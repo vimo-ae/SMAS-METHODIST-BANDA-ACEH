@@ -1,0 +1,29 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('grades', function (Blueprint $table) {
+            $table->id();
+            $table->string('students_id');
+            $table->foreign('students_id')->references('nis')->on('students')->cascadeOnDelete();
+            $table->string('subject_code',20);
+            $table->foreign('subject_code')->references('code')->on('subjects')->cascadeOnDelete();
+            $table->string('semester', 10);
+            $table->string('academic_year', 9);
+            $table->enum('grade_type', ['tugas', 'uts', 'uas', 'rapor']);
+            $table->float('score');
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('grades');
+    }
+};

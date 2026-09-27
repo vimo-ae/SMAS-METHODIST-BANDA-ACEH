@@ -1,0 +1,3 @@
+<?php
+namespace Database\Seeders; use App\Models\Guardian; use App\Models\Student; use App\Models\User; use Illuminate\Database\Seeder; use Illuminate\Support\Facades\Hash;
+class GuardianSeeder extends Seeder { public function run():void { $i=1; foreach(Student::all() as $student){$nik=str_pad((string)$i,16,'0',STR_PAD_LEFT); $g=Guardian::firstOrCreate(['nik'=>$nik],['relationship'=>'Orang Tua','occupation'=>'Karyawan','address'=>'Jl. Contoh']); User::firstOrCreate(['email'=>'orangtua'.$i.'@methodistbandaaceh.sch.id'],['name'=>'Orang Tua '.$i,'password'=>Hash::make('password123'),'role'=>'orangtua','academic_key'=>$g->nik]); $g->students()->syncWithoutDetaching([$student->nis]); $i++;}} }

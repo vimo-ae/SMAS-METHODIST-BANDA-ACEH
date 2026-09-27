@@ -1,0 +1,3 @@
+<?php
+namespace Database\Seeders; use App\Models\ClassSubjectTeacher; use App\Models\SchoolClass; use App\Models\Subject; use App\Models\Teacher; use Illuminate\Database\Seeder;
+class ClassSubjectTeacherSeeder extends Seeder { public function run():void { $teachers=Teacher::all(); $subjects=Subject::all(); $classes=SchoolClass::all(); foreach($classes as $ci=>$class){foreach($subjects as $si=>$subject){$teacher=$teachers[($ci+$si)%max(1,$teachers->count())]??null; if(!$teacher) continue; ClassSubjectTeacher::firstOrCreate(['class_id'=>$class->id,'subject_code'=>$subject->code,'academic_year'=>'2025/2026','semester'=>'ganjil'],['teacher_id'=>$teacher->nip]);}} } }
