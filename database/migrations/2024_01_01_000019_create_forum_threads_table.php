@@ -9,10 +9,26 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('forum_threads', function (Blueprint $table) {
+
+            // Primary Key
             $table->id();
-            $table->foreignId('cst_id')->constrained('class_subject_teacher')->cascadeOnDelete();
+
+            // FK -> class_subject_teacher.cst_id
+            $table->string('cst_id', 20);
+
+            $table->foreign('cst_id')
+                ->references('cst_id')
+                ->on('class_subject_teacher')
+                ->cascadeOnDelete();
+
+            // Judul thread
             $table->string('title');
-            $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
+
+            // FK -> users.id
+            $table->foreignId('created_by')
+                ->constrained('users')
+                ->cascadeOnDelete();
+
             $table->timestamps();
         });
     }

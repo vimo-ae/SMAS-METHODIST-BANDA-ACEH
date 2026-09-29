@@ -9,12 +9,27 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('assignments', function (Blueprint $table) {
+
+            // Primary Key
             $table->id();
-            $table->foreignId('cst_id')->constrained('class_subject_teacher')->cascadeOnDelete();
+
+            // FK -> class_subject_teacher.cst_id
+            $table->string('cst_id', 20);
+
+            $table->foreign('cst_id')
+                ->references('cst_id')
+                ->on('class_subject_teacher')
+                ->cascadeOnDelete();
+
             $table->string('title');
+
             $table->text('description')->nullable();
+
             $table->dateTime('due_date');
-            $table->unsignedSmallInteger('max_score')->default(100);
+
+            $table->unsignedSmallInteger('max_score')
+                ->default(100);
+
             $table->timestamps();
         });
     }

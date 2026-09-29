@@ -9,12 +9,28 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('schedules', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('cst_id')->constrained('class_subject_teacher')->cascadeOnDelete();
-            $table->enum('day', ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu']);
+
+            // Tidak ada primary key
+            $table->string('cst_id', 20);
+
+            $table->enum('day', [
+                'senin',
+                'selasa',
+                'rabu',
+                'kamis',
+                'jumat',
+                'sabtu'
+            ]);
+
             $table->time('start_time');
             $table->time('end_time');
+
             $table->timestamps();
+
+            $table->foreign('cst_id')
+                ->references('cst_id')
+                ->on('class_subject_teacher')
+                ->cascadeOnDelete();
         });
     }
 

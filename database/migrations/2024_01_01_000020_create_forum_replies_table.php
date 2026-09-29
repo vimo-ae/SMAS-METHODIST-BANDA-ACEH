@@ -9,10 +9,22 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('forum_replies', function (Blueprint $table) {
+            // Primary Key
             $table->id();
-            $table->foreignId('thread_id')->constrained('forum_threads')->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+
+            // FK -> forum_threads.id
+            $table->foreignId('thread_id')
+                ->constrained('forum_threads')
+                ->cascadeOnDelete();
+
+            // FK -> users.id
+            $table->foreignId('user_id')
+                ->constrained('users')
+                ->cascadeOnDelete();
+
+            // Isi balasan
             $table->text('content');
+
             $table->timestamps();
         });
     }

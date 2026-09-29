@@ -9,16 +9,44 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('attendances', function (Blueprint $table) {
+
+            // Primary Key
             $table->id();
-            $table->foreignId('cst_id')->constrained('class_subject_teacher')->cascadeOnDelete();
+
+            // FK -> class_subject_teacher.cst_id
+            $table->string('cst_id', 20);
+
+            $table->foreign('cst_id')
+                ->references('cst_id')
+                ->on('class_subject_teacher')
+                ->cascadeOnDelete();
+
+            // FK -> students.nis
             $table->string('students_id');
-            $table->foreign('students_id')->references('nis')->on('students')->cascadeOnDelete();
+
+            $table->foreign('students_id')
+                ->references('nis')
+                ->on('students')
+                ->cascadeOnDelete();
+
             $table->date('date');
-            $table->enum('status', ['hadir', 'izin', 'sakit', 'alpha']);
+
+            $table->enum('status', [
+                'hadir',
+                'izin',
+                'sakit',
+                'alpha'
+            ]);
+
             $table->string('note')->nullable();
+
             $table->timestamps();
 
-            $table->unique(['cst_id', 'students_id', 'date']);
+            // Satu siswa hanya memiliki satu absensi
+            // untuk satu mata pelajaran pada satu tanggal
+            $table->unique(
+                ['cst_id', 'students_id', 'date']
+            );
         });
     }
 

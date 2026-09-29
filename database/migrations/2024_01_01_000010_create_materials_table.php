@@ -9,12 +9,27 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('materials', function (Blueprint $table) {
+
+            // Primary Key materials
             $table->id();
-            $table->foreignId('cst_id')->constrained('class_subject_teacher')->cascadeOnDelete();
+
+            // FK -> class_subject_teacher.cst_id
+            $table->string('cst_id', 20);
+
+            $table->foreign('cst_id')
+                ->references('cst_id')
+                ->on('class_subject_teacher')
+                ->cascadeOnDelete();
+
             $table->string('title');
+
             $table->text('description')->nullable();
+
             $table->string('file_path')->nullable();
-            $table->timestamp('uploaded_at')->useCurrent();
+
+            $table->timestamp('uploaded_at')
+                ->useCurrent();
+
             $table->timestamps();
         });
     }
