@@ -9,11 +9,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('classes', function (Blueprint $table) {
+
             $table->unsignedBigInteger('class_id')->primary();
 
             $table->string('name');
 
-            $table->string('homeroom_teacher_id')->nullable();
+            // FK ke teachers.nip
+            $table->unsignedBigInteger('homeroom_teacher_id')->nullable();
 
             $table->string('academic_year', 9);
 

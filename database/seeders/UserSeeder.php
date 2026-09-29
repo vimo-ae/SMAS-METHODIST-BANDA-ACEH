@@ -1,3 +1,42 @@
 <?php
-namespace Database\Seeders; use App\Models\User; use Illuminate\Database\Seeder; use Illuminate\Support\Facades\Hash;
-class UserSeeder extends Seeder { public function run():void { foreach([['superadmin@methodistbandaaceh.sch.id','Super Admin','superadmin',null],['admin@methodistbandaaceh.sch.id','Admin Sekolah','admin',null]] as $a){User::firstOrCreate(['email'=>$a[0]],['name'=>$a[1],'password'=>Hash::make('password123'),'role'=>$a[2],'academic_key'=>$a[3]]);} } }
+
+namespace Database\Seeders;
+
+use App\Models\User;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+
+class UserSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $users = [
+            [
+                'user_id' => 1,
+                'email' => 'superadmin@methodistbandaaceh.sch.id',
+                'name' => 'Super Admin',
+                'role' => 'superadmin',
+            ],
+            [
+                'user_id' => 2,
+                'email' => 'admin@methodistbandaaceh.sch.id',
+                'name' => 'Admin Sekolah',
+                'role' => 'admin',
+            ],
+        ];
+
+        foreach ($users as $data) {
+            User::updateOrCreate(
+                [
+                    'user_id' => $data['user_id'],
+                ],
+                [
+                    'name' => $data['name'],
+                    'email' => $data['email'],
+                    'password' => Hash::make('password123'),
+                    'role' => $data['role'],
+                ]
+            );
+        }
+    }
+}

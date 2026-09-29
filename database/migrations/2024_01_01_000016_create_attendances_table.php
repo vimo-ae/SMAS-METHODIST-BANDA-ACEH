@@ -22,7 +22,7 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             // FK -> students.nis
-            $table->string('students_id');
+            $table->unsignedBigInteger('students_id');
 
             $table->foreign('students_id')
                 ->references('nis')
@@ -44,9 +44,11 @@ return new class extends Migration
 
             // Satu siswa hanya memiliki satu absensi
             // untuk satu mata pelajaran pada satu tanggal
-            $table->unique(
-                ['cst_id', 'students_id', 'date']
-            );
+            $table->unique([
+                'cst_id',
+                'students_id',
+                'date'
+            ]);
         });
     }
 

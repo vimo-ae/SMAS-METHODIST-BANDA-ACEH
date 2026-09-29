@@ -9,8 +9,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('students', function (Blueprint $table) {
-            $table->string('nis')->primary();
 
+            // PK sekaligus FK ke users.user_id
+            $table->unsignedBigInteger('nis')->primary();
+
+            $table->foreign('nis')
+                ->references('user_id')
+                ->on('users')
+                ->cascadeOnDelete();
+
+            // FK ke classes.class_id
             $table->foreignId('class_id')
                 ->nullable()
                 ->constrained('classes', 'class_id')

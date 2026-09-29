@@ -9,16 +9,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('assignment_submissions', function (Blueprint $table) {
-            // Primary Key
-            $table->id();
 
-            // FK -> assignments.id
-            $table->foreignId('assignment_id')
-                ->constrained('assignments')
+            // FK -> assignments.assignment_id
+            $table->unsignedBigInteger('assignment_id');
+
+            $table->foreign('assignment_id')
+                ->references('assignment_id')
+                ->on('assignments')
                 ->cascadeOnDelete();
 
             // FK -> students.nis
-            $table->string('students_id');
+            $table->unsignedBigInteger('students_id');
 
             $table->foreign('students_id')
                 ->references('nis')
@@ -37,9 +38,10 @@ return new class extends Migration
 
             // Satu siswa hanya boleh memiliki satu submission
             // untuk satu assignment
-            $table->unique(
-                ['assignment_id', 'students_id']
-            );
+            $table->unique([
+                'assignment_id',
+                'students_id'
+            ]);
         });
     }
 

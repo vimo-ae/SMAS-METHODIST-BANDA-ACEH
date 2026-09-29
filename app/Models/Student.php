@@ -11,10 +11,9 @@ class Student extends Model
 
     protected $table = 'students';
 
+    // Primary key students = nis
     protected $primaryKey = 'nis';
-
     public $incrementing = false;
-
     protected $keyType = 'string';
 
     protected $fillable = [
@@ -52,6 +51,13 @@ class Student extends Model
         );
     }
 
+    // students.nis
+    //     ↓
+    // parent_student.students_id
+    //     ↓
+    // parent_student.parents_id
+    //     ↓
+    // parents.nik
     public function guardians()
     {
         return $this->belongsToMany(

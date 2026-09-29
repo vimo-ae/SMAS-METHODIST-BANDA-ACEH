@@ -24,9 +24,12 @@ return new class extends Migration
             // Judul thread
             $table->string('title');
 
-            // FK -> users.id
-            $table->foreignId('created_by')
-                ->constrained('users')
+            // FK -> users.user_id
+            $table->unsignedBigInteger('created_by');
+
+            $table->foreign('created_by')
+                ->references('user_id')
+                ->on('users')
                 ->cascadeOnDelete();
 
             $table->timestamps();

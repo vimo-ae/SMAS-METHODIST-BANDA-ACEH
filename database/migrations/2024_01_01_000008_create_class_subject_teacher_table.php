@@ -14,15 +14,13 @@ return new class extends Migration
             $table->string('cst_id', 20)->primary();
 
             // FK ke classes.class_id
-            $table->foreignId('class_id')
-                ->constrained('classes', 'class_id')
-                ->cascadeOnDelete();
+            $table->unsignedBigInteger('class_id');
 
             // FK ke subjects.code
             $table->string('subject_code', 20);
 
             // FK ke teachers.nip
-            $table->string('teacher_id');
+            $table->unsignedBigInteger('teacher_id');
 
             // Tahun ajaran
             $table->string('academic_year', 9);
@@ -34,6 +32,12 @@ return new class extends Migration
             ]);
 
             $table->timestamps();
+
+            // Relasi ke classes
+            $table->foreign('class_id')
+                ->references('class_id')
+                ->on('classes')
+                ->cascadeOnDelete();
 
             // Relasi ke subjects
             $table->foreign('subject_code')

@@ -9,6 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('forum_replies', function (Blueprint $table) {
+
             // Primary Key
             $table->id();
 
@@ -17,9 +18,12 @@ return new class extends Migration
                 ->constrained('forum_threads')
                 ->cascadeOnDelete();
 
-            // FK -> users.id
-            $table->foreignId('user_id')
-                ->constrained('users')
+            // FK -> users.user_id
+            $table->unsignedBigInteger('user_id');
+
+            $table->foreign('user_id')
+                ->references('user_id')
+                ->on('users')
                 ->cascadeOnDelete();
 
             // Isi balasan

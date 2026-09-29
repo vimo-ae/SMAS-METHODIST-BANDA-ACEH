@@ -8,20 +8,37 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Assignment extends Model
 {
     use HasFactory;
-    protected $fillable = ['cst_id', 'title', 'description', 'due_date', 'max_score'];
+
+    protected $table = 'assignments';
+
+    protected $primaryKey = 'assignment_id';
+
+    public $incrementing = true;
+
+    protected $keyType = 'int';
+
+    protected $fillable = [
+        'assignment_id',
+        'cst_id',
+        'title',
+        'description',
+        'due_date',
+        'max_score',
+    ];
 
     protected function casts(): array
     {
-        return ['due_date' => 'datetime'];
+        return [
+            'due_date' => 'datetime',
+        ];
     }
 
     public function classSubjectTeacher()
     {
-        return $this->belongsTo(ClassSubjectTeacher::class, 'cst_id');
-    }
-
-    public function submissions()
-    {
-        return $this->hasMany(AssignmentSubmission::class);
+        return $this->belongsTo(
+            ClassSubjectTeacher::class,
+            'cst_id',
+            'cst_id'
+        );
     }
 }

@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('assignments', function (Blueprint $table) {
 
             // Primary Key
-            $table->id();
+            $table->id('assignment_id');
 
             // FK -> class_subject_teacher.cst_id
             $table->string('cst_id', 20);

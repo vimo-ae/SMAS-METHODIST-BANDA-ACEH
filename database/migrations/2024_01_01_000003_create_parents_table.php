@@ -8,22 +8,21 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('announcements', function (Blueprint $table) {
-            $table->id();
+        Schema::create('parents', function (Blueprint $table) {
 
-            $table->string('title');
+            // PK sekaligus FK ke users.user_id
+            $table->unsignedBigInteger('nik')->primary();
 
-            $table->text('content');
-
-            $table->json('target_roles');
-
-            // FK -> users.user_id
-            $table->unsignedBigInteger('created_by');
-
-            $table->foreign('created_by')
+            $table->foreign('nik')
                 ->references('user_id')
                 ->on('users')
                 ->cascadeOnDelete();
+
+            $table->string('relationship')->nullable();
+
+            $table->string('occupation')->nullable();
+
+            $table->text('address')->nullable();
 
             $table->timestamps();
         });
@@ -31,6 +30,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('announcements');
+        Schema::dropIfExists('parents');
     }
 };
