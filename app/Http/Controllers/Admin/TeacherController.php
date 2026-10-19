@@ -35,18 +35,17 @@ class TeacherController extends Controller
 
         DB::transaction(function () use ($v) {
 
-            Teacher::create([
-                'nip' => $v['nip'],
-                'specialization' => $v['specialization'] ?? null,
-            ]);
-
             User::create([
+                'user_id' => $v['nip'],
                 'name' => $v['name'],
                 'email' => $v['email'],
                 'phone' => $v['phone'] ?? null,
                 'password' => Hash::make('password123'),
                 'role' => 'guru',
-                'academic_key' => $v['nip'],
+            ]);
+            Teacher::create([
+                'nip' => $v['nip'],
+                'specialization' => $v['specialization'] ?? null,
             ]);
         });
 
@@ -73,17 +72,11 @@ class TeacherController extends Controller
             'email' => [
                 'required',
                 'email',
-                'unique:users,email,' . $teacher->user?->id,
+                'unique:users,email,' . $teacher->user?->user_id . ',user_id',
             ],
 
             'phone' => 'nullable|string|max:20',
 
-            'nip' => [
-                'required',
-                'string',
-                'max:30',
-                'unique:teachers,nip,' . $teacher->nip . ',nip',
-            ],
 
             'specialization' => 'nullable|string|max:100',
         ]);
@@ -91,7 +84,6 @@ class TeacherController extends Controller
         DB::transaction(function () use ($v, $teacher) {
 
             $teacher->update([
-                'nip' => $v['nip'],
                 'specialization' => $v['specialization'] ?? null,
             ]);
 
@@ -99,7 +91,6 @@ class TeacherController extends Controller
                 'name' => $v['name'],
                 'email' => $v['email'],
                 'phone' => $v['phone'] ?? null,
-                'academic_key' => $v['nip'],
             ]);
         });
 

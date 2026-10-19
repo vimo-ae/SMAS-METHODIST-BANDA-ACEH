@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('notifications', function (Blueprint $table) {
 
-            $table->id();
+            $table->id('notification_id');
 
             // FK -> users.user_id
             $table->unsignedBigInteger('user_id');

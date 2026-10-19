@@ -7,100 +7,20 @@ use Illuminate\Database\Seeder;
 
 class SubjectSeeder extends Seeder
 {
+    /** Tepat 15 mata pelajaran + durasi ujian (menit) masing-masing. */
+    public const SUBJECTS = [
+        'MTK' => ['Matematika', 120], 'FIS' => ['Fisika', 90], 'BIO' => ['Biologi', 90],
+        'KIM' => ['Kimia', 90], 'BIN' => ['Bahasa Indonesia', 90], 'BIG' => ['Bahasa Inggris', 90],
+        'SEJ' => ['Sejarah', 60], 'EKO' => ['Ekonomi', 75], 'GEO' => ['Geografi', 60],
+        'PKN' => ['PPKn', 60], 'SOS' => ['Sosiologi', 60], 'INF' => ['Informatika', 100],
+        'SBD' => ['Seni Budaya', 45], 'PJOK' => ['PJOK', 45], 'AGM' => ['Pendidikan Agama', 60],
+    ];
+
     public function run(): void
     {
-        $subjects = [
-            [
-                'code' => 'MTK',
-                'name' => 'Matematika',
-            ],
-            [
-                'code' => 'FIS',
-                'name' => 'Fisika',
-            ],
-            [
-                'code' => 'BIO',
-                'name' => 'Biologi',
-            ],
-            [
-                'code' => 'KIM',
-                'name' => 'Kimia',
-            ],
-            [
-                'code' => 'BIN',
-                'name' => 'Bahasa Indonesia',
-            ],
-            [
-                'code' => 'BIG',
-                'name' => 'Bahasa Inggris',
-            ],
-            [
-                'code' => 'SEJ',
-                'name' => 'Sejarah',
-            ],
-            [
-                'code' => 'EKO',
-                'name' => 'Ekonomi',
-            ],
-            [
-                'code' => 'GEO',
-                'name' => 'Geografi',
-            ],
-            [
-                'code' => 'PKN',
-                'name' => 'PPKn',
-            ],
-            [
-                'code' => 'SOS',
-                'name' => 'Sosiologi',
-            ],
-            [
-                'code' => 'INF',
-                'name' => 'Informatika',
-            ],
-            [
-                'code' => 'SBD',
-                'name' => 'Seni Budaya',
-            ],
-            [
-                'code' => 'PJOK',
-                'name' => 'PJOK',
-            ],
-            [
-                'code' => 'AGM',
-                'name' => 'Pendidikan Agama',
-            ],
-            [
-                'code' => 'PRA',
-                'name' => 'Prakarya',
-            ],
-            [
-                'code' => 'JEP',
-                'name' => 'Bahasa Jepang',
-            ],
-            [
-                'code' => 'MAN',
-                'name' => 'Bahasa Mandarin',
-            ],
-            [
-                'code' => 'BK',
-                'name' => 'Bimbingan Konseling',
-            ],
-            [
-                'code' => 'STA',
-                'name' => 'Statistika',
-            ],
-        ];
-
-        foreach ($subjects as $subject) {
-            Subject::updateOrCreate(
-                [
-                    'code' => $subject['code'],
-                ],
-                [
-                    'name' => $subject['name'],
-                ]
-            );
+        Subject::whereNotIn('code', array_keys(self::SUBJECTS))->delete();
+        foreach (self::SUBJECTS as $code => [$name]) {
+            Subject::updateOrCreate(['code' => $code], ['name' => $name]);
         }
     }
 }

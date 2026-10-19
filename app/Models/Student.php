@@ -31,12 +31,12 @@ class Student extends Model
         ];
     }
 
-    // students.nis → users.academic_key
+    // students.nis → users.user_id
     public function user()
     {
         return $this->hasOne(
             User::class,
-            'academic_key',
+            'user_id',
             'nis'
         );
     }
@@ -104,5 +104,28 @@ class Student extends Model
             'students_id',
             'nis'
         );
+    }
+
+    // Kelas mata pelajaran yang diikuti (join kelas guru mapel)
+    public function joinedClasses()
+    {
+        return $this->belongsToMany(
+            ClassSubjectTeacher::class,
+            'cst_students',
+            'students_id',
+            'cst_id',
+            'nis',
+            'cst_id'
+        )->withPivot('joined_at');
+    }
+
+    public function examSessions()
+    {
+        return $this->hasMany(ExamSession::class, 'students_id', 'nis');
+    }
+
+    public function getNameAttribute(): string
+    {
+        return $this->user?->name ?? (string) $this->nis;
     }
 }

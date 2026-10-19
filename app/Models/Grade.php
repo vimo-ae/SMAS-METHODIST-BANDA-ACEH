@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Grade extends Model
 {
@@ -11,34 +11,22 @@ class Grade extends Model
 
     protected $table = 'grades';
 
-    protected $primaryKey = null;
-
-    public $incrementing = false;
-
     protected $fillable = [
-        'students_id',
-        'subject_code',
-        'semester',
-        'academic_year',
-        'grade_type',
-        'score',
+        'students_id', 'subject_code', 'semester', 'academic_year', 'grade_type', 'score',
     ];
+
+    protected function casts(): array
+    {
+        return ['score' => 'float'];
+    }
 
     public function student()
     {
-        return $this->belongsTo(
-            Student::class,
-            'students_id',
-            'nis'
-        );
+        return $this->belongsTo(Student::class, 'students_id', 'nis');
     }
 
     public function subject()
     {
-        return $this->belongsTo(
-            Subject::class,
-            'subject_code',
-            'code'
-        );
+        return $this->belongsTo(Subject::class, 'subject_code', 'code');
     }
 }

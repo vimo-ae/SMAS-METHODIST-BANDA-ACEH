@@ -2,36 +2,27 @@
 
 namespace App\Models;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory;
+
+    public const ROLES = ['admin', 'guru', 'siswa', 'orangtua'];
 
     protected $table = 'users';
 
-    // Primary key users adalah user_id
+    // user_id diisi manual sesuai NIP / NIS / NIK
     protected $primaryKey = 'user_id';
-
-    public $incrementing = true;
-
+    public $incrementing = false;
     protected $keyType = 'int';
 
     protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'role',
-        'phone',
-        'avatar',
+        'user_id', 'name', 'email', 'password', 'role', 'phone', 'avatar',
     ];
 
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    protected $hidden = ['password', 'remember_token'];
 
     protected function casts(): array
     {
@@ -41,77 +32,58 @@ class User extends Authenticatable
         ];
     }
 
-    // User -> Student
-    // students.nis = users.user_id
     public function student()
     {
-        return $this->hasOne(
-            Student::class,
-            'nis',
-            'user_id'
-        );
+        return $this->hasOne(Student::class, 'nis', 'user_id');
     }
 
-    // User -> Teacher
-    // teachers.nip = users.user_id
     public function teacher()
     {
-        return $this->hasOne(
-            Teacher::class,
-            'nip',
-            'user_id'
-        );
+        return $this->hasOne(Teacher::class, 'nip', 'user_id');
     }
 
-    // User -> Parent
-    // parents.nik = users.user_id
     public function guardianProfile()
     {
-        return $this->hasOne(
-            Guardian::class,
-            'nik',
-            'user_id'
-        );
+        return $this->hasOne(Guardian::class, 'nik', 'user_id');
     }
 
     public function announcements()
     {
-        return $this->hasMany(
-            Announcement::class,
-            'created_by',
-            'user_id'
-        );
+        return $this->hasMany(Announcement::class, 'created_by', 'user_id');
     }
 
     public function forumReplies()
     {
-        return $this->hasMany(
-            ForumReply::class,
-            'user_id',
-            'user_id'
-        );
+        return $this->hasMany(ForumReply::class, 'user_id', 'user_id');
     }
 
     public function notifications()
     {
-        return $this->hasMany(
-            Notification::class,
-            'user_id',
-            'user_id'
-        );
-    }
-
-    public function isSuperAdmin(): bool
-    {
-        return $this->role === 'superadmin';
+        return $this->hasMany(Notification::class, 'user_id', 'user_id');
     }
 
     public function isAdmin(): bool
     {
-        return in_array(
-            $this->role,
-            ['superadmin', 'admin'],
-            true
-        );
+        return $this->role === 'admin';
+    }
+
+    public function isGuru(): bool
+    {
+        return $this->role === 'guru';
+    }
+
+    public function isSiswa(): bool
+    {
+        return $this->role === 'siswa';
+    }
+
+    public function isOrangtua(): bool
+    {
+        return $this->role === 'orangtua';
+    }
+
+    public function roleLabel(): string
+    {
+        return ['admin' => 'Administrator', 'guru' => 'Guru', 'siswa' => 'Siswa', 'orangtua' => 'Orang Tua'][$this->role] ?? $this->role;
     }
 }

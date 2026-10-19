@@ -36,12 +36,7 @@ return new class extends Migration
 
             $table->timestamps();
 
-            // Satu siswa hanya boleh memiliki satu submission
-            // untuk satu assignment
-            $table->unique([
-                'assignment_id',
-                'students_id'
-            ]);
+            $table->primary(['assignment_id', 'students_id']);
         });
     }
 

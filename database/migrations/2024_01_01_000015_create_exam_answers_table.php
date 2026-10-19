@@ -10,11 +10,9 @@ return new class extends Migration
     {
         Schema::create('exam_answers', function (Blueprint $table) {
 
-            $table->id();
-
-            // FK -> exams.id
+            // FK -> exams.exam_id
             $table->foreignId('exam_id')
-                ->constrained('exams')
+                ->constrained('exams', 'exam_id')
                 ->cascadeOnDelete();
 
             // FK -> students.nis
@@ -27,7 +25,7 @@ return new class extends Migration
 
             // FK -> exam_questions.id
             $table->foreignId('question_id')
-                ->constrained('exam_questions')
+                ->constrained('exam_questions', 'exam_question_id')
                 ->cascadeOnDelete();
 
             $table->text('answer')->nullable();

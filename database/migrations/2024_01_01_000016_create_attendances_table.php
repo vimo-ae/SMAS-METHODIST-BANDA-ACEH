@@ -10,9 +10,6 @@ return new class extends Migration
     {
         Schema::create('attendances', function (Blueprint $table) {
 
-            // Primary Key
-            $table->id();
-
             // FK -> class_subject_teacher.cst_id
             $table->string('cst_id', 20);
 

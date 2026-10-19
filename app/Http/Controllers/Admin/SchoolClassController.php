@@ -42,7 +42,9 @@ class SchoolClassController extends Controller
             ],
         ]);
 
-        SchoolClass::create($v);
+        // class_id tidak auto-increment, jadi dibuat berurutan
+        $v['class_id'] = (SchoolClass::max('class_id') ?? 100) + 1;
+        (new SchoolClass)->forceFill($v)->save();
 
         return redirect()
             ->route('admin.classes.index')

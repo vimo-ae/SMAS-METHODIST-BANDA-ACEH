@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class AssignmentSubmission extends Model
 {
     use HasFactory;
+
+    protected $primaryKey = null;
+    public $incrementing = false;
     protected $fillable = ['assignment_id', 'students_id', 'file_path', 'submitted_at', 'score', 'feedback'];
 
     protected function casts(): array

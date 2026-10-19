@@ -2,60 +2,34 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use App\Models\Teacher;
+use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class TeacherSeeder extends Seeder
 {
+    public const TEACHERS = [
+        ['Budi Santoso', 'budi.guru', 'Matematika'],
+        ['Siti Rahma', 'siti.guru', 'Fisika'],
+        ['Andi Wijaya', 'andi.guru', 'Biologi'],
+        ['Rina Lestari', 'rina.guru', 'Kimia'],
+        ['Maria Simanjuntak', 'maria.guru', 'Bahasa Indonesia'],
+        ['John Panjaitan', 'john.guru', 'Bahasa Inggris'],
+        ['Cut Nyak Dewi', 'dewi.guru', 'Sosial'],
+        ['Daniel Sitompul', 'daniel.guru', 'Informatika & Seni'],
+    ];
+
     public function run(): void
     {
-        $teachers = [
-            [
-                'nip' => 1234567899887,
-                'name' => 'Budi Santoso',
-                'email' => 'budi.guru@example.com',
-                'specialization' => 'Matematika',
-            ],
-            [
-                'nip' => 1234567899888,
-                'name' => 'Siti Rahma',
-                'email' => 'siti.guru@example.com',
-                'specialization' => 'Fisika',
-            ],
-            [
-                'nip' => 1234567899889,
-                'name' => 'Andi Wijaya',
-                'email' => 'andi.guru@example.com',
-                'specialization' => 'Biologi',
-            ],
-        ];
-
-        foreach ($teachers as $data) {
-
-            // 1. Buat akun user dengan user_id = NIP
-            User::updateOrCreate(
-                [
-                    'user_id' => $data['nip'],
-                ],
-                [
-                    'name' => $data['name'],
-                    'email' => $data['email'],
-                    'password' => Hash::make('password'),
-                    'role' => 'guru',
-                ]
-            );
-
-            // 2. NIP menjadi primary key teachers
-            Teacher::updateOrCreate(
-                [
-                    'nip' => $data['nip'],
-                ],
-                [
-                    'specialization' => $data['specialization'],
-                ]
-            );
+        foreach (self::TEACHERS as $i => [$name, $mail, $spec]) {
+            $nip = 1234567899887 + $i;
+            User::updateOrCreate(['user_id' => $nip], [
+                'name' => $name,
+                'email' => $mail.'@methodistbandaaceh.sch.id',
+                'password' => 'password123',
+                'role' => 'guru',
+            ]);
+            Teacher::updateOrCreate(['nip' => $nip], ['specialization' => $spec]);
         }
     }
 }

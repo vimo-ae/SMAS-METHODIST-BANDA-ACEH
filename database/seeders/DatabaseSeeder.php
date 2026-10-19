@@ -9,13 +9,15 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            UserSeeder::class,
+            UserSeeder::class,            // admin (tanpa super admin)
             TeacherSeeder::class,
-            SubjectSeeder::class,
+            SubjectSeeder::class,         // 15 mata pelajaran
             SchoolClassSeeder::class,
             StudentSeeder::class,
             GuardianSeeder::class,
             ClassSubjectTeacherSeeder::class,
+            ExamSeeder::class,            // 15 ujian x 35 soal (kelas X IPA 1)
+            DemoDataSeeder::class,        // materi, tugas, forum, nilai, dll.
         ]);
     }
 }

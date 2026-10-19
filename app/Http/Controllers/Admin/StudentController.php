@@ -51,11 +51,11 @@ class StudentController extends Controller
         DB::transaction(function () use ($v) {
 
             User::create([
+                'user_id' => $v['nis'],
                 'name' => $v['name'],
                 'email' => $v['email'],
                 'password' => Hash::make('password123'),
                 'role' => 'siswa',
-                'academic_key' => $v['nis'],
             ]);
 
             Student::create([
@@ -95,15 +95,9 @@ class StudentController extends Controller
             'email' => [
                 'required',
                 'email',
-                'unique:users,email,' . $student->user?->id,
+                'unique:users,email,' . $student->user?->user_id . ',user_id',
             ],
 
-            'nis' => [
-                'required',
-                'string',
-                'max:30',
-                'unique:students,nis,' . $student->nis . ',nis',
-            ],
 
             'class_id' => [
                 'nullable',
@@ -120,7 +114,6 @@ class StudentController extends Controller
         DB::transaction(function () use ($v, $student) {
 
             $student->update([
-                'nis' => $v['nis'],
                 'class_id' => $v['class_id'] ?? null,
                 'gender' => $v['gender'],
                 'birth_date' => $v['birth_date'] ?? null,
@@ -130,7 +123,6 @@ class StudentController extends Controller
             $student->user()->update([
                 'name' => $v['name'],
                 'email' => $v['email'],
-                'academic_key' => $v['nis'],
             ]);
         });
 

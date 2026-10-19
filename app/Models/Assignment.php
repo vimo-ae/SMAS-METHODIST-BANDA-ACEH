@@ -41,4 +41,9 @@ class Assignment extends Model
             'cst_id'
         );
     }
+
+    public function submissions()
+    {
+        return $this->hasMany(AssignmentSubmission::class, 'assignment_id', 'assignment_id');
+    }
 }

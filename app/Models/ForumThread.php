@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ForumThread extends Model
 {
-    protected $fillable = ['cst_id', 'title', 'created_by'];
+    protected $fillable = ['cst_id', 'title', 'body', 'created_by'];
 
     public function classSubjectTeacher()
     {

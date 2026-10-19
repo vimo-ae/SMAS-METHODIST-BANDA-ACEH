@@ -10,12 +10,9 @@ return new class extends Migration
     {
         Schema::create('forum_replies', function (Blueprint $table) {
 
-            // Primary Key
-            $table->id();
-
             // FK -> forum_threads.id
             $table->foreignId('thread_id')
-                ->constrained('forum_threads')
+                ->constrained('forum_threads', 'thread_id')
                 ->cascadeOnDelete();
 
             // FK -> users.user_id

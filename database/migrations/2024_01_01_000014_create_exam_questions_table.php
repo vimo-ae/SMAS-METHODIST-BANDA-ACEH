@@ -9,8 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('exam_questions', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('exam_id')->constrained('exams')->cascadeOnDelete();
+            $table->id('exam_question_id');
+            $table->foreignId('exam_id')->constrained('exams', 'exam_id')->cascadeOnDelete();
             $table->text('question_text');
             $table->enum('question_type', ['pilihan_ganda', 'esai']);
             $table->json('options')->nullable();

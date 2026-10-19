@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('grades', function (Blueprint $table) {
-
+            
             // FK -> students.nis
             $table->unsignedBigInteger('students_id');
 

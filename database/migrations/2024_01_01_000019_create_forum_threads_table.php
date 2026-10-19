@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('forum_threads', function (Blueprint $table) {
 
             // Primary Key
-            $table->id();
+            $table->id('thread_id');
 
             // FK -> class_subject_teacher.cst_id
             $table->string('cst_id', 20);

@@ -26,7 +26,7 @@ class Teacher extends Model
     {
         return $this->hasOne(
             User::class,
-            'academic_key',
+            'user_id',
             'nip'
         );
     }

@@ -18,11 +18,13 @@ class ClassSubjectTeacher extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
+        'cst_id',
         'class_id',
         'subject_code',
         'teacher_id',
         'academic_year',
         'semester',
+        'join_code',
     ];
 
     public function schoolClass()
@@ -80,5 +82,23 @@ class ClassSubjectTeacher extends Model
     public function forumThreads()
     {
         return $this->hasMany(ForumThread::class, 'cst_id', 'cst_id');
+    }
+
+    // Siswa yang sudah bergabung lewat kode kelas
+    public function joinedStudents()
+    {
+        return $this->belongsToMany(
+            Student::class,
+            'cst_students',
+            'cst_id',
+            'students_id',
+            'cst_id',
+            'nis'
+        )->withPivot('joined_at');
+    }
+
+    public function label(): string
+    {
+        return ($this->subject->name ?? $this->subject_code).' — '.($this->schoolClass->name ?? '-');
     }
 }
