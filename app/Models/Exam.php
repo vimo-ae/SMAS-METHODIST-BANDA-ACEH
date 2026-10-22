@@ -12,19 +12,22 @@ class Exam extends Model
     protected $primaryKey = 'exam_id';   // <-- tambahkan
 
     protected $fillable = [
-        'cst_id', 'title', 'type', 'start_time', 'end_time', 'duration_minutes',
-        'total_questions', 'is_published', 'require_face_photo', 'instructions',
-    ];
+    'cst_id', 'title', 'exam_type', 'start_time', 'end_time', 'duration_minutes',
+    'pass_score', 'shuffle_questions', 'shuffle_options',
+    'is_published', 'instructions',
+];
 
-    protected function casts(): array
-    {
-        return [
-            'start_time' => 'datetime',
-            'end_time' => 'datetime',
-            'is_published' => 'boolean',
-            'require_face_photo' => 'boolean',
-        ];
-    }
+protected function casts(): array
+{
+    return [
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
+        'pass_score' => 'float',
+        'shuffle_questions' => 'boolean',
+        'shuffle_options' => 'boolean',
+        'is_published' => 'boolean',
+    ];
+}
 
     public function getRouteKeyName(): string
     {
@@ -64,6 +67,6 @@ class Exam extends Model
 
     public function isComplete(): bool
     {
-        return $this->questions()->count() === (int) $this->total_questions;
+        return $this->questions()->exists();
     }
 }

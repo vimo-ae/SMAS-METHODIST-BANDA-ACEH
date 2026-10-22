@@ -3,24 +3,31 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class ExamSession extends Model
 {
-    protected $primaryKey = 'exam_session_id';   // <-- tambahkan
+    protected $primaryKey = 'exam_session_id';
 
     protected $fillable = [
-        'exam_id', 'students_id', 'face_photo', 'started_at', 'deadline_at', 'finished_at',
-        'status', 'objective_score', 'essay_score', 'violation_count', 'teacher_note',
+        'exam_id', 'students_id', 'token', 'face_photo',
+        'started_at', 'finished_at', 'left_at', 'status',
     ];
+
+    protected static function booted(): void
+    {
+        // token dibuat otomatis saat sesi dibuat
+        static::creating(function (self $session) {
+            $session->token ??= Str::random(40);
+        });
+    }
 
     protected function casts(): array
     {
         return [
             'started_at' => 'datetime',
-            'deadline_at' => 'datetime',
             'finished_at' => 'datetime',
-            'objective_score' => 'float',
-            'essay_score' => 'float',
+            'left_at' => 'datetime',
         ];
     }
 
@@ -42,11 +49,14 @@ class ExamSession extends Model
 
     public function violations()
     {
-        return $this->hasMany(ExamViolation::class, 'exam_session_id', 'exam_session_id');   // <-- diperjelas
+        return $this->hasMany(ExamViolation::class, 'exam_session_id', 'exam_session_id');
     }
 
+    // Batas waktu memakai end_time ujian, bukan deadline_at
     public function isRunning(): bool
     {
-        return $this->status === 'berlangsung' && $this->deadline_at && now()->lt($this->deadline_at);
+        return $this->status === 'berlangsung'
+            && $this->exam
+            && now()->lt($this->exam->end_time);
     }
 }

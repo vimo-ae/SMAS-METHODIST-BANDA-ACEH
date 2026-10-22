@@ -40,12 +40,21 @@ class StudentSeeder extends Seeder
                         'nis' => $nis,
                     ],
                     [
+                        'nisn' => str_pad((string) $nis, 10, '0', STR_PAD_LEFT),
                         'class_id' => $class->class_id,
                         'gender' => $i % 2 ? 'L' : 'P',
-                        'birth_date' => now()
+                        'pob' => 'Banda Aceh',
+                        'dob' => now()
                             ->subYears(16 + ($i % 2))
                             ->subDays($i),
                         'address' => 'Jl. Contoh No. ' . $i,
+                        'district' => 'Baiturrahman',
+                        'city' => 'Banda Aceh',
+                        'province' => 'Aceh',
+                        'parent_name' => 'Orang Tua Siswa ' . $no,
+                        'parent_phone' => '0812345' . str_pad((string) $no, 5, '0', STR_PAD_LEFT),
+                        'entry_year' => 2025,
+                        'status' => 'aktif',
                     ]
                 );
 

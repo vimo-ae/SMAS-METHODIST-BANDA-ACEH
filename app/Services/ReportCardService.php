@@ -28,14 +28,16 @@ class ReportCardService
             $scores['tugas'] = $subs->avg(fn ($s) => $s->assignment->max_score > 0 ? $s->score / $s->assignment->max_score * 100 : 0);
         }
 
-        // Kuis / UTS / UAS dari sesi ujian yang sudah dinilai
+        // UTS / UAS dari sesi ujian yang sudah selesai.
+        // Nilai dihitung dari exam_answers (tidak lagi disimpan di exam_sessions).
+        $grader = app(ExamGrader::class);
         $sessions = ExamSession::where('students_id', $student->nis)
-            ->whereIn('status', ['selesai', 'dinilai'])
+            ->where('status', 'selesai')
             ->whereHas('exam', fn ($q) => $q->where('cst_id', $cst->cst_id))
-            ->with('exam')->get()->groupBy(fn ($s) => $s->exam->type);
-        foreach (['kuis', 'uts', 'uas'] as $type) {
+            ->with('exam')->get()->groupBy(fn ($s) => $s->exam->exam_type);
+        foreach (['uts', 'uas'] as $type) {
             if (isset($sessions[$type])) {
-                $scores[$type] = $sessions[$type]->avg('objective_score');
+                $scores[$type] = $sessions[$type]->avg(fn ($s) => $grader->objectiveScore($s));
             }
         }
 

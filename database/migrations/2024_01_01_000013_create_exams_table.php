@@ -23,8 +23,7 @@ return new class extends Migration
 
             $table->string('title');
 
-            $table->enum('type', [
-                'kuis',
+            $table->enum('exam_type', [
                 'uts',
                 'uas'
             ]);
@@ -34,6 +33,14 @@ return new class extends Migration
             $table->dateTime('end_time');
 
             $table->unsignedSmallInteger('duration_minutes');
+
+            $table->decimal('pass_score', 5, 2)->default(75);   // nilai minimal lulus (KKM)
+
+            $table->boolean('shuffle_questions')->default(false);   // acak urutan soal
+            $table->boolean('shuffle_options')->default(false);     // acak urutan opsi
+
+            $table->boolean('is_published')->default(false);
+            $table->text('instructions')->nullable();
 
             $table->timestamps();
         });

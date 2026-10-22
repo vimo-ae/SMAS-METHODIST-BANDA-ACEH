@@ -15,13 +15,14 @@ class ExamSeeder extends Seeder
             [$name, $duration] = SubjectSeeder::SUBJECTS[$cst->subject_code];
 
             $exam = Exam::updateOrCreate(['cst_id' => $cst->cst_id, 'title' => "Ujian TKA $name"], [
-                'type' => 'uas',
+                'exam_type' => 'uas',
                 'start_time' => now()->subDay(),
                 'end_time' => now()->addDays(60),
                 'duration_minutes' => $duration,
-                'total_questions' => 35,
+                'pass_score' => 75,
+                'shuffle_questions' => true,
+                'shuffle_options' => true,
                 'is_published' => true,
-                'require_face_photo' => true,
                 'instructions' => 'Kerjakan dengan jujur. Berpindah tab/jendela akan dicatat sebagai pelanggaran. Esai dikerjakan di lembar jawaban lalu difoto dan diunggah.',
             ]);
 

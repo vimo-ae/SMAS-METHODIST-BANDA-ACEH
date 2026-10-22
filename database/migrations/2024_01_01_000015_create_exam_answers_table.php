@@ -23,7 +23,7 @@ return new class extends Migration
                 ->on('students')
                 ->cascadeOnDelete();
 
-            // FK -> exam_questions.id
+            // FK -> exam_questions.exam_question_id
             $table->foreignId('question_id')
                 ->constrained('exam_questions', 'exam_question_id')
                 ->cascadeOnDelete();
@@ -31,6 +31,15 @@ return new class extends Migration
             $table->text('answer')->nullable();
 
             $table->unsignedSmallInteger('score')->nullable();
+
+            // Penilaian esai oleh guru
+            $table->unsignedBigInteger('graded_by')->nullable();   // FK -> teachers.nip
+            $table->timestamp('graded_at')->nullable();
+
+            $table->foreign('graded_by')
+                ->references('nip')
+                ->on('teachers')
+                ->nullOnDelete();
 
             $table->timestamps();
 

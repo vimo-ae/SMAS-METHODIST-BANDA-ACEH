@@ -18,16 +18,28 @@ class Student extends Model
 
     protected $fillable = [
         'nis',
+        'nisn',
         'class_id',
         'gender',
         'birth_date',
+        'pob',
+        'dob',
         'address',
+        'district',
+        'city',
+        'province',
+        'parent_name',
+        'parent_phone',
+        'entry_year',
+        'status',
     ];
 
     protected function casts(): array
     {
         return [
             'birth_date' => 'date',
+            'dob' => 'date',
+            'entry_year' => 'integer',
         ];
     }
 
@@ -127,5 +139,10 @@ class Student extends Model
     public function getNameAttribute(): string
     {
         return $this->user?->name ?? (string) $this->nis;
+    }
+
+    public function violations()
+    {
+        return $this->hasMany(ExamViolation::class, 'students_id', 'nis');
     }
 }

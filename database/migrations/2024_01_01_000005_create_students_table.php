@@ -17,6 +17,7 @@ return new class extends Migration
                 ->references('user_id')
                 ->on('users')
                 ->cascadeOnDelete();
+            $table->string('nisn', 10)->nullable()->unique();
 
             // FK ke classes.class_id
             $table->foreignId('class_id')
@@ -24,12 +25,17 @@ return new class extends Migration
                 ->constrained('classes', 'class_id')
                 ->nullOnDelete();
 
+            $table->string('pob', 100)->nullable();            // tempat lahir
+            $table->date('dob')->nullable();                   // tanggal lahir
+            $table->text('address')->nullable();               // jalan, desa/kelurahan
+            $table->string('district', 100)->nullable();       // kecamatan
+            $table->string('city', 100)->nullable();           // kota/kabupaten
+            $table->string('province', 100)->nullable();
+            $table->string('parent_name', 100)->nullable();
+            $table->string('parent_phone', 20)->nullable();
+            $table->year('entry_year')->nullable();            // tahun masuk
+            $table->string('status', 15)->default('aktif');    // aktif | lulus | pindah | drop_out
             $table->enum('gender', ['L', 'P']);
-
-            $table->date('birth_date')->nullable();
-
-            $table->text('address')->nullable();
-
             $table->timestamps();
         });
     }

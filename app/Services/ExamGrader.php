@@ -71,39 +71,56 @@ class ExamGrader
         return [0.0, false];
     }
 
-    /** Hitung ulang seluruh jawaban sesi dan simpan skor objektif (skala 0-100). */
+    /**
+     * Koreksi seluruh jawaban sesi. Skor dan is_correct ditulis ke exam_answers,
+     * sesi hanya ditandai selesai (tidak ada lagi skor di exam_sessions).
+     */
     public function gradeSession(ExamSession $session): ExamSession
     {
         return DB::transaction(function () use ($session) {
             $exam = $session->exam()->with('questions')->first();
             $answers = $exam->answers()->where('students_id', $session->students_id)->get()->keyBy('question_id');
 
-            $earned = 0.0;
             foreach ($exam->questions as $q) {
                 if ($q->isEssay()) {
-                    continue;
+                    continue; // esai dinilai manual oleh guru
                 }
-                $row = $answers->get($q->id);
+                $row = $answers->get($q->exam_question_id);
                 [$score, $ok] = $this->gradeQuestion($q, $row?->answer);
-                $earned += $score;
 
                 if ($row) {
-                    $row->update(['score' => $score, 'is_correct' => $ok]);
+                    // exam_answers tanpa primary key tunggal: update lewat query
+                    \App\Models\ExamAnswer::where('exam_id', $row->exam_id)
+                        ->where('students_id', $row->students_id)
+                        ->where('question_id', $row->question_id)
+                        ->update(['score' => $score, 'is_correct' => $ok]);
                 }
             }
 
-            $total = $exam->totalWeight();
-            $objective = $total > 0 ? round($earned / $total * 100, 2) : 0.0;
-            $hasEssay = $exam->questions->contains(fn ($q) => $q->isEssay());
-
             $session->update([
-                'objective_score' => $objective,
-                'status' => $hasEssay && $session->essay_score === null ? 'selesai' : 'dinilai',
+                'status' => 'selesai',
                 'finished_at' => $session->finished_at ?? now(),
             ]);
 
             return $session->fresh();
         });
+    }
+
+    /** Nilai objektif sesi, skala 0-100, dihitung dari exam_answers. */
+    public function objectiveScore(ExamSession $session): float
+    {
+        $exam = $session->exam()->with('questions')->first();
+        $total = $exam->totalWeight();
+        if ($total <= 0) {
+            return 0.0;
+        }
+
+        $earned = \App\Models\ExamAnswer::where('exam_id', $session->exam_id)
+            ->where('students_id', $session->students_id)
+            ->whereIn('question_id', $exam->questions->where('question_type', '!=', 'esai')->pluck('exam_question_id'))
+            ->sum('score');
+
+        return round($earned / $total * 100, 2);
     }
 
     /** Validasi: apakah kunci jawaban soal lengkap & masuk akal? */

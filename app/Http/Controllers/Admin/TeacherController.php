@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class TeacherController extends Controller
 {
@@ -31,6 +32,10 @@ class TeacherController extends Controller
             'phone' => 'nullable|string|max:20',
             'nip' => 'required|string|max:30|unique:teachers,nip',
             'specialization' => 'nullable|string|max:100',
+            'education_level' => 'nullable|string|max:30',
+            'address' => 'nullable|string',
+            'hire_date' => 'nullable|date',
+            'status' => ['nullable', Rule::in(['aktif', 'cuti', 'pensiun', 'resign'])],
         ]);
 
         DB::transaction(function () use ($v) {
@@ -46,6 +51,10 @@ class TeacherController extends Controller
             Teacher::create([
                 'nip' => $v['nip'],
                 'specialization' => $v['specialization'] ?? null,
+                'education_level' => $v['education_level'] ?? null,
+                'address' => $v['address'] ?? null,
+                'hire_date' => $v['hire_date'] ?? null,
+                'status' => $v['status'] ?? 'aktif',
             ]);
         });
 
@@ -79,12 +88,20 @@ class TeacherController extends Controller
 
 
             'specialization' => 'nullable|string|max:100',
+            'education_level' => 'nullable|string|max:30',
+            'address' => 'nullable|string',
+            'hire_date' => 'nullable|date',
+            'status' => ['nullable', Rule::in(['aktif', 'cuti', 'pensiun', 'resign'])],
         ]);
 
         DB::transaction(function () use ($v, $teacher) {
 
             $teacher->update([
                 'specialization' => $v['specialization'] ?? null,
+                'education_level' => $v['education_level'] ?? null,
+                'address' => $v['address'] ?? null,
+                'hire_date' => $v['hire_date'] ?? null,
+                'status' => $v['status'] ?? $teacher->status,
             ]);
 
             $teacher->user()->update([

@@ -80,7 +80,6 @@ class DemoDataSeeder extends Seeder
                 ['exam_id' => $exam->exam_id, 'students_id' => $st->nis],
                 [
                     'started_at' => now()->subHours(3),
-                    'deadline_at' => now()->subHours(1),
                     'finished_at' => now()->subHours(2),
                     'status' => 'selesai',
                 ]
@@ -113,10 +112,9 @@ class DemoDataSeeder extends Seeder
 
         $first = ExamSession::where('exam_id', $exam->exam_id)->orderBy('exam_session_id')->first();
         ExamViolation::firstOrCreate(
-            ['exam_session_id' => $first->exam_session_id, 'type' => 'tab_switch'],
+            ['exam_session_id' => $first->exam_session_id, 'students_id' => $first->students_id, 'type' => 'tab_switch'],
             ['detail' => 'Berpindah tab (dummy)', 'occurred_at' => now()->subHours(2)]
         );
-        $first->update(['violation_count' => 1]);
 
         ReportNote::updateOrCreate(
             ['students_id' => $students[0]->nis, 'semester' => 'ganjil', 'academic_year' => '2025/2026'],

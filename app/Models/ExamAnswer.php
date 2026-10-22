@@ -9,16 +9,25 @@ class ExamAnswer extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['exam_id', 'students_id', 'question_id', 'answer', 'answer_file', 'is_correct', 'score'];
+    protected $fillable = [
+    'exam_id', 'students_id', 'question_id', 'answer', 'answer_file',
+    'is_correct', 'score', 'graded_by', 'graded_at',
+];
 
-    protected function casts(): array
-    {
-        return [
-            'answer' => 'array',
-            'is_correct' => 'boolean',
-            'score' => 'float',
-        ];
-    }
+protected function casts(): array
+{
+    return [
+        'answer' => 'array',
+        'is_correct' => 'boolean',
+        'score' => 'float',
+        'graded_at' => 'datetime',
+    ];
+}
+
+public function grader()
+{
+    return $this->belongsTo(Teacher::class, 'graded_by', 'nip');
+}
 
     public function exam()
     {

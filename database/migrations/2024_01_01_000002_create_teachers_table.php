@@ -20,6 +20,11 @@ return new class extends Migration
 
             $table->string('specialization')->nullable();
 
+            $table->string('education_level', 30)->nullable();   // S1, S2, S3, D3, dst.
+            $table->text('address')->nullable();
+            $table->date('hire_date')->nullable();               // tanggal mulai bertugas
+            $table->string('status', 15)->default('aktif');      // aktif | cuti | pensiun | resign
+
             $table->timestamps();
         });
     }

@@ -20,7 +20,18 @@ class Teacher extends Model
     protected $fillable = [
         'nip',
         'specialization',
+        'education_level',
+        'address',
+        'hire_date',
+        'status',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'hire_date' => 'date',
+        ];
+    }
 
     public function user()
     {

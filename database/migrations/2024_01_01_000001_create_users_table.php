@@ -22,7 +22,6 @@ return new class extends Migration
             $table->string('password');
 
             $table->enum('role', [
-                'superadmin',
                 'admin',
                 'guru',
                 'siswa',
@@ -31,7 +30,7 @@ return new class extends Migration
 
             $table->string('phone', 20)->nullable();
 
-            $table->string('avatar')->nullable();
+            $table->string('photo')->nullable();
 
             $table->rememberToken();
 

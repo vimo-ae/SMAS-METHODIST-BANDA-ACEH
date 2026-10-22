@@ -19,7 +19,7 @@ class User extends Authenticatable
     protected $keyType = 'int';
 
     protected $fillable = [
-        'user_id', 'name', 'email', 'password', 'role', 'phone', 'avatar',
+        'user_id', 'name', 'email', 'password', 'role', 'phone', 'photo',
     ];
 
     protected $hidden = ['password', 'remember_token'];

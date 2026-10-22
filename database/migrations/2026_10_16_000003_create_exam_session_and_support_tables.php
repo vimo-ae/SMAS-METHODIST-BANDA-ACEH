@@ -25,15 +25,12 @@ return new class extends Migration
             $table->id('exam_session_id');
             $table->foreignId('exam_id')->constrained('exams', 'exam_id')->cascadeOnDelete();
             $table->unsignedBigInteger('students_id');
+            $table->string('token', 64)->unique();        // token akses ujian (baru)
             $table->string('face_photo')->nullable();
-            $table->timestamp('started_at')->nullable();
-            $table->timestamp('deadline_at')->nullable();
-            $table->timestamp('finished_at')->nullable();
-            $table->string('status', 15)->default('berlangsung'); // berlangsung | selesai | dinilai
-            $table->decimal('objective_score', 6, 2)->default(0);  // 0-100, dari soal bobot
-            $table->decimal('essay_score', 6, 2)->nullable();      // 0-100, manual guru (tanpa bobot)
-            $table->unsignedSmallInteger('violation_count')->default(0);
-            $table->text('teacher_note')->nullable();
+            $table->timestamp('started_at')->nullable();  // kapan masuk/mengakses ujian
+            $table->timestamp('finished_at')->nullable(); // kapan menekan selesai
+            $table->timestamp('left_at')->nullable();     // kapan keluar/out dari ujian (baru)
+            $table->string('status', 15)->default('berlangsung'); // berlangsung | selesai | keluar
             $table->timestamps();
 
             $table->foreign('students_id')->references('nis')->on('students')->cascadeOnDelete();
@@ -43,10 +40,13 @@ return new class extends Migration
         Schema::create('exam_violations', function (Blueprint $table) {
             $table->id('exam_violation_id');
             $table->foreignId('exam_session_id')->constrained('exam_sessions', 'exam_session_id')->cascadeOnDelete();
-            $table->string('type', 30); // tab_switch | window_blur | fullscreen_exit | copy_paste
+
+            // Siswa yang melakukan pelanggaran (FK -> students.nis)
+            $table->unsignedBigInteger('students_id');
+            $table->foreign('students_id')->references('nis')->on('students')->cascadeOnDelete();
+            $table->enum('type', ['tab_switch', 'window_blur', 'fullscreen_exit', 'copy_paste']);
             $table->string('detail')->nullable();
             $table->timestamp('occurred_at')->useCurrent();
-            $table->timestamps();
         });
 
         // Catatan wali kelas untuk rapor

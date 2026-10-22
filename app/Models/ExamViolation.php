@@ -6,9 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class ExamViolation extends Model
 {
-    protected $primaryKey = 'exam_violation_id';   // <-- tambahkan
+    protected $primaryKey = 'exam_violation_id';
 
-    protected $fillable = ['exam_session_id', 'type', 'detail', 'occurred_at'];
+    public $timestamps = false;
+
+    protected $fillable = ['exam_session_id', 'students_id', 'type', 'detail', 'occurred_at'];
 
     protected function casts(): array
     {
@@ -17,6 +19,11 @@ class ExamViolation extends Model
 
     public function session()
     {
-        return $this->belongsTo(ExamSession::class, 'exam_session_id', 'exam_session_id');   // <-- argumen ketiga
+        return $this->belongsTo(ExamSession::class, 'exam_session_id', 'exam_session_id');
+    }
+
+    public function student()
+    {
+        return $this->belongsTo(Student::class, 'students_id', 'nis');
     }
 }

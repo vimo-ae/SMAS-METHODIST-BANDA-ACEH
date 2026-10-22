@@ -29,7 +29,13 @@ class TeacherSeeder extends Seeder
                 'password' => 'password123',
                 'role' => 'guru',
             ]);
-            Teacher::updateOrCreate(['nip' => $nip], ['specialization' => $spec]);
+            Teacher::updateOrCreate(['nip' => $nip], [
+                'specialization' => $spec,
+                'education_level' => 'S1',
+                'address' => 'Jl. Contoh No. ' . ($i + 1),
+                'hire_date' => '2018-07-15',
+                'status' => 'aktif',
+            ]);
         }
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Guru;
 use App\Http\Controllers\Controller;
 use App\Models\ClassSubjectTeacher;
 use App\Models\Exam;
+use App\Models\ExamAnswer;
 use App\Models\ExamQuestion;
 use App\Models\ExamSession;
 use App\Services\Access;
@@ -38,15 +39,19 @@ class ExamController extends Controller
         $v = $request->validate([
             'cst_id' => 'required|exists:class_subject_teacher,cst_id',
             'title' => 'required|string|max:150',
-            'type' => ['required', Rule::in(['kuis', 'uts', 'uas'])],
+            'exam_type' => ['required', Rule::in(['uts', 'uas'])],
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
             'duration_minutes' => 'required|integer|min:5|max:300',
-            'total_questions' => 'required|integer|min:1|max:100',
+            'pass_score' => 'required|numeric|min:0|max:100',
             'instructions' => 'nullable|string',
         ]);
         Access::authorizeTeacher($request->user(), ClassSubjectTeacher::findOrFail($v['cst_id']));
-        $exam = Exam::create($v + ['require_face_photo' => true, 'is_published' => false]);
+        $exam = Exam::create($v + [
+            'shuffle_questions' => $request->boolean('shuffle_questions'),
+            'shuffle_options' => $request->boolean('shuffle_options'),
+            'is_published' => false,
+        ]);
 
         return redirect()->route('guru.exams.show', $exam)->with('success', 'Ujian dibuat. Silakan isi soal beserta kunci jawaban.');
     }
@@ -67,10 +72,13 @@ class ExamController extends Controller
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
             'duration_minutes' => 'required|integer|min:5|max:300',
-            'total_questions' => 'required|integer|min:1|max:100',
+            'pass_score' => 'required|numeric|min:0|max:100',
             'instructions' => 'nullable|string',
         ]);
-        $exam->update($v + ['require_face_photo' => $request->boolean('require_face_photo')]);
+        $exam->update($v + [
+            'shuffle_questions' => $request->boolean('shuffle_questions'),
+            'shuffle_options' => $request->boolean('shuffle_options'),
+        ]);
 
         return back()->with('success', 'Pengaturan ujian diperbarui.');
     }
@@ -87,7 +95,7 @@ class ExamController extends Controller
     {
         $this->own($request, $exam);
         if (! $exam->is_published && ! $exam->isComplete()) {
-            return back()->with('error', "Jumlah soal harus tepat {$exam->total_questions} (saat ini {$exam->questions()->count()}).");
+            return back()->with('error', 'Ujian belum punya soal. Tambahkan soal terlebih dahulu.');
         }
         $exam->update(['is_published' => ! $exam->is_published]);
 
@@ -102,9 +110,6 @@ class ExamController extends Controller
         if (is_string($data)) {
             return back()->withInput()->with('error', $data);
         }
-        if ($exam->questions()->count() >= $exam->total_questions) {
-            return back()->withInput()->with('error', "Batas soal ({$exam->total_questions}) sudah tercapai.");
-        }
         if ($request->hasFile('image')) {
             $data['image_path'] = $request->file('image')->store('questions', 'public');
         }
@@ -116,7 +121,7 @@ class ExamController extends Controller
     public function destroyQuestion(Request $request, Exam $exam, ExamQuestion $question)
     {
         $this->own($request, $exam);
-        abort_unless($question->exam_id === $exam->id, 404);
+        abort_unless($question->exam_id === $exam->exam_id, 404);
         if ($question->image_path) {
             Storage::disk('public')->delete($question->image_path);
         }
@@ -186,8 +191,9 @@ class ExamController extends Controller
     public function results(Request $request, Exam $exam, ExamGrader $grader)
     {
         $this->own($request, $exam);
-        // Tutup sesi yang waktunya habis
-        $exam->sessions()->where('status', 'berlangsung')->where('deadline_at', '<', now())->get()
+        // Tutup sesi yang waktunya habis (deadline dihitung dari started_at + durasi, maks end_time)
+        $exam->sessions()->where('status', 'berlangsung')->with('exam')->get()
+            ->filter(fn ($s) => now()->gte($s->deadline()))
             ->each(fn ($s) => $grader->gradeSession($s));
 
         $exam->load('classSubjectTeacher.subject', 'classSubjectTeacher.schoolClass.students.user', 'questions');
@@ -206,12 +212,32 @@ class ExamController extends Controller
         return view('guru.exams.session', compact('session', 'exam', 'answers'));
     }
 
+    /** Nilai esai disimpan per soal di exam_answers.score (bukan di exam_sessions). */
     public function gradeEssay(Request $request, ExamSession $session, ReportCardService $svc)
     {
         $exam = $session->exam()->with('classSubjectTeacher')->first();
         Access::authorizeTeacher($request->user(), $exam->classSubjectTeacher);
-        $v = $request->validate(['essay_score' => 'required|numeric|min:0|max:100', 'teacher_note' => 'nullable|string|max:1000']);
-        $session->update($v + ['status' => 'dinilai']);
+        $v = $request->validate([
+            'scores' => 'required|array',
+            'scores.*' => 'nullable|numeric|min:0|max:100',
+        ]);
+
+        $essayIds = $exam->questions()->where('question_type', 'esai')->pluck('exam_question_id')->all();
+
+        foreach ($v['scores'] as $questionId => $score) {
+            if ($score === null || ! in_array((int) $questionId, $essayIds, true)) {
+                continue;
+            }
+                ExamAnswer::where('exam_id', $exam->exam_id)
+                ->where('students_id', $session->students_id)
+                ->where('question_id', $questionId)
+                ->update([
+                    'score' => $score,
+                    'graded_by' => $request->user()->teacher->nip,
+                    'graded_at' => now(),
+    ]);
+        }
+
         $svc->syncFromActivity($session->student, $exam->classSubjectTeacher);
 
         return back()->with('success', 'Nilai esai tersimpan (tidak memengaruhi bobot nilai objektif).');

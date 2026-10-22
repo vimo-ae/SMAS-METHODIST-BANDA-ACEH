@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class StudentController extends Controller
 {
@@ -36,6 +37,8 @@ class StudentController extends Controller
 
             'nis' => 'required|string|max:30|unique:students,nis',
 
+            'nisn' => 'nullable|digits:10|unique:students,nisn',
+
             'class_id' => [
                 'nullable',
                 'exists:classes,class_id'
@@ -43,9 +46,25 @@ class StudentController extends Controller
 
             'gender' => 'required|in:L,P',
 
-            'birth_date' => 'nullable|date',
+            'pob' => 'nullable|string|max:100',
+
+            'dob' => 'nullable|date',
 
             'address' => 'nullable|string',
+
+            'district' => 'nullable|string|max:100',
+
+            'city' => 'nullable|string|max:100',
+
+            'province' => 'nullable|string|max:100',
+
+            'parent_name' => 'nullable|string|max:100',
+
+            'parent_phone' => 'nullable|string|max:20',
+
+            'entry_year' => 'nullable|digits:4',
+
+            'status' => ['nullable', Rule::in(['aktif', 'lulus', 'pindah', 'drop_out'])],
         ]);
 
         DB::transaction(function () use ($v) {
@@ -60,10 +79,19 @@ class StudentController extends Controller
 
             Student::create([
                 'nis' => $v['nis'],
+                'nisn' => $v['nisn'] ?? null,
                 'class_id' => $v['class_id'] ?? null,
                 'gender' => $v['gender'],
-                'birth_date' => $v['birth_date'] ?? null,
+                'pob' => $v['pob'] ?? null,
+                'dob' => $v['dob'] ?? null,
                 'address' => $v['address'] ?? null,
+                'district' => $v['district'] ?? null,
+                'city' => $v['city'] ?? null,
+                'province' => $v['province'] ?? null,
+                'parent_name' => $v['parent_name'] ?? null,
+                'parent_phone' => $v['parent_phone'] ?? null,
+                'entry_year' => $v['entry_year'] ?? null,
+                'status' => $v['status'] ?? 'aktif',
             ]);
         });
 
@@ -98,6 +126,11 @@ class StudentController extends Controller
                 'unique:users,email,' . $student->user?->user_id . ',user_id',
             ],
 
+            'nisn' => [
+                'nullable',
+                'digits:10',
+                'unique:students,nisn,' . $student->nis . ',nis',
+            ],
 
             'class_id' => [
                 'nullable',
@@ -106,18 +139,43 @@ class StudentController extends Controller
 
             'gender' => 'required|in:L,P',
 
-            'birth_date' => 'nullable|date',
+            'pob' => 'nullable|string|max:100',
+
+            'dob' => 'nullable|date',
 
             'address' => 'nullable|string',
+
+            'district' => 'nullable|string|max:100',
+
+            'city' => 'nullable|string|max:100',
+
+            'province' => 'nullable|string|max:100',
+
+            'parent_name' => 'nullable|string|max:100',
+
+            'parent_phone' => 'nullable|string|max:20',
+
+            'entry_year' => 'nullable|digits:4',
+
+            'status' => ['nullable', Rule::in(['aktif', 'lulus', 'pindah', 'drop_out'])],
         ]);
 
         DB::transaction(function () use ($v, $student) {
 
             $student->update([
+                'nisn' => $v['nisn'] ?? null,
                 'class_id' => $v['class_id'] ?? null,
                 'gender' => $v['gender'],
-                'birth_date' => $v['birth_date'] ?? null,
+                'pob' => $v['pob'] ?? null,
+                'dob' => $v['dob'] ?? null,
                 'address' => $v['address'] ?? null,
+                'district' => $v['district'] ?? null,
+                'city' => $v['city'] ?? null,
+                'province' => $v['province'] ?? null,
+                'parent_name' => $v['parent_name'] ?? null,
+                'parent_phone' => $v['parent_phone'] ?? null,
+                'entry_year' => $v['entry_year'] ?? null,
+                'status' => $v['status'] ?? $student->status,
             ]);
 
             $student->user()->update([
