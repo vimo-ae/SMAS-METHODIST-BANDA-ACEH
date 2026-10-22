@@ -1,0 +1,27 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class ClassEnrollment extends Model
+{
+    protected $primaryKey = 'enrollment_id';
+
+    protected $fillable = ['students_id', 'class_id', 'academic_year', 'status', 'enrolled_at', 'left_at'];
+
+    protected function casts(): array
+    {
+        return ['enrolled_at' => 'date', 'left_at' => 'date'];
+    }
+
+    public function student()
+    {
+        return $this->belongsTo(Student::class, 'students_id', 'nis');
+    }
+
+    public function schoolClass()
+    {
+        return $this->belongsTo(SchoolClass::class, 'class_id', 'class_id');
+    }
+}
