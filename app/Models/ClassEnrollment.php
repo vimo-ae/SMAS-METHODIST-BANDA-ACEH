@@ -8,7 +8,7 @@ class ClassEnrollment extends Model
 {
     protected $primaryKey = 'enrollment_id';
 
-    protected $fillable = ['students_id', 'class_id', 'academic_year', 'status', 'enrolled_at', 'left_at'];
+    protected $fillable = ['students_id', 'cst_id', 'academic_year', 'status', 'enrolled_at', 'left_at'];
 
     protected function casts(): array
     {
@@ -20,8 +20,8 @@ class ClassEnrollment extends Model
         return $this->belongsTo(Student::class, 'students_id', 'nis');
     }
 
-    public function schoolClass()
+    public function classSubjectTeacher()
     {
-        return $this->belongsTo(SchoolClass::class, 'class_id', 'class_id');
+        return $this->belongsTo(ClassSubjectTeacher::class, 'cst_id', 'cst_id');
     }
 }

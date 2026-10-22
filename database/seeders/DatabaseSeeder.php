@@ -13,9 +13,9 @@ class DatabaseSeeder extends Seeder
             TeacherSeeder::class,
             SubjectSeeder::class,         // 15 mata pelajaran
             SchoolClassSeeder::class,
+            ClassSubjectTeacherSeeder::class,
             StudentSeeder::class,
             GuardianSeeder::class,
-            ClassSubjectTeacherSeeder::class,
             ExamSeeder::class,            // 15 ujian x 35 soal (kelas X IPA 1)
             DemoDataSeeder::class,        // materi, tugas, forum, nilai, dll.
         ]);

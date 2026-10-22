@@ -21,15 +21,17 @@ return new class extends Migration
                 ->on('students')
                 ->cascadeOnDelete();
 
-            // FK -> classes.class_id
-            $table->foreignId('class_id')
-                ->constrained('classes', 'class_id')
+            // FK -> class_subject_teacher.cst_id
+            $table->string('cst_id', 20);
+
+            $table->foreign('cst_id')
+                ->references('cst_id')
+                ->on('class_subject_teacher')
                 ->cascadeOnDelete();
 
             // Contoh: 2025/2026
             $table->string('academic_year', 9);
 
-            // Hasil siswa pada tahun ajaran tersebut
             $table->enum('status', [
                 'aktif',
                 'naik_kelas',
@@ -39,13 +41,13 @@ return new class extends Migration
                 'drop_out',
             ])->default('aktif');
 
-            $table->date('enrolled_at')->nullable();   // tanggal masuk kelas
-            $table->date('left_at')->nullable();       // tanggal keluar kelas
+            $table->date('enrolled_at')->nullable();
+            $table->date('left_at')->nullable();
 
             $table->timestamps();
 
-            // Satu siswa hanya punya satu kelas per tahun ajaran
-            $table->unique(['students_id', 'academic_year']);
+            // Satu siswa hanya terdaftar sekali di satu kelas-mapel
+            $table->unique(['students_id', 'cst_id']);
         });
     }
 

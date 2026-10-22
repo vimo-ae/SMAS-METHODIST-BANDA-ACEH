@@ -12,12 +12,16 @@ return new class extends Migration
         Schema::create('cst_students', function (Blueprint $table) {
             $table->string('cst_id', 20);
             $table->unsignedBigInteger('students_id');
+        
+            $table->enum('status', ['aktif', 'keluar', 'selesai'])->default('aktif');
             $table->timestamp('joined_at')->useCurrent();
+            $table->timestamp('left_at')->nullable();
             $table->timestamps();
-
+        
             $table->foreign('cst_id')->references('cst_id')->on('class_subject_teacher')->cascadeOnDelete();
             $table->foreign('students_id')->references('nis')->on('students')->cascadeOnDelete();
-            $table->unique(['cst_id', 'students_id']);
+        
+            $table->primary(['cst_id', 'students_id']);   // sebelumnya unique
         });
 
         // Sesi ujian = absensi ujian (foto wajah) + status pengerjaan

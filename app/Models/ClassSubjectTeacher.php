@@ -101,4 +101,9 @@ class ClassSubjectTeacher extends Model
     {
         return ($this->subject->name ?? $this->subject_code).' — '.($this->schoolClass->name ?? '-');
     }
+
+    public function enrollments()
+    {
+        return $this->hasMany(ClassEnrollment::class, 'cst_id', 'cst_id');
+    }
 }

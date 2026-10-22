@@ -50,9 +50,4 @@ class SchoolClass extends Model
             'class_id'
         );
     }
-
-    public function enrollments()
-    {
-        return $this->hasMany(ClassEnrollment::class, 'class_id', 'class_id');
-    }
 }

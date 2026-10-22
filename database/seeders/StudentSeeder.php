@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\ClassEnrollment;
+use App\Models\ClassSubjectTeacher;
 use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\User;
@@ -57,6 +59,21 @@ class StudentSeeder extends Seeder
                         'status' => 'aktif',
                     ]
                 );
+
+                // 3. Daftarkan siswa ke semua kelas-mapel di kelasnya
+                foreach (ClassSubjectTeacher::where('class_id', $class->class_id)->get() as $cst) {
+                    ClassEnrollment::updateOrCreate(
+                        [
+                            'students_id' => $nis,
+                            'cst_id' => $cst->cst_id,
+                        ],
+                        [
+                            'academic_year' => $cst->academic_year,
+                            'status' => 'aktif',
+                            'enrolled_at' => now()->startOfYear(),
+                        ]
+                    );
+                }
 
                 $no++;
             }
