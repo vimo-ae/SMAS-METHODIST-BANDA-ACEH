@@ -9,38 +9,36 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('grades', function (Blueprint $table) {
-            
-            // FK -> students.nis
-            $table->unsignedBigInteger('students_id');
+    $table->id('grade_id');
 
-            // FK -> subjects.code
-            $table->string('subject_code', 20);
+    // FK -> students.nis
+    $table->unsignedBigInteger('students_id');
+    $table->foreign('students_id')->references('nis')->on('students')->cascadeOnDelete();
 
-            $table->string('semester', 10);
+    // FK -> class_subject_teacher.cst_id
+    $table->string('cst_id', 20);
+    $table->foreign('cst_id')->references('cst_id')->on('class_subject_teacher')->cascadeOnDelete();
 
-            $table->string('academic_year', 9);
+    $table->enum('grade_type', ['tugas', 'kuis', 'uts', 'uas', 'lainnya']);
 
-            $table->enum('grade_type', [
-                'tugas',
-                'uts',
-                'uas',
-                'rapor'
-            ]);
+    // Sumber nilai (salah satunya terisi, atau keduanya null untuk input manual lain)
+    $table->foreignId('assignment_id')->nullable()
+        ->constrained('assignments', 'assignment_id')->cascadeOnDelete();
+    $table->foreignId('exam_id')->nullable()
+        ->constrained('exams', 'exam_id')->cascadeOnDelete();
 
-            $table->float('score');
+    $table->decimal('score', 6, 2)->nullable();
 
-            $table->timestamps();
+    // Null = dihitung sistem, terisi = diinput guru
+    $table->unsignedBigInteger('graded_by')->nullable();
+    $table->foreign('graded_by')->references('nip')->on('teachers')->nullOnDelete();
+    $table->timestamp('graded_at')->nullable();
 
-            $table->foreign('students_id')
-                ->references('nis')
-                ->on('students')
-                ->cascadeOnDelete();
+    $table->timestamps();
 
-            $table->foreign('subject_code')
-                ->references('code')
-                ->on('subjects')
-                ->cascadeOnDelete();
-        });
+    $table->unique(['students_id', 'assignment_id']);
+    $table->unique(['students_id', 'exam_id']);
+});
     }
 
     public function down(): void

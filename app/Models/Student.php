@@ -63,25 +63,6 @@ class Student extends Model
         );
     }
 
-    // students.nis
-    //     ↓
-    // parent_student.students_id
-    //     ↓
-    // parent_student.parents_id
-    //     ↓
-    // parents.nik
-    public function guardians()
-    {
-        return $this->belongsToMany(
-            Guardian::class,
-            'parent_student',
-            'students_id',
-            'parents_id',
-            'nis',
-            'nik'
-        );
-    }
-
     public function submissions()
     {
         return $this->hasMany(
@@ -95,15 +76,6 @@ class Student extends Model
     {
         return $this->hasMany(
             ExamAnswer::class,
-            'students_id',
-            'nis'
-        );
-    }
-
-    public function attendances()
-    {
-        return $this->hasMany(
-            Attendance::class,
             'students_id',
             'nis'
         );

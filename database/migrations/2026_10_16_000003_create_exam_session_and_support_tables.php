@@ -52,44 +52,10 @@ return new class extends Migration
             $table->string('detail')->nullable();
             $table->timestamp('occurred_at')->useCurrent();
         });
-
-        // Catatan wali kelas untuk rapor
-        Schema::create('report_notes', function (Blueprint $table) {
-            
-            $table->unsignedBigInteger('students_id');
-            $table->string('semester', 10);
-            $table->string('academic_year', 9);
-            $table->string('attitude', 30)->nullable();
-            $table->text('note')->nullable();
-            $table->timestamps();
-
-            $table->foreign('students_id')->references('nis')->on('students')->cascadeOnDelete();
-            $table->unique(['students_id', 'semester', 'academic_year']);
-        });
-
-        // Tanya guru / pengaduan dari orang tua
-        Schema::create('parent_messages', function (Blueprint $table) {
-            $table->id('parent_message_id');
-            $table->unsignedBigInteger('parent_user_id');
-            $table->unsignedBigInteger('teacher_user_id')->nullable(); // null = ditujukan ke admin/sekolah
-            $table->unsignedBigInteger('students_id')->nullable();
-            $table->string('type', 15)->default('pertanyaan'); // pertanyaan | pengaduan
-            $table->string('subject');
-            $table->text('message');
-            $table->text('reply')->nullable();
-            $table->unsignedBigInteger('replied_by')->nullable();
-            $table->timestamp('replied_at')->nullable();
-            $table->timestamps();
-
-            $table->foreign('parent_user_id')->references('user_id')->on('users')->cascadeOnDelete();
-            $table->foreign('teacher_user_id')->references('user_id')->on('users')->nullOnDelete();
-            $table->foreign('students_id')->references('nis')->on('students')->nullOnDelete();
-        });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('parent_messages');
         Schema::dropIfExists('report_notes');
         Schema::dropIfExists('exam_violations');
         Schema::dropIfExists('exam_sessions');

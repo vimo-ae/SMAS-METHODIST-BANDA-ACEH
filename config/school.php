@@ -3,20 +3,17 @@
 return [
     'name' => 'SMAS Methodist Banda Aceh',
 
-    // Bobot nilai rapor (total 100). "Harian" = rata-rata tugas + kuis.
-    'grade_weights' => [
-        'harian' => 30,
-        'uts'    => 30,
-        'uas'    => 40,
-    ],
-
-    // KKM / nilai minimal tuntas
+    // KKM / nilai minimal tuntas (untuk nilai tugas, kuis, dan lainnya di buku nilai)
     'kkm' => 75,
+
+    // Cek Nilai untuk orang tua (tanpa login)
+    'guest_check' => [
+        'require_dob' => true,   // verifikasi tanggal lahir anak sebelum nilai tampil
+    ],
 
     // Ujian
     'exam' => [
-        'default_total_questions' => 35,   // 35 soal per mata pelajaran
-        'max_violations'          => 3,    // batas pelanggaran sebelum ujian otomatis diakhiri
+        'max_violations' => 3,    // batas pelanggaran sebelum ujian otomatis diakhiri
     ],
 
     'question_types' => [

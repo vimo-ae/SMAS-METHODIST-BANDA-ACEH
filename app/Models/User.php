@@ -9,7 +9,7 @@ class User extends Authenticatable
 {
     use HasFactory;
 
-    public const ROLES = ['admin', 'guru', 'siswa', 'orangtua'];
+    public const ROLES = ['admin', 'guru', 'siswa'];
 
     protected $table = 'users';
 
@@ -42,19 +42,9 @@ class User extends Authenticatable
         return $this->hasOne(Teacher::class, 'nip', 'user_id');
     }
 
-    public function guardianProfile()
-    {
-        return $this->hasOne(Guardian::class, 'nik', 'user_id');
-    }
-
     public function announcements()
     {
         return $this->hasMany(Announcement::class, 'created_by', 'user_id');
-    }
-
-    public function forumReplies()
-    {
-        return $this->hasMany(ForumReply::class, 'user_id', 'user_id');
     }
 
     public function notifications()
@@ -75,11 +65,6 @@ class User extends Authenticatable
     public function isSiswa(): bool
     {
         return $this->role === 'siswa';
-    }
-
-    public function isOrangtua(): bool
-    {
-        return $this->role === 'orangtua';
     }
 
     public function roleLabel(): string

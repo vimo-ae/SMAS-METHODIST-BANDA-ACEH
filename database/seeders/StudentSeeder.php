@@ -46,9 +46,8 @@ class StudentSeeder extends Seeder
                         'class_id' => $class->class_id,
                         'gender' => $i % 2 ? 'L' : 'P',
                         'pob' => 'Banda Aceh',
-                        'dob' => now()
-                            ->subYears(16 + ($i % 2))
-                            ->subDays($i),
+                        // Tanggal tetap (tidak bergantung hari seeder dijalankan)
+                        'dob' => sprintf('%d-05-%02d', 2009 + ($i % 2), $i),
                         'address' => 'Jl. Contoh No. ' . $i,
                         'district' => 'Baiturrahman',
                         'city' => 'Banda Aceh',

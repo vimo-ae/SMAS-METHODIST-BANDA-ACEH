@@ -27,15 +27,10 @@ return new class extends Migration
         Schema::table('grades', function (Blueprint $table) {
             $table->string('grade_type', 10)->change();
         });
-
-        Schema::table('forum_threads', function (Blueprint $table) {
-            $table->text('body')->nullable()->after('title');
-        });
     }
 
     public function down(): void
     {
-        Schema::table('forum_threads', fn (Blueprint $t) => $t->dropColumn('body'));
         Schema::table('exam_answers', fn (Blueprint $t) => $t->dropColumn(['answer_file', 'is_correct']));
         Schema::table('class_subject_teacher', function (Blueprint $t) {
             $t->dropUnique(['join_code']);

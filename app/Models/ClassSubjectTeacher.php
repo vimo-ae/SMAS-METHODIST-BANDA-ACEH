@@ -74,16 +74,6 @@ class ClassSubjectTeacher extends Model
         return $this->hasMany(Exam::class, 'cst_id', 'cst_id');
     }
 
-    public function attendances()
-    {
-        return $this->hasMany(Attendance::class, 'cst_id', 'cst_id');
-    }
-
-    public function forumThreads()
-    {
-        return $this->hasMany(ForumThread::class, 'cst_id', 'cst_id');
-    }
-
     // Siswa yang sudah bergabung lewat kode kelas
     public function joinedStudents()
     {

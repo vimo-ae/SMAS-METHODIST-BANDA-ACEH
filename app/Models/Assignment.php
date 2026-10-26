@@ -46,4 +46,9 @@ class Assignment extends Model
     {
         return $this->hasMany(AssignmentSubmission::class, 'assignment_id', 'assignment_id');
     }
+
+    public function grades()
+    {
+        return $this->hasMany(Grade::class, 'assignment_id', 'assignment_id');
+    }
 }
