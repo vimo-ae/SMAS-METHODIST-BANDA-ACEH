@@ -2,37 +2,32 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
 use App\Models\ExamAnswer;
-use App\Models\ExamSession;
-use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
-/** Penyajian berkas privat (foto wajah, lembar esai, tugas) dengan otorisasi. */
+/** Penyajian berkas privat (lembar esai dan tugas) dengan otorisasi. */
 class FileController extends Controller
 {
-    public function faceOrEssay(Request $request, string $kind, int $id)
+    /** Foto lembar jawaban esai. $id = exam_answer_id. */
+    public function essay(Request $request, int $id)
     {
-        $user = $request->user();
-        if ($kind === 'face') {
-            $session = ExamSession::with('exam.classSubjectTeacher')->findOrFail($id);
-            $path = $session->face_photo;
-            $nis = $session->students_id;
-            $cst = $session->exam->classSubjectTeacher;
-        } else {
-            $ans = ExamAnswer::with('exam.classSubjectTeacher')->findOrFail($id);
-            $path = $ans->answer_file;
-            $nis = $ans->students_id;
-            $cst = $ans->exam->classSubjectTeacher;
-        }
+        $ans = ExamAnswer::with('exam.classSubjectTeacher')->findOrFail($id);
+        $cst = $ans->exam->classSubjectTeacher;
 
-        return $this->serve($user, $path, $nis, $cst->teacher_id);
+        return $this->serve($request->user(), $ans->answer_file, $ans->students_id, $cst->teacher_id);
     }
 
-    public function submission(Request $request, AssignmentSubmission $submission)
+    /** File tugas siswa. Dicari lewat assignment + nis, karena tabelnya memakai primary key gabungan. */
+    public function submission(Request $request, Assignment $assignment, int $nis)
     {
-        $cst = $submission->assignment->classSubjectTeacher;
+        $submission = AssignmentSubmission::where('assignment_id', $assignment->assignment_id)
+            ->where('students_id', $nis)
+            ->firstOrFail();
+
+        $cst = $assignment->classSubjectTeacher;
 
         return $this->serve($request->user(), $submission->file_path, $submission->students_id, $cst->teacher_id);
     }
@@ -43,11 +38,10 @@ class FileController extends Controller
             'admin' => true,
             'guru' => $user->teacher && (string) $user->teacher->nip === (string) $teacherNip,
             'siswa' => $user->student && (string) $user->student->nis === (string) $nis,
-            'orangtua' => $user->guardianProfile && $user->guardianProfile->students()->where('students.nis', $nis)->exists(),
             default => false,
         };
         abort_unless($allowed && $path && Storage::disk('local')->exists($path), 404);
 
-        return Storage::disk('local')->response($path);
+        return response()->file(Storage::disk('local')->path($path));
     }
 }

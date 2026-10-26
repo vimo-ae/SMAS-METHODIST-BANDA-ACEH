@@ -30,7 +30,6 @@ return new class extends Migration
             $table->foreignId('exam_id')->constrained('exams', 'exam_id')->cascadeOnDelete();
             $table->unsignedBigInteger('students_id');
             $table->string('token', 64)->unique();        // token akses ujian (baru)
-            $table->string('face_photo')->nullable();
             $table->timestamp('started_at')->nullable();  // kapan masuk/mengakses ujian
             $table->timestamp('finished_at')->nullable(); // kapan menekan selesai
             $table->timestamp('left_at')->nullable();     // kapan keluar/out dari ujian (baru)

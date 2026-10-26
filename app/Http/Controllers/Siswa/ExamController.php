@@ -65,7 +65,6 @@ class ExamController extends Controller
         return view('siswa.exams.show', compact('exam', 'session'));
     }
 
-    /** Absensi ujian: unggah foto wajah, lalu mulai sesi. */
     public function start(Request $request, Exam $exam)
     {
         $student = $this->authorizeExam($request, $exam);
@@ -79,13 +78,11 @@ class ExamController extends Controller
             return redirect()->route('siswa.exams.take', $exam);
         }
 
-        // Foto wajah selalu wajib
-        $request->validate(['face_photo' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096']);
-        $path = $request->file('face_photo')->store("exam-faces/{$exam->exam_id}", 'local');
-
         ExamSession::create([
-            'exam_id' => $exam->exam_id, 'students_id' => $student->nis, 'face_photo' => $path,
-            'started_at' => now(), 'status' => 'berlangsung',
+            'exam_id' => $exam->exam_id,
+            'students_id' => $student->nis,
+            'started_at' => now(),
+            'status' => 'berlangsung',
         ]);
 
         return redirect()->route('siswa.exams.take', $exam);
@@ -95,7 +92,7 @@ class ExamController extends Controller
     {
         $student = $this->authorizeExam($request, $exam);
         $session = ExamSession::where(['exam_id' => $exam->exam_id, 'students_id' => $student->nis])->first();
-        abort_unless($session, 403, 'Lakukan absensi foto wajah terlebih dahulu.');
+        abort_unless($session, 403, 'Mulai ujian terlebih dahulu.');
         $session = $this->closeIfExpired($session);
         if ($session->status !== 'berlangsung') {
             return redirect()->route('siswa.exams.show', $exam)->with('error', 'Ujian sudah berakhir.');

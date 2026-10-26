@@ -10,7 +10,7 @@ class ExamSession extends Model
     protected $primaryKey = 'exam_session_id';
 
     protected $fillable = [
-        'exam_id', 'students_id', 'token', 'face_photo',
+        'exam_id', 'students_id', 'token',
         'started_at', 'finished_at', 'left_at', 'status',
     ];
 
