@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
             ClassSubjectTeacherSeeder::class,
             StudentSeeder::class,
             ExamSeeder::class,            // 15 ujian x 35 soal (kelas X IPA 1)
-            DemoDataSeeder::class,        // materi, tugas, forum, nilai, dll.
+            DemoDataSeeder::class        // materi, tugas, forum, nilai, dll.
         ]);
     }
 }

@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
 
             // User ID diisi manual sesuai NIP / NIS / NIK
-            $table->unsignedBigInteger('user_id')->primary();
+            $table->id('user_id')->primary();
 
             $table->string('name');
 
