@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+class AssignmentSubmission extends Model
+{
+    use HasFactory;
+
+    protected $primaryKey = null;
+    public $incrementing = false;
+    protected $fillable = ['assignment_id', 'students_id', 'file_path', 'submitted_at', 'score', 'feedback'];
+
+    protected function casts(): array
+    {
+        return ['submitted_at' => 'datetime'];
+    }
+
+    public function assignment()
+    {
+        return $this->belongsTo(Assignment::class, 'assignment_id', 'assignment_id');
+    }
+
+    public function student()
+    {
+        return $this->belongsTo(Student::class,'students_id','nis');
+    }
+}

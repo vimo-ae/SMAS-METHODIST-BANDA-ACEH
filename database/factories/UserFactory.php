@@ -2,44 +2,28 @@
 
 namespace Database\Factories;
 
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
-/**
- * @extends Factory<User>
- */
 class UserFactory extends Factory
 {
-    /**
-     * The current password being used by the factory.
-     */
-    protected static ?string $password;
+    protected $model = \App\Models\User::class;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
+            // user_id diisi manual (NIP / NIS), tidak auto-increment
+            'user_id' => fake()->unique()->numerify('##########'),
+            'name' => fake('id_ID')->name(),
             'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
-            'remember_token' => Str::random(10),
+            'password' => Hash::make('password'),
+            'role' => 'siswa',
+            'phone' => fake('id_ID')->numerify('08##########'),
+            'photo' => null,
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
-    public function unverified(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
-        ]);
-    }
+    public function admin(): static { return $this->state(fn () => ['role' => 'admin']); }
+    public function guru(): static { return $this->state(fn () => ['role' => 'guru']); }
+    public function siswa(): static { return $this->state(fn () => ['role' => 'siswa']); }
 }
