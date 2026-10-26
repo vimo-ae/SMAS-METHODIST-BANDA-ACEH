@@ -69,6 +69,6 @@ class User extends Authenticatable
 
     public function roleLabel(): string
     {
-        return ['admin' => 'Administrator', 'guru' => 'Guru', 'siswa' => 'Siswa', 'orangtua' => 'Orang Tua'][$this->role] ?? $this->role;
+        return ['admin' => 'Administrator', 'guru' => 'Guru', 'siswa' => 'Siswa'][$this->role] ?? $this->role;
     }
 }

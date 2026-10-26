@@ -72,10 +72,19 @@ class ClassroomController extends Controller
         }
         $path = $request->file('file')->store('submissions/'.$assignment->assignment_id, 'local');
 
-        AssignmentSubmission::updateOrCreate(
-            ['assignment_id' => $assignment->assignment_id, 'students_id' => $student->nis],
-            ['file_path' => $path, 'submitted_at' => now()]
-        );
+        // PK gabungan: update lewat query, bukan updateOrCreate()/save()
+        if ($existing) {
+            AssignmentSubmission::where('assignment_id', $assignment->assignment_id)
+                ->where('students_id', $student->nis)
+                ->update(['file_path' => $path, 'submitted_at' => now()]);
+        } else {
+            AssignmentSubmission::create([
+                'assignment_id' => $assignment->assignment_id,
+                'students_id' => $student->nis,
+                'file_path' => $path,
+                'submitted_at' => now(),
+            ]);
+        }
 
         return back()->with('success', 'Tugas berhasil dikumpulkan.');
     }

@@ -116,8 +116,10 @@ class ClassroomController extends Controller
             'score' => 'required|numeric|min:0|max:'.$assignment->max_score,
             'feedback' => 'nullable|string|max:1000',
         ]);
-        $sub = AssignmentSubmission::where('assignment_id', $assignment->assignment_id)->where('students_id', $nis)->firstOrFail();
-        $sub->update($v);
+        
+        $query = AssignmentSubmission::where('assignment_id', $assignment->assignment_id)->where('students_id', $nis);
+        abort_unless($query->exists(), 404);
+        $query->update($v);   // PK gabungan: update lewat query, bukan $model->update()
 
         $student = $cst->joinedStudents()->where('students.nis', $nis)->first();
         if ($student) {

@@ -21,7 +21,6 @@ class Student extends Model
         'nisn',
         'class_id',
         'gender',
-        'birth_date',
         'pob',
         'dob',
         'address',
@@ -37,7 +36,6 @@ class Student extends Model
     protected function casts(): array
     {
         return [
-            'birth_date' => 'date',
             'dob' => 'date',
             'entry_year' => 'integer',
         ];

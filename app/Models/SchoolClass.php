@@ -15,10 +15,11 @@ class SchoolClass extends Model
     protected $primaryKey = 'class_id';
 
     public $incrementing = false;
-    
+
     protected $keyType = 'int';
 
     protected $fillable = [
+        'class_id',
         'name',
         'homeroom_teacher_id',
         'academic_year',

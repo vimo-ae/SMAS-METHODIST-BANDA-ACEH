@@ -9,6 +9,8 @@ class ExamAnswer extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'exam_answer_id';
+    
     protected $fillable = [
     'exam_id', 'students_id', 'question_id', 'answer', 'answer_file',
     'is_correct', 'score', 'graded_by', 'graded_at',

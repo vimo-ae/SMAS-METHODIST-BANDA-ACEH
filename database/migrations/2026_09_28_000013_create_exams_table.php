@@ -25,7 +25,8 @@ return new class extends Migration
 
             $table->enum('exam_type', [
                 'uts',
-                'uas'
+                'uas',
+                'kuis'
             ]);
 
             $table->dateTime('start_time');

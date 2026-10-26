@@ -12,38 +12,18 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
+            // user_id diisi manual (NIP / NIS), tidak auto-increment
+            'user_id' => fake()->unique()->numerify('##########'),
             'name' => fake('id_ID')->name(),
             'email' => fake()->unique()->safeEmail(),
-            'password' => Hash::make('password'), // password default untuk data dummy
+            'password' => Hash::make('password'),
             'role' => 'siswa',
-            'academic_key' => null,
-            'phone' => fake('id_ID')->phoneNumber(),
-            'avatar' => null,
+            'phone' => fake('id_ID')->numerify('08##########'),
+            'photo' => null,
         ];
     }
 
-    public function admin(): static
-    {
-        return $this->state(fn () => ['role' => 'admin']);
-    }
-
-    public function superAdmin(): static
-    {
-        return $this->state(fn () => ['role' => 'superadmin']);
-    }
-
-    public function guru(): static
-    {
-        return $this->state(fn () => ['role' => 'guru']);
-    }
-
-    public function siswa(): static
-    {
-        return $this->state(fn () => ['role' => 'siswa']);
-    }
-
-    public function orangTua(): static
-    {
-        return $this->state(fn () => ['role' => 'orangtua']);
-    }
+    public function admin(): static { return $this->state(fn () => ['role' => 'admin']); }
+    public function guru(): static { return $this->state(fn () => ['role' => 'guru']); }
+    public function siswa(): static { return $this->state(fn () => ['role' => 'siswa']); }
 }

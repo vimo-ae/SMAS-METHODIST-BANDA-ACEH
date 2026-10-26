@@ -31,6 +31,9 @@ return new class extends Migration
                 'genap'
             ]);
 
+            // Kode untuk "join kelas" oleh siswa
+$table->string('join_code', 8)->nullable()->unique();
+
             $table->timestamps();
 
             // Relasi ke classes

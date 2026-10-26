@@ -52,11 +52,22 @@ class ExamSession extends Model
         return $this->hasMany(ExamViolation::class, 'exam_session_id', 'exam_session_id');
     }
 
-    // Batas waktu memakai end_time ujian, bukan deadline_at
+    /**
+     * Batas waktu siswa: started_at + durasi ujian, tetapi tidak boleh melewati end_time ujian.
+     * (Tidak disimpan di database, selalu dihitung.)
+     */
+    public function deadline(): \Illuminate\Support\Carbon
+    {
+        $deadline = $this->started_at->copy()->addMinutes($this->exam->duration_minutes);
+    
+        return $deadline->gt($this->exam->end_time) ? $this->exam->end_time->copy() : $deadline;
+    }
+    
     public function isRunning(): bool
     {
         return $this->status === 'berlangsung'
+            && $this->started_at
             && $this->exam
-            && now()->lt($this->exam->end_time);
+            && now()->lt($this->deadline());
     }
 }

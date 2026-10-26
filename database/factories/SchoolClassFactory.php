@@ -10,24 +10,12 @@ class SchoolClassFactory extends Factory
 
     public function definition(): array
     {
-        $grade = fake()->randomElement([10, 11, 12]);
-        $jurusan = fake()->randomElement(['IPA', 'IPS']);
-        $nomor = fake()->numberBetween(1, 3);
-
         return [
-            'name' => $this->romanGrade($grade) . " $jurusan $nomor",
-            'grade_level' => $grade,
+            // class_id diisi manual (tidak auto-increment)
+            'class_id' => fake()->unique()->numberBetween(200, 9999),
+            'name' => fake()->randomElement(['X', 'XI', 'XII']).' '.fake()->randomElement(['IPA', 'IPS']).' '.fake()->numberBetween(1, 3),
             'homeroom_teacher_id' => null,
             'academic_year' => '2025/2026',
         ];
-    }
-
-    private function romanGrade(int $grade): string
-    {
-        return match ($grade) {
-            10 => 'X',
-            11 => 'XI',
-            12 => 'XII',
-        };
     }
 }

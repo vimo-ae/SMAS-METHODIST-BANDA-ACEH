@@ -14,8 +14,6 @@ class Access
             'admin' => true,
             'guru' => $user->teacher && (string) $cst->teacher_id === (string) $user->teacher->nip,
             'siswa' => $user->student && $cst->joinedStudents()->where('students.nis', $user->student->nis)->exists(),
-            'orangtua' => $user->guardianProfile && $cst->joinedStudents()
-                ->whereIn('students.nis', $user->guardianProfile->students()->pluck('students.nis'))->exists(),
             default => false,
         };
     }

@@ -102,6 +102,8 @@ class ExamGrader
                 'finished_at' => $session->finished_at ?? now(),
             ]);
 
+            $this->recordToGradebook($session);   // BARU
+
             return $session->fresh();
         });
     }
@@ -137,5 +139,60 @@ class ExamGrader
                 ? null : 'Pasangan jawaban belum lengkap.',
             default => null,
         };
+    }
+
+    /** Masukkan nilai ujian ke buku nilai (dihitung sistem, graded_by = null). */
+public function recordToGradebook(ExamSession $session): void
+{
+    $exam = $session->exam;
+
+    \App\Models\Grade::updateOrCreate(
+        ['students_id' => $session->students_id, 'exam_id' => $exam->exam_id],
+        [
+            'cst_id' => $exam->cst_id,
+            'grade_type' => $exam->exam_type,   // uts | uas
+            'score' => $this->objectiveScore($session),
+            'graded_by' => null,
+            'graded_at' => now(),
+        ]
+    );
+}
+
+    /** Ringkasan untuk siswa/orang tua: benar, salah, tidak dijawab, nilai, lulus atau tidak. */
+    public function summary(ExamSession $session): array
+    {
+        $exam = $session->exam()->with('questions')->first();
+        $objective = $exam->questions->where('question_type', '!=', 'esai');
+        $essays = $exam->questions->where('question_type', 'esai');
+
+        $answers = \App\Models\ExamAnswer::where('exam_id', $session->exam_id)
+            ->where('students_id', $session->students_id)
+            ->whereIn('question_id', $objective->pluck('exam_question_id'))
+            ->get();
+
+        $correct = $answers->where('is_correct', true)->count();
+        $wrong = $answers->filter(
+            fn ($a) => $a->is_correct === false && $a->answer !== null && $a->answer !== [] && $a->answer !== ''
+        )->count();
+        $total = $objective->count();
+        $score = $this->objectiveScore($session);
+
+        $essayGraded = \App\Models\ExamAnswer::where('exam_id', $session->exam_id)
+            ->where('students_id', $session->students_id)
+            ->whereIn('question_id', $essays->pluck('exam_question_id'))
+            ->whereNotNull('graded_at')
+            ->count();
+
+        return [
+            'total' => $total,
+            'correct' => $correct,
+            'wrong' => $wrong,
+            'unanswered' => max(0, $total - $correct - $wrong),
+            'score' => $score,
+            'pass_score' => (float) $exam->pass_score,
+            'passed' => $score >= (float) $exam->pass_score,
+            'essay_total' => $essays->count(),
+            'essay_graded' => $essayGraded,
+        ];
     }
 }

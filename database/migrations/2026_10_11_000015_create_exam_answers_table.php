@@ -10,6 +10,8 @@ return new class extends Migration
     {
         Schema::create('exam_answers', function (Blueprint $table) {
 
+            $table->id('exam_answer_id');
+
             // FK -> exams.exam_id
             $table->foreignId('exam_id')
                 ->constrained('exams', 'exam_id')
@@ -30,7 +32,14 @@ return new class extends Migration
 
             $table->text('answer')->nullable();
 
-            $table->unsignedSmallInteger('score')->nullable();
+            // Path foto lembar jawaban esai
+            $table->string('answer_file')->nullable();
+
+            // Hasil koreksi otomatis (null untuk esai)
+            $table->boolean('is_correct')->nullable();
+
+            // Skor desimal (contoh: 1.5)
+            $table->decimal('score', 6, 2)->nullable();
 
             // Penilaian esai oleh guru
             $table->unsignedBigInteger('graded_by')->nullable();   // FK -> teachers.nip
@@ -43,8 +52,7 @@ return new class extends Migration
 
             $table->timestamps();
 
-            // Satu siswa hanya boleh punya satu jawaban
-            // untuk satu soal
+            // Satu siswa hanya boleh punya satu jawaban untuk satu soal
             $table->unique(
                 ['question_id', 'students_id'],
                 'exam_answer_unique'
