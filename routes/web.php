@@ -12,16 +12,35 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
-});
+});  
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
     })->middleware(['role.redirect'])->name('dashboard');
-
+   
     // Route Siswa
-    Route::get('/siswa/dashboard', [SiswaDashboard::class, 'index'])->name('siswa.dashboard');
-    Route::get('/siswa/e-class', [SiswaClassroom::class, 'index'])->name('siswa.classes.index');
-    Route::get('/siswa/e-exam', [SiswaExam::class, 'index'])->name('siswa.exams.index');
+    
+    // Route Siswa
+    Route::get('/siswa/dashboard', [SiswaDashboard::class, 'index'])
+        ->name('siswa.dashboard');
+
+    Route::get('/siswa/e-class', [SiswaClassroom::class, 'index'])
+        ->name('siswa.classes.index');
+
+    Route::get('/siswa/e-exam', [SiswaExam::class, 'index'])
+        ->name('siswa.exams.index');
+    
+    // Halaman informasi dan tata tertib ujian
+    Route::get('/siswa/e-exam/{exam}', [SiswaExam::class, 'show'])
+        ->name('siswa.exams.show');
+
+    // Memulai ujian
+    Route::post('/siswa/e-exam/{exam}/start', [SiswaExam::class, 'start'])
+        ->name('siswa.exams.start');
+
+    // Halaman pengerjaan ujian
+    Route::get('/siswa/e-exam/{exam}/take', [SiswaExam::class, 'take'])
+        ->name('siswa.exams.take');
 
     // Route Guru
     Route::get('/guru/dashboard', [GuruDashboard::class, 'index'])->name('guru.dashboard');
