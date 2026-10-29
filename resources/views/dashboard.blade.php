@@ -10,16 +10,16 @@
 
     <style>
         :root {
-            --c-green: #205C3B;
-            --c-green-dark: #17452D;
-            --c-ivory: #FAF8F4;
-            --c-sage: #E9E8D9;
-            --c-navy: #172033;
-            --c-pale: #DDE9DF;
-            --c-muted: #73766F;
-            --c-border: #E8E5DD;
-            --c-orange-soft: #FCE7DA;
-            --c-orange: #E8742C;
+            --c-green: #4338CA;
+            --c-green-dark: #2E2A7F;
+            --c-ivory: #F8F9FC;
+            --c-sage: #E0E7FF;
+            --c-navy: #0F172A;
+            --c-pale: #EEF2FF;
+            --c-muted: #475569;s
+            --c-border: #E5E7EB;
+            --c-orange-soft: #E0E7FF;
+            --c-orange: #6366F1;
         }
 
         .d-page { background: var(--c-ivory); min-height: 100vh; padding: 56px 0 72px; overflow: hidden; }
