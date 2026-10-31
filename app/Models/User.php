@@ -16,7 +16,7 @@ class User extends Authenticatable
     // user_id diisi manual sesuai NIP / NIS / NIK
     protected $primaryKey = 'user_id';
     public $incrementing = false;
-    protected $keyType = 'int';
+    protected $keyType = 'string';   
 
     protected $fillable = [
         'user_id', 'name', 'email', 'password', 'role', 'phone', 'photo',
