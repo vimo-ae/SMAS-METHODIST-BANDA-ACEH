@@ -1,86 +1,130 @@
 
 @extends('layouts.admin')
 
-@section('title', 'Tambah Pengumuman')
-
 @section('content')
-<div class="mb-4">
-    <h4 class="fw-bold mb-1">Tambah Pengumuman</h4>
-    <p class="text-muted">Buat informasi baru untuk warga sekolah.</p>
-</div>
+<div class="container-fluid">
 
-<div class="card border-0 shadow-sm">
-    <div class="card-body p-4">
+    <div class="mb-4">
+        <a href="{{ route('announcements.index') }}"
+           class="text-decoration-none text-muted">
+            <i class="bi bi-arrow-left"></i> Kembali ke Pengumuman
+        </a>
 
-        <form action="{{ route('announcements.store') }}" method="POST">
-            @csrf
-
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Judul Pengumuman</label>
-                <input type="text"
-                       name="title"
-                       class="form-control"
-                       placeholder="Masukkan judul pengumuman"
-                       value="{{ old('title') }}"
-                       maxlength="150"
-                       required>
-
-                @error('title')
-                    <small class="text-danger">{{ $message }}</small>
-                @enderror
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Isi Pengumuman</label>
-                <textarea name="content"
-                          class="form-control"
-                          rows="6"
-                          placeholder="Tuliskan isi pengumuman..."
-                          required>{{ old('content') }}</textarea>
-
-                @error('content')
-                    <small class="text-danger">{{ $message }}</small>
-                @enderror
-            </div>
-
-            <div class="mb-4">
-                <label class="form-label fw-semibold">Target Penerima</label>
-                <p class="text-muted small">
-                    Pilih siapa saja yang dapat melihat pengumuman ini.
-                </p>
-
-                @foreach(['admin' => 'Admin', 'guru' => 'Guru', 'siswa' => 'Siswa'] as $value => $label)
-                    <div class="form-check mb-2">
-                        <input class="form-check-input"
-                               type="checkbox"
-                               name="target_roles[]"
-                               value="{{ $value }}"
-                               id="role_{{ $value }}"
-                               @checked(in_array($value, old('target_roles', [])))>
-
-                        <label class="form-check-label" for="role_{{ $value }}">
-                            {{ $label }}
-                        </label>
-                    </div>
-                @endforeach
-
-                @error('target_roles')
-                    <small class="text-danger">{{ $message }}</small>
-                @enderror
-            </div>
-
-            <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-send me-1"></i> Terbitkan
-                </button>
-
-                <a href="{{ route('announcements.index') }}"
-                   class="btn btn-outline-secondary">
-                    Batal
-                </a>
-            </div>
-        </form>
-
+        <h3 class="fw-bold mt-3 mb-1">Tambah Pengumuman</h3>
+        <p class="text-muted">
+            Buat pengumuman baru untuk Guru dan Siswa.
+        </p>
     </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+
+            <form action="{{ route('announcements.store') }}" method="POST">
+                @csrf
+
+                <div class="mb-3">
+                    <label for="title" class="form-label fw-semibold">
+                        Judul Pengumuman
+                    </label>
+
+                    <input type="text"
+                           name="title"
+                           id="title"
+                           class="form-control @error('title') is-invalid @enderror"
+                           value="{{ old('title') }}"
+                           placeholder="Masukkan judul pengumuman"
+                           required>
+
+                    @error('title')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label for="content" class="form-label fw-semibold">
+                        Isi Pengumuman
+                    </label>
+
+                    <textarea name="content"
+                              id="content"
+                              rows="6"
+                              class="form-control @error('content') is-invalid @enderror"
+                              placeholder="Tuliskan isi pengumuman..."
+                              required>{{ old('content') }}</textarea>
+
+                    @error('content')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">
+                        Pengumuman Ditujukan Kepada
+                    </label>
+
+                    <p class="text-muted small">
+                        Pilih satu atau lebih penerima pengumuman.
+                    </p>
+
+                    @php
+                        $selectedRoles = old('target_roles', []);
+                    @endphp
+
+                    <div class="d-flex flex-wrap gap-4">
+
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   name="target_roles[]"
+                                   value="guru"
+                                   id="role_guru"
+                                   {{ in_array('guru', $selectedRoles) ? 'checked' : '' }}>
+
+                            <label class="form-check-label" for="role_guru">
+                                Guru
+                            </label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   name="target_roles[]"
+                                   value="siswa"
+                                   id="role_siswa"
+                                   {{ in_array('siswa', $selectedRoles) ? 'checked' : '' }}>
+
+                            <label class="form-check-label" for="role_siswa">
+                                Siswa
+                            </label>
+                        </div>
+
+                    </div>
+
+                    @error('target_roles')
+                        <div class="text-danger small mt-2">{{ $message }}</div>
+                    @enderror
+
+                    @error('target_roles.*')
+                        <div class="text-danger small mt-2">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="{{ route('announcements.index') }}"
+                       class="btn btn-light border">
+                        Batal
+                    </a>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-send me-1"></i>
+                        Publikasikan Pengumuman
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
 </div>
 @endsection

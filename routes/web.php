@@ -18,12 +18,6 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
     })->middleware(['role.redirect'])->name('dashboard');
-   
-    // Route Announcement Admin
-    Route::middleware('role:admin')->group(function () {
-        Route::post('/pengumuman', [AnnouncementController::class, 'store'])->name('announcements.store');
-        Route::delete('/pengumuman/{announcement}', [AnnouncementController::class, 'destroy'])->name('announcements.destroy');
-    });
     
     // Route Siswa
     Route::get('/siswa/dashboard', [SiswaDashboard::class, 'index'])

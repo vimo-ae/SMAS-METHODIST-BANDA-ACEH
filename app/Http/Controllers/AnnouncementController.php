@@ -16,7 +16,7 @@ class AnnouncementController extends Controller
             ->filter(fn ($a) => $user->isAdmin() || in_array($user->role, $a->target_roles ?? [], true))
             ->take(30);
 
-        return view('announcements.index', compact('announcements'));
+        return view('admin.announcements.index', compact('announcements'));
     }
 
     /** Hanya admin (dibatasi di route dan dicek lagi di sini). */
