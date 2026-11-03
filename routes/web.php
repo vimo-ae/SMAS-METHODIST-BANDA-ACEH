@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
+use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\Guru\ClassroomController as GuruClassroom;
 use App\Http\Controllers\Guru\DashboardController as GuruDashboard;
 use App\Http\Controllers\Guru\ExamController as GuruExam;
@@ -18,7 +19,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
     })->middleware(['role.redirect'])->name('dashboard');
    
-    // Route Siswa
+    // Route Announcement Admin
+    Route::middleware('role:admin')->group(function () {
+        Route::post('/pengumuman', [AnnouncementController::class, 'store'])->name('announcements.store');
+        Route::delete('/pengumuman/{announcement}', [AnnouncementController::class, 'destroy'])->name('announcements.destroy');
+    });
     
     // Route Siswa
     Route::get('/siswa/dashboard', [SiswaDashboard::class, 'index'])
@@ -47,8 +52,35 @@ Route::middleware('auth')->group(function () {
     Route::get('/guru/e-class', [GuruClassroom::class, 'index'])->name('guru.classes.index');
     Route::get('/guru/e-exam', [GuruExam::class, 'index'])->name('guru.exams.index');
 
-    // Route Admin
-    Route::get('/admin/dashboard', [AdminDashboard::class, 'index'])->name('admin.dashboard');
+        // Route Admin Dashboard
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/admin/dashboard', [AdminDashboard::class, 'index'])
+            ->name('admin.dashboard');
+    });
+    
+    // Route Admin Announcement
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/pengumuman', [AnnouncementController::class, 'index'])
+            ->name('announcements.index');
+    
+        Route::get('/pengumuman/create', [AnnouncementController::class, 'create'])
+            ->name('announcements.create');
+    
+        Route::post('/pengumuman', [AnnouncementController::class, 'store'])
+            ->name('announcements.store');
+    
+        Route::get('/pengumuman/{announcement}', [AnnouncementController::class, 'show'])
+            ->name('announcements.show');
+    
+        Route::get('/pengumuman/{announcement}/edit', [AnnouncementController::class, 'edit'])
+            ->name('announcements.edit');
+    
+        Route::put('/pengumuman/{announcement}', [AnnouncementController::class, 'update'])
+            ->name('announcements.update');
+    
+        Route::delete('/pengumuman/{announcement}', [AnnouncementController::class, 'destroy'])
+            ->name('announcements.destroy');
+    });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
