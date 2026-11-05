@@ -1,44 +1,35 @@
-@extends('layouts.app')
-@section('title', 'Pengumuman')
+@extends('layouts.public')
+
+@section('title', 'Pengumuman & Berita | SMAS Methodist Banda Aceh')
+
 @section('content')
-<h4>Pengumuman</h4>
+<section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+    <p class="text-xs font-semibold uppercase tracking-widest text-softblue sm:text-sm">Info Terbaru</p>
+    <h1 class="mt-2 font-serif text-3xl font-bold text-navy sm:text-4xl">Pengumuman & Berita</h1>
 
-@if(in_array(auth()->user()->role, ['superadmin', 'admin']))
-<div class="card mb-4">
-    <div class="card-header">Buat Pengumuman Baru</div>
-    <div class="card-body">
-        <form method="POST" action="{{ route('announcements.store') }}">
-            @csrf
-            <div class="mb-2">
-                <input type="text" name="title" class="form-control" placeholder="Judul" required>
-            </div>
-            <div class="mb-2">
-                <textarea name="content" class="form-control" placeholder="Isi pengumuman" required></textarea>
-            </div>
-            <div class="mb-2">
-                <label class="form-label">Ditujukan untuk:</label><br>
-                @foreach(['superadmin' => 'Super Admin', 'admin' => 'Admin', 'guru' => 'Guru', 'siswa' => 'Siswa', 'orangtua' => 'Orang Tua'] as $val => $label)
-                    <div class="form-check form-check-inline">
-                        <input type="checkbox" class="form-check-input" name="target_roles[]" value="{{ $val }}" id="role_{{ $val }}">
-                        <label class="form-check-label" for="role_{{ $val }}">{{ $label }}</label>
-                    </div>
-                @endforeach
-            </div>
-            <button class="btn btn-primary">Kirim</button>
-        </form>
+    <div class="mt-6 flex flex-wrap gap-2 text-sm">
+        <a href="{{ route('announcements.index') }}"
+           class="rounded-full px-4 py-2 font-medium {{ $category ? 'bg-white text-navy hover:bg-softblue/20' : 'bg-navy text-white' }}">
+            Semua
+        </a>
+        @foreach (\App\Models\Announcement::CATEGORIES as $key => $label)
+            <a href="{{ route('announcements.index', ['kategori' => $key]) }}"
+               class="rounded-full px-4 py-2 font-medium {{ $category === $key ? 'bg-navy text-white' : 'bg-white text-navy hover:bg-softblue/20' }}">
+                {{ $label }}
+            </a>
+        @endforeach
     </div>
-</div>
-@endif
 
-@forelse($announcements as $a)
-    <div class="card mb-2">
-        <div class="card-body">
-            <h5 class="card-title">{{ $a->title }}</h5>
-            <p class="card-text">{{ $a->content }}</p>
-            <small class="text-muted">Oleh {{ $a->creator->name }} - {{ $a->created_at->diffForHumans() }}</small>
-        </div>
+    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        @forelse ($announcements as $announcement)
+            @include('partials.announcement-card', ['announcement' => $announcement])
+        @empty
+            <p class="col-span-full rounded-xl border border-dashed border-softblue bg-white p-10 text-center text-navy/60">
+                Belum ada pengumuman di kategori ini.
+            </p>
+        @endforelse
     </div>
-@empty
-    <p class="text-muted">Belum ada pengumuman untuk Anda.</p>
-@endforelse
+
+    <div class="mt-10">{{ $announcements->links() }}</div>
+</section>
 @endsection

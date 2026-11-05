@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Guru\ClassroomController as GuruClassroom;
 use App\Http\Controllers\Guru\DashboardController as GuruDashboard;
@@ -10,9 +12,9 @@ use App\Http\Controllers\Siswa\DashboardController as SiswaDashboard;
 use App\Http\Controllers\Siswa\ExamController as SiswaExam;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/pengumuman', [AnnouncementController::class, 'index'])->name('announcements.index');
+Route::get('/pengumuman/{announcement:slug}', [AnnouncementController::class, 'show'])->name('announcements.show');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {

@@ -28,7 +28,7 @@
         {{-- TOP BAR --}}
         <div class="hidden bg-navy text-xs text-white/80 md:block">
             <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 sm:px-6 lg:px-8">
-                <span>Jl. Pocut Baren No. 3, Kota Banda Aceh, Aceh</span>
+                <span>Jl. Pocut Baren No. 3, Kelurahan Mulia / Laksana, Kecamatan Kuta Alam, Kota Banda Aceh, Aceh 23123</span>
                 <span>official_smasmethodist@gmail.com</span>
             </div>
         </div>
@@ -79,7 +79,7 @@
                 <div>
                     <p class="text-sm font-semibold text-navy">Kontak</p>
                     <ul class="mt-3 space-y-2 text-sm text-navy/70">
-                        <li>Jl. Pocut Baren No. 3, Kota Banda Aceh, Aceh</li>
+                        <li>Jl. Pocut Baren No. 3, Kelurahan Mulia / Laksana, Kecamatan Kuta Alam, Kota Banda Aceh, Aceh 23123</li>
                         <li>0852-6010-9442</li>
                         <li class="break-all">official_smasmethodist@gmail.com</li>
                         <li>NSPN 10105395</li>

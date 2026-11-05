@@ -160,8 +160,19 @@
                 <p class="text-xs font-semibold uppercase tracking-widest text-softblue sm:text-sm">Info Terbaru</p>
                 <h2 class="mt-2 font-serif text-3xl font-bold text-navy sm:text-4xl">Pengumuman & Berita</h2>
             </div>
-            <a href="#" class="text-sm font-semibold text-navy transition hover:text-softblue">Lihat semua &rarr;</a>
+            <a href="{{ route('announcements.index') }}" class="text-sm font-semibold text-navy transition hover:text-softblue">Lihat semua &rarr;</a>
         </div>
+    
+        <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            @forelse ($announcements as $announcement)
+                @include('partials.announcement-card', ['announcement' => $announcement])
+            @empty
+                <p class="col-span-full rounded-xl border border-dashed border-softblue bg-white p-10 text-center text-navy/60">
+                    Belum ada pengumuman.
+                </p>
+            @endforelse
+        </div>
+    </section>
 
         {{-- TODO: ganti dengan @forelse ($announcements as $announcement) setelah fitur pengumuman dibuat --}}
         <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

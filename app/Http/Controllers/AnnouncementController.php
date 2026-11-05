@@ -9,30 +9,35 @@ class AnnouncementController extends Controller
 {
     public function index(Request $request)
     {
-        $user = $request->user();
-        $announcements = Announcement::with('creator')->latest()->get()
-            ->filter(fn ($a) => $user->isAdmin() || in_array($user->role, $a->target_roles ?? [], true))->take(30);
+        $category = $request->query('kategori');
 
-        return view('announcements.index', compact('announcements'));
+        $announcements = Announcement::published()
+            ->when(
+                array_key_exists($category, Announcement::CATEGORIES),
+                fn ($q) => $q->where('category', $category)
+            )
+            ->latest('published_at')
+            ->paginate(9)
+            ->withQueryString();
+
+        return view('announcements.index', compact('announcements', 'category'));
     }
 
-    public function store(Request $request)
+    public function show(Announcement $announcement)
     {
-        $v = $request->validate([
-            'title' => 'required|string|max:150',
-            'content' => 'required|string',
-            'target_roles' => 'required|array|min:1',
-            'target_roles.*' => 'in:admin,guru,siswa,orangtua',
-        ]);
-        Announcement::create($v + ['created_by' => $request->user()->user_id]);
+        abort_unless(
+            $announcement->is_public
+                && $announcement->published_at
+                && $announcement->published_at->lte(now()),
+            404
+        );
 
-        return redirect()->route('announcements.index')->with('success', 'Pengumuman berhasil dibuat.');
-    }
+        $related = Announcement::published()
+            ->where('announcement_id', '!=', $announcement->announcement_id)
+            ->latest('published_at')
+            ->take(3)
+            ->get();
 
-    public function destroy(Announcement $announcement)
-    {
-        $announcement->delete();
-
-        return back()->with('success', 'Pengumuman dihapus.');
+        return view('announcements.show', compact('announcement', 'related'));
     }
 }
