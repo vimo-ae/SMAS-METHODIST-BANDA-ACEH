@@ -19,9 +19,42 @@ Route::middleware('auth')->group(function () {
     })->middleware(['role.redirect'])->name('dashboard');
 
     // Route Siswa
-    Route::get('/siswa/dashboard', [SiswaDashboard::class, 'index'])->name('siswa.dashboard');
-    Route::get('/siswa/e-class', [SiswaClassroom::class, 'index'])->name('siswa.classes.index');
-    Route::get('/siswa/e-exam', [SiswaExam::class, 'index'])->name('siswa.exams.index');
+    Route::get('/siswa/dashboard', [SiswaDashboard::class, 'index'])
+        ->name('siswa.dashboard');
+
+    Route::get('/siswa/e-class', [SiswaClassroom::class, 'index'])
+        ->name('siswa.classes.index');
+
+    Route::get('/siswa/e-exam', [SiswaExam::class, 'index'])
+        ->name('siswa.exams.index');
+
+    // Halaman informasi dan tata tertib ujian
+    Route::get('/siswa/e-exam/{exam}', [SiswaExam::class, 'show'])
+        ->name('siswa.exams.show');
+
+    // Memulai ujian
+    Route::post('/siswa/e-exam/{exam}/start', [SiswaExam::class, 'start'])
+        ->name('siswa.exams.start');
+
+    // Halaman pengerjaan ujian
+    Route::get('/siswa/e-exam/{exam}/take', [SiswaExam::class, 'take'])
+        ->name('siswa.exams.take');
+
+    // Aksi saat mengerjakan ujian
+    Route::post('/siswa/e-exam/{exam}/answer', [SiswaExam::class, 'answer'])
+        ->name('siswa.exams.answer');
+
+    Route::post('/siswa/e-exam/{exam}/essay/{question}', [SiswaExam::class, 'essay'])
+        ->name('siswa.exams.essay');
+
+    Route::post('/siswa/e-exam/{exam}/violation', [SiswaExam::class, 'violation'])
+        ->name('siswa.exams.violation');
+
+    Route::post('/siswa/e-exam/{exam}/leave', [SiswaExam::class, 'leave'])
+        ->name('siswa.exams.leave');
+
+    Route::post('/siswa/e-exam/{exam}/finish', [SiswaExam::class, 'finish'])
+        ->name('siswa.exams.finish');
 
     // Route Guru
     Route::get('/guru/dashboard', [GuruDashboard::class, 'index'])->name('guru.dashboard');

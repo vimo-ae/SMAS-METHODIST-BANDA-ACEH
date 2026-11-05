@@ -1,0 +1,305 @@
+/* =========================================================
+   exam.css — Tampilan Ujian Siswa (daftar, detail, mengerjakan)
+   Pakai di layout: <link rel="stylesheet" href="{{ asset('css/exam.css') }}">
+   ========================================================= */
+
+:root {
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --primary-soft: #dbeafe;
+  --success: #16a34a;
+  --success-soft: #dcfce7;
+  --warning: #d97706;
+  --warning-soft: #fef3c7;
+  --danger: #dc2626;
+  --danger-soft: #fee2e2;
+  --muted: #64748b;
+  --text: #0f172a;
+  --border: #e2e8f0;
+  --bg: #f1f5f9;
+  --card: #ffffff;
+  --radius: 14px;
+  --shadow: 0 1px 3px rgba(15, 23, 42, .08), 0 4px 14px rgba(15, 23, 42, .05);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.55;
+}
+
+.exam-page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+.page-title { margin: 0 0 4px; font-size: 1.6rem; font-weight: 700; }
+.page-subtitle { margin: 0 0 24px; color: var(--muted); }
+
+/* ---------- Tombol ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 18px; border: 0; border-radius: 10px;
+  font: inherit; font-weight: 600; font-size: .95rem;
+  cursor: pointer; text-decoration: none;
+  transition: background .15s, transform .05s, box-shadow .15s;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-success { background: var(--success); color: #fff; }
+.btn-success:hover { background: #15803d; }
+.btn-outline { background: transparent; color: var(--primary); border: 1.5px solid var(--primary); }
+.btn-outline:hover { background: var(--primary-soft); }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-block { display: flex; width: 100%; }
+.btn[disabled], .btn.disabled { opacity: .5; cursor: not-allowed; pointer-events: none; }
+
+/* ---------- Badge status ---------- */
+.badge {
+  display: inline-block; padding: 3px 12px; border-radius: 999px;
+  font-size: .75rem; font-weight: 700; letter-spacing: .02em;
+}
+.badge-belum      { background: var(--primary-soft); color: var(--primary-dark); }
+.badge-berlangsung{ background: var(--warning-soft); color: var(--warning); }
+.badge-selesai    { background: var(--success-soft); color: var(--success); }
+.badge-ditutup    { background: #e2e8f0; color: var(--muted); }
+
+/* ---------- Alert ---------- */
+.alert {
+  padding: 12px 16px; border-radius: 10px; margin-bottom: 16px;
+  font-size: .95rem; border-left: 4px solid;
+}
+.alert-success { background: var(--success-soft); border-color: var(--success); color: #166534; }
+.alert-error   { background: var(--danger-soft);  border-color: var(--danger);  color: #991b1b; }
+.alert-info    { background: var(--primary-soft); border-color: var(--primary); color: #1e40af; }
+
+/* =========================================================
+   1. DAFTAR UJIAN (siswa.exams.index)
+   ========================================================= */
+.exam-grid {
+  display: grid; gap: 18px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.exam-card {
+  background: var(--card); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 20px;
+  display: flex; flex-direction: column; gap: 12px;
+  border-top: 4px solid var(--primary);
+  transition: transform .15s, box-shadow .15s;
+}
+.exam-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(15, 23, 42, .12); }
+.exam-card.is-berlangsung { border-top-color: var(--warning); }
+.exam-card.is-selesai     { border-top-color: var(--success); }
+.exam-card.is-ditutup     { border-top-color: #94a3b8; }
+
+.exam-card__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.exam-card__title { margin: 0; font-size: 1.1rem; font-weight: 700; }
+.exam-card__subject { margin: 2px 0 0; color: var(--muted); font-size: .88rem; }
+
+.exam-meta { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: .88rem; color: var(--muted); }
+.exam-meta li { display: flex; gap: 8px; align-items: center; }
+.exam-meta strong { color: var(--text); font-weight: 600; }
+
+.exam-card__score {
+  margin-top: auto; padding: 10px 14px; border-radius: 10px;
+  background: var(--success-soft); color: #166534; font-weight: 700; text-align: center;
+}
+.exam-card__footer { margin-top: auto; }
+
+.empty-state {
+  text-align: center; padding: 56px 16px; color: var(--muted);
+  background: var(--card); border-radius: var(--radius); border: 2px dashed var(--border);
+}
+
+/* =========================================================
+   2. DETAIL UJIAN (siswa.exams.show)
+   ========================================================= */
+.exam-detail {
+  background: var(--card); border-radius: var(--radius);
+  box-shadow: var(--shadow); overflow: hidden;
+}
+.exam-detail__hero {
+  padding: 28px; color: #fff;
+  background: linear-gradient(135deg, var(--primary), #7c3aed);
+}
+.exam-detail__hero h1 { margin: 0 0 6px; font-size: 1.6rem; }
+.exam-detail__hero p  { margin: 0; opacity: .9; }
+.exam-detail__body { padding: 24px 28px; }
+
+.info-grid {
+  display: grid; gap: 14px; margin-bottom: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+.info-item { background: var(--bg); border-radius: 12px; padding: 14px 16px; }
+.info-item__label { font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.info-item__value { font-size: 1.15rem; font-weight: 700; margin-top: 2px; }
+
+.rules {
+  background: var(--warning-soft); border-radius: 12px; padding: 16px 20px 16px 36px;
+  margin: 0 0 24px; color: #78350f; font-size: .92rem;
+}
+.rules li { margin-bottom: 4px; }
+
+.result-box { text-align: center; padding: 28px; border-radius: 12px; background: var(--success-soft); }
+.result-box__score { font-size: 3rem; font-weight: 800; color: var(--success); line-height: 1; }
+.result-box__label { color: #166534; margin-top: 6px; }
+
+/* =========================================================
+   3. MENGERJAKAN UJIAN (siswa.exams.take)
+   ========================================================= */
+.take-topbar {
+  position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  padding: 12px 20px; background: var(--card);
+  border-bottom: 1px solid var(--border); box-shadow: 0 2px 8px rgba(15, 23, 42, .06);
+}
+.take-topbar__title { font-weight: 700; font-size: 1rem; }
+.take-topbar__title small { display: block; color: var(--muted); font-weight: 500; }
+
+.timer {
+  font-variant-numeric: tabular-nums; font-size: 1.25rem; font-weight: 800;
+  padding: 6px 16px; border-radius: 10px;
+  background: var(--primary-soft); color: var(--primary-dark);
+}
+.timer.is-warning { background: var(--warning-soft); color: var(--warning); }
+.timer.is-danger  { background: var(--danger-soft);  color: var(--danger); animation: pulse 1s infinite; }
+@keyframes pulse { 50% { opacity: .55; } }
+
+.violation-counter {
+  font-size: .85rem; font-weight: 600; padding: 6px 12px; border-radius: 10px;
+  background: var(--danger-soft); color: var(--danger);
+}
+
+.take-layout {
+  max-width: 1180px; margin: 0 auto; padding: 20px 16px 60px;
+  display: grid; gap: 20px; grid-template-columns: 1fr 280px; align-items: start;
+}
+
+/* kartu soal */
+.question-card {
+  background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px;
+}
+.question-card__meta {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 14px; color: var(--muted); font-size: .85rem;
+}
+.question-card__no {
+  background: var(--primary); color: #fff; font-weight: 700;
+  padding: 4px 14px; border-radius: 999px;
+}
+.question-card__text { font-size: 1.08rem; margin-bottom: 18px; white-space: pre-line; }
+.question-card__image {
+  display: block; max-width: 100%; max-height: 340px; margin: 0 auto 18px;
+  border-radius: 10px; border: 1px solid var(--border);
+}
+
+/* pilihan ganda */
+.option-list { display: grid; gap: 10px; }
+.option {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 16px; border: 2px solid var(--border); border-radius: 12px;
+  cursor: pointer; transition: border-color .15s, background .15s;
+}
+.option:hover { border-color: var(--primary); background: #f8fafc; }
+.option input { margin-top: 4px; accent-color: var(--primary); width: 18px; height: 18px; }
+.option__key {
+  flex: none; width: 28px; height: 28px; border-radius: 50%;
+  display: grid; place-items: center; font-weight: 700; font-size: .85rem;
+  background: var(--bg); color: var(--muted);
+}
+.option.is-selected { border-color: var(--primary); background: var(--primary-soft); }
+.option.is-selected .option__key { background: var(--primary); color: #fff; }
+
+/* isian singkat */
+.answer-input {
+  width: 100%; padding: 12px 14px; font: inherit;
+  border: 2px solid var(--border); border-radius: 12px; outline: none;
+}
+.answer-input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-soft); }
+
+/* esai: unggah foto */
+.upload-box {
+  border: 2px dashed var(--border); border-radius: 12px; padding: 24px;
+  text-align: center; color: var(--muted); transition: border-color .15s, background .15s;
+}
+.upload-box:hover { border-color: var(--primary); background: #f8fafc; }
+.upload-box.is-uploaded { border-color: var(--success); background: var(--success-soft); color: #166534; }
+.upload-box input[type=file] { margin-top: 10px; }
+.upload-preview { max-width: 220px; margin: 12px auto 0; border-radius: 10px; }
+
+.question-card__nav {
+  display: flex; justify-content: space-between; gap: 10px; margin-top: 22px;
+  padding-top: 18px; border-top: 1px solid var(--border);
+}
+.save-status { font-size: .8rem; color: var(--muted); align-self: center; }
+.save-status.is-saved { color: var(--success); }
+
+/* navigasi nomor soal */
+.question-nav {
+  position: sticky; top: 84px;
+  background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px;
+}
+.question-nav h3 { margin: 0 0 12px; font-size: .95rem; }
+.question-nav__grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.nav-btn {
+  aspect-ratio: 1; border: 2px solid var(--border); border-radius: 10px;
+  background: #fff; font: inherit; font-weight: 700; font-size: .85rem; cursor: pointer;
+  transition: all .15s;
+}
+.nav-btn:hover { border-color: var(--primary); }
+.nav-btn.is-answered { background: var(--success); border-color: var(--success); color: #fff; }
+.nav-btn.is-current  { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+.nav-btn.is-flagged  { background: var(--warning); border-color: var(--warning); color: #fff; }
+
+.legend { display: grid; gap: 6px; margin: 14px 0; font-size: .78rem; color: var(--muted); }
+.legend span::before {
+  content: ""; display: inline-block; width: 12px; height: 12px; border-radius: 3px;
+  margin-right: 8px; vertical-align: -1px; border: 2px solid var(--border);
+}
+.legend .l-answered::before { background: var(--success); border-color: var(--success); }
+.legend .l-current::before  { border-color: var(--primary); }
+.legend .l-flagged::before  { background: var(--warning); border-color: var(--warning); }
+
+/* modal peringatan pelanggaran / konfirmasi selesai */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 100; display: none;
+  align-items: center; justify-content: center; padding: 16px;
+  background: rgba(15, 23, 42, .65); backdrop-filter: blur(3px);
+}
+.modal-overlay.is-open { display: flex; }
+.modal {
+  background: #fff; border-radius: 16px; padding: 28px; max-width: 440px; width: 100%;
+  text-align: center; box-shadow: 0 20px 50px rgba(0, 0, 0, .3);
+  animation: pop .2s ease-out;
+}
+@keyframes pop { from { transform: scale(.92); opacity: 0; } }
+.modal__icon { font-size: 2.6rem; }
+.modal h2 { margin: 8px 0; font-size: 1.25rem; }
+.modal p  { color: var(--muted); margin: 0 0 20px; }
+.modal__actions { display: flex; gap: 10px; justify-content: center; }
+.modal.is-danger h2 { color: var(--danger); }
+
+/* cegah blok/copy teks saat ujian */
+.no-select { -webkit-user-select: none; user-select: none; }
+
+/* =========================================================
+   Responsif
+   ========================================================= */
+@media (max-width: 860px) {
+  .take-layout { grid-template-columns: 1fr; }
+  .question-nav { position: static; order: -1; }
+  .question-nav__grid { grid-template-columns: repeat(8, 1fr); }
+}
+@media (max-width: 520px) {
+  .exam-detail__hero, .exam-detail__body { padding: 20px; }
+  .question-card { padding: 18px; }
+  .question-nav__grid { grid-template-columns: repeat(5, 1fr); }
+  .take-topbar { padding: 10px 12px; }
+}

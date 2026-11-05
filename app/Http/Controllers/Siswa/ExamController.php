@@ -46,8 +46,14 @@ class ExamController extends Controller
     {
         $student = $request->user()->student;
         $cstIds = $student->joinedClasses()->pluck('class_subject_teacher.cst_id');
+
         $exams = Exam::with('classSubjectTeacher.subject')->withCount('questions')
-            ->whereIn('cst_id', $cstIds)->where('is_published', true)->orderBy('start_time')->get();
+            ->whereIn('cst_id', $cstIds)
+            ->where('is_published', true)
+            ->when($request->filled('cst'), fn ($q) => $q->where('cst_id', $request->cst))
+            ->orderBy('start_time')
+            ->get();
+
         $sessions = $student->examSessions()->get()->keyBy('exam_id');
         $sessions->each(fn ($s) => $this->closeIfExpired($s));
         $sessions = $student->examSessions()->get()->keyBy('exam_id');
@@ -165,8 +171,8 @@ class ExamController extends Controller
         $v = $request->validate(['type' => 'required|in:tab_switch,window_blur,fullscreen_exit,copy_paste', 'detail' => 'nullable|string|max:200']);
         ExamViolation::create([
             'exam_session_id' => $session->exam_session_id,
-            'students_id' => $session->students_id,   // baru
-            'type' => 'required|in:tab_switch,window_blur,fullscreen_exit,copy_paste',
+            'students_id' => $session->students_id,
+            'type' => $v['type'],
             'detail' => $v['detail'] ?? null,
             'occurred_at' => now(),
         ]);
