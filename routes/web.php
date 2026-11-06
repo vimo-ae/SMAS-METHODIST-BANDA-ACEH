@@ -20,8 +20,6 @@ Route::middleware('auth')->group(function () {
     })->middleware(['role.redirect'])->name('dashboard');
    
     // Route Siswa
-    
-    // Route Siswa
     Route::get('/siswa/dashboard', [SiswaDashboard::class, 'index'])
         ->name('siswa.dashboard');
 
