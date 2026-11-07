@@ -19,6 +19,10 @@ class ExamController extends Controller
 {
     private function own(Request $request, Exam $exam): void
     {
+        if (!$exam->classSubjectTeacher) {
+            abort(404, 'Ujian ini tidak memiliki data pengampu kelas (cst_id kosong). Silakan hapus atau perbaiki data ujian ini.');
+        }
+
         Access::authorizeTeacher($request->user(), $exam->classSubjectTeacher);
     }
 
@@ -56,12 +60,32 @@ class ExamController extends Controller
         return redirect()->route('guru.exams.show', $exam)->with('success', 'Ujian dibuat. Silakan isi soal beserta kunci jawaban.');
     }
 
+    public function create(Request $request)
+    {
+        // Ambil data mata pelajaran dan kelas yang diampu oleh guru yang sedang login
+        $csts = ClassSubjectTeacher::with('subject', 'schoolClass')
+            ->where('teacher_id', $request->user()->teacher->nip)
+            ->orderBy('class_id')
+            ->get();
+
+        return view('guru.exams.create', compact('csts'));
+    }
+
     public function show(Request $request, Exam $exam)
     {
         $this->own($request, $exam);
         $exam->load('classSubjectTeacher.subject', 'classSubjectTeacher.schoolClass', 'questions');
 
         return view('guru.exams.show', compact('exam'));
+    }
+    
+    public function edit(Request $request, Exam $exam)
+    {
+        // 1. Cek satpam, pastikan ini ujian milik gurunya
+        $this->own($request, $exam);
+
+        // 2. Tampilkan halaman form edit (pastikan kamu punya file resources/views/guru/exams/edit.blade.php)
+        return view('guru.exams.edit', compact('exam'));
     }
 
     public function update(Request $request, Exam $exam)
@@ -80,7 +104,9 @@ class ExamController extends Controller
             'shuffle_options' => $request->boolean('shuffle_options'),
         ]);
 
-        return back()->with('success', 'Pengaturan ujian diperbarui.');
+        return redirect()
+        ->route('guru.exams.index')
+        ->with('success', 'Ujian berhasil diedit.');
     }
 
     public function destroy(Request $request, Exam $exam)
@@ -110,21 +136,44 @@ class ExamController extends Controller
         if (is_string($data)) {
             return back()->withInput()->with('error', $data);
         }
-        if ($request->hasFile('image')) {
-            $data['image_path'] = $request->file('image')->store('questions', 'public');
-        }
         $exam->questions()->create($data);
 
         return back()->with('success', 'Soal ditambahkan.');
+    }
+
+    public function updateQuestion(Request $request, Exam $exam, ExamQuestion $question)
+    {
+        $this->own($request,$exam);
+        abort_unless($question->exam_id ===$exam->exam_id, 404);
+
+        $data = $this->parseQuestion($request);
+        if (is_string($data)) {
+            return back()->withInput()->with('error', $data);
+        }
+
+        $question->update($data);
+
+        return back()->with('success', 'Soal berhasil diperbarui.');
+    }
+
+    public function updateScore(Request $request, Exam $exam, ExamQuestion $question)
+    {
+        $this->own($request,$exam);
+        abort_unless($question->exam_id ===$exam->exam_id, 404);
+
+        $request->validate([
+            'score_weight' => 'required|numeric|min:0|max:100',
+        ]);
+
+        $question->update(['score_weight' =>$request->score_weight]);
+
+        return back()->with('success', 'Bobot soal berhasil diperbarui.');
     }
 
     public function destroyQuestion(Request $request, Exam $exam, ExamQuestion $question)
     {
         $this->own($request, $exam);
         abort_unless($question->exam_id === $exam->exam_id, 404);
-        if ($question->image_path) {
-            Storage::disk('public')->delete($question->image_path);
-        }
         $question->delete();
 
         return back()->with('success', 'Soal dihapus.');
@@ -137,7 +186,6 @@ class ExamController extends Controller
             'question_type' => ['required', Rule::in(array_keys(config('school.question_types')))],
             'question_text' => 'required|string',
             'score_weight' => 'nullable|numeric|min:0|max:100',
-            'image' => 'nullable|image|max:2048',
         ]);
         $type = $request->input('question_type');
         $lines = fn (?string $s) => array_values(array_filter(array_map('trim', preg_split('/\R/', (string) $s)), 'strlen'));
@@ -178,13 +226,12 @@ class ExamController extends Controller
         }
 
         return [
-            'question_text' => $request->input('question_text'),
-            'question_type' => $type,
-            'options' => $options,
-            'correct_answer' => $key,
-            // Esai tidak berbobot
-            'score_weight' => $type === 'esai' ? 0 : (float) $request->input('score_weight', 1),
-        ];
+                'question_text' => $request->input('question_text'),
+                'question_type' => $type,
+                'options' => $options,
+                'correct_answer' => $key,
+                'score_weight' => $type === 'esai' ? 0 : 1, // Default 1, kalkulasi 100/N dilakukan saat penilaian
+            ];
     }
 
     // ---------- Hasil & koreksi esai ----------
