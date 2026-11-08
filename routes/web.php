@@ -65,6 +65,29 @@ Route::middleware('auth')->group(function () {
             ->name('admin.dashboard');
     });
     
+    // Admin untuk announcement
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/pengumuman', [AnnouncementController::class, 'index'])
+            ->name('announcements.index');
+    
+        Route::get('/pengumuman/create', [AnnouncementController::class, 'create'])
+            ->name('announcements.create');
+    
+        Route::post('/pengumuman', [AnnouncementController::class, 'store'])
+            ->name('announcements.store');
+    
+        Route::get('/pengumuman/{announcement}', [AnnouncementController::class, 'show'])
+            ->name('announcements.show');
+    
+        Route::get('/pengumuman/{announcement}/edit', [AnnouncementController::class, 'edit'])
+            ->name('announcements.edit');
+    
+        Route::put('/pengumuman/{announcement}', [AnnouncementController::class, 'update'])
+            ->name('announcements.update');
+    
+        Route::delete('/pengumuman/{announcement}', [AnnouncementController::class, 'destroy'])
+            ->name('announcements.destroy');
+    });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
