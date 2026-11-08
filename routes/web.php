@@ -65,7 +65,7 @@ Route::middleware('auth')->group(function () {
             ->name('admin.dashboard');
     });
     
-    // Route Admin khusus Announcement 
+    // Route Admin : khusus Announcement 
     Route::middleware('role:admin')->group(function () {
         Route::get('/pengumuman', [AnnouncementController::class, 'index'])
             ->name('announcements.index');
