@@ -20,7 +20,7 @@ Route::middleware('auth')->group(function () {
     })->middleware(['role.redirect'])->name('dashboard');
    
     // Route Siswa
-    Route::get('/siswa/dashboard', [SiswaDashboard::class, 'index'])
+    Route::get('/siswa', [SiswaDashboard::class, 'index'])
         ->name('siswa.dashboard');
 
     Route::get('/siswa/e-class', [SiswaClassroom::class, 'index'])
@@ -57,13 +57,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/siswa/e-exam/{exam}/finish', [SiswaExam::class, 'finish'])
         ->name('siswa.exams.finish');
 
-    // Route Guru
-    Route::get('/guru/dashboard', [GuruDashboard::class, 'index'])->name('guru.dashboard');
+    Route::get('/guru', [GuruDashboard::class, 'index'])->name('guru.dashboard');
     Route::get('/guru/e-class', [GuruClassroom::class, 'index'])->name('guru.classes.index');
     Route::get('/guru/e-exam', [GuruExam::class, 'index'])->name('guru.exams.index');
 
-        // Route Admin Dashboard
-    Route::middleware('role:admin')->group(function () {
         Route::get('/admin/dashboard', [AdminDashboard::class, 'index'])
             ->name('admin.dashboard');
     });
