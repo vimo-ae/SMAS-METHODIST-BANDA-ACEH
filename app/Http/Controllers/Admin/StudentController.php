@@ -35,7 +35,7 @@ class StudentController extends Controller
 
             'email' => 'required|email|unique:users,email',
 
-            'nis' => 'required|string|max:30|unique:students,nis',
+            'nis' => 'required|string|max:10|unique:students,nis',
 
             'nisn' => 'nullable|digits:10|unique:students,nisn',
 
@@ -46,11 +46,11 @@ class StudentController extends Controller
 
             'gender' => 'required|in:L,P',
 
-            'pob' => 'nullable|string|max:100',
+            'pob' => 'nullable|string|max:50',
 
             'dob' => 'nullable|date',
 
-            'address' => 'nullable|string',
+            'address' => 'nullable|string|max:255',
 
             'district' => 'nullable|string|max:100',
 
@@ -139,11 +139,11 @@ class StudentController extends Controller
 
             'gender' => 'required|in:L,P',
 
-            'pob' => 'nullable|string|max:100',
+            'pob' => 'nullable|string|max:50',
 
             'dob' => 'nullable|date',
 
-            'address' => 'nullable|string',
+            'address' => 'nullable|string|max:255',
 
             'district' => 'nullable|string|max:100',
 

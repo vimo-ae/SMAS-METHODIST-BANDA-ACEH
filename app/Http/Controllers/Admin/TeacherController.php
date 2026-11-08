@@ -30,10 +30,10 @@ class TeacherController extends Controller
             'name' => 'required|string|max:100',
             'email' => 'required|email|unique:users,email',
             'phone' => 'nullable|string|max:20',
-            'nip' => 'required|string|max:30|unique:teachers,nip',
+            'nip' => 'required|string|max:18|unique:teachers,nip',
             'specialization' => 'nullable|string|max:100',
             'education_level' => 'nullable|string|max:30',
-            'address' => 'nullable|string',
+            'address' => 'nullable|string|max:255',
             'hire_date' => 'nullable|date',
             'status' => ['nullable', Rule::in(['aktif', 'cuti', 'pensiun', 'resign'])],
         ]);
@@ -89,7 +89,7 @@ class TeacherController extends Controller
 
             'specialization' => 'nullable|string|max:100',
             'education_level' => 'nullable|string|max:30',
-            'address' => 'nullable|string',
+            'address' => 'nullable|string|max:255',
             'hire_date' => 'nullable|date',
             'status' => ['nullable', Rule::in(['aktif', 'cuti', 'pensiun', 'resign'])],
         ]);

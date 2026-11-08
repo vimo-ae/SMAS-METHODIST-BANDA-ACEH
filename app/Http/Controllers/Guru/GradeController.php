@@ -54,7 +54,7 @@ class GradeController extends Controller
     {
         Access::authorizeTeacher($request->user(), $cst);
         $request->validate([
-            'students_id' => 'required|integer',
+            'students_id' => 'required|string|max:10',
             'grade_type' => 'required|in:kuis,lainnya',
             'score' => 'required|numeric|min:0|max:100',
         ]);
@@ -75,7 +75,7 @@ class GradeController extends Controller
     }
 
     /** Guru memeriksa tugas: simpan ke submission dan ke buku nilai (skala 0-100). */
-    public function gradeAssignment(Request $request, Assignment $assignment, int $nis)
+    public function gradeAssignment(Request $request, Assignment $assignment, string $nis)
     {
         Access::authorizeTeacher($request->user(), $assignment->classSubjectTeacher);
         $v = $request->validate([
