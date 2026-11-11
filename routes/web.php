@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
+use App\Http\Controllers\Admin\MonitoringController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\Guru\ClassroomController as GuruClassroom;
 use App\Http\Controllers\Guru\DashboardController as GuruDashboard;
@@ -61,10 +62,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/guru/e-class', [GuruClassroom::class, 'index'])->name('guru.classes.index');
     Route::get('/guru/e-exam', [GuruExam::class, 'index'])->name('guru.exams.index');
 
-        Route::get('/admin/dashboard', [AdminDashboard::class, 'index'])
-            ->name('admin.dashboard');
     });
     
+    Route::get('/admin/dashboard', [AdminDashboard::class, 'index'])
+        ->name('admin.dashboard');
+
+    //Admin untuk monitoring
+    Route::prefix('admin/monitoring')->name('admin.monitoring.')->group(function () {
+    Route::get('/', [MonitoringController::class, 'index'])->name('index');
+    Route::get('/session/{id}', [MonitoringController::class, 'show'])->name('show');
+    });
+
     // Admin untuk announcement
     Route::middleware('role:admin')->group(function () {
         Route::get('/pengumuman', [AnnouncementController::class, 'index'])

@@ -1,651 +1,336 @@
-
 @extends('layouts.admin')
 
-@section('title', 'Dashboard Admin')
+@section('title', 'Dashboard Admin - Portal Akademik')
 
 @section('content')
 
 @php
-    $stats = $stats ?? [];
+    // Variabel dummy fallback jika data belum dikirim dari Controller
+    $stats = $stats ?? ['Total Siswa' => 0, 'Total Guru' => 0, 'Total Kelas' => 0, 'Peserta Ujian' => 0];
+    $activeSessions = $activeSessions ?? collect(); // Untuk monitoring sesi ujian
     $recentAnnouncements = $recentAnnouncements ?? collect();
-    $violations = $violations ?? collect();
     $classes = $classes ?? collect();
-
-    $statCards = [
-        [
-            'label' => 'Total Siswa',
-            'value' => $stats['Total Siswa'] ?? 0,
-            'icon' => 'bi-people-fill',
-            'color' => 'primary',
-        ],
-        [
-            'label' => 'Total Guru',
-            'value' => $stats['Total Guru'] ?? 0,
-            'icon' => 'bi-person-workspace',
-            'color' => 'success',
-        ],
-        [
-            'label' => 'Total Kelas',
-            'value' => $stats['Total Kelas'] ?? 0,
-            'icon' => 'bi-building',
-            'color' => 'info',
-        ],
-        [
-            'label' => 'Mata Pelajaran',
-            'value' => $stats['Mata Pelajaran'] ?? 0,
-            'icon' => 'bi-book-half',
-            'color' => 'warning',
-        ],
-        [
-            'label' => 'Total Ujian',
-            'value' => $stats['Total Ujian'] ?? 0,
-            'icon' => 'bi-file-earmark-text',
-            'color' => 'danger',
-        ],
-        [
-            'label' => 'Peserta Ujian',
-            'value' => $stats['Peserta Ujian'] ?? 0,
-            'icon' => 'bi-person-check-fill',
-            'color' => 'primary',
-        ],
-    ];
 @endphp
 
+{{-- WRAPPER TEMA WARNA SESUAI GAMBAR --}}
+<div class="theme-portal rounded-4 shadow-lg">
 
-{{-- HEADER DASHBOARD --}}
-<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
-
-    <div>
-        <h4 class="fw-bold mb-1">Dashboard Admin</h4>
-
-        <p class="text-muted mb-0">
-            Selamat datang, {{ auth()->user()->name ?? 'Administrator' }}!
-            Berikut ringkasan aktivitas akademik MALAS.
-        </p>
-    </div>
-
-    <div class="bg-white border rounded-3 px-3 py-2">
-        <div class="small text-muted">
-            <i class="bi bi-calendar3 me-1"></i>
+    {{-- HEADER DASHBOARD --}}
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 p-4 border-bottom border-light-subtle">
+        <div>
+            <div class="text-uppercase tracking-wide text-accent fw-bold small mb-1">Sistem Pembelajaran Sekolah</div>
+            <h2 class="fw-bold mb-1 text-white">Portal Admin Akademik</h2>
+            <p class="text-muted-portal mb-0">
+                Selamat datang, {{ auth()->user()->name ?? 'Administrator' }}. Pantau dan kelola seluruh aktivitas belajar mengajar.
+            </p>
+        </div>
+        <div class="portal-badge px-3 py-2 rounded-3">
+            <i class="bi bi-calendar3 me-2"></i>
             {{ now()->translatedFormat('l, d F Y') }}
         </div>
     </div>
 
-</div>
+    <div class="p-4 pt-0">
+
+        {{-- STATISTIK UTAMA --}}
+        <div class="row g-3 mb-4">
+            {{-- Total Siswa --}}
+            <div class="col-6 col-md-3">
+                <div class="portal-card h-100 p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="text-muted-portal small text-uppercase">Total Siswa</div>
+                        <div class="icon-box text-info"><i class="bi bi-people-fill"></i></div>
+                    </div>
+                    <h3 class="fw-bold text-white mb-0">{{ number_format($stats['Total Siswa'] ?? 0) }}</h3>
+                </div>
+            </div>
+            
+            {{-- Total Guru --}}
+            <div class="col-6 col-md-3">
+                <div class="portal-card h-100 p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="text-muted-portal small text-uppercase">Data Guru</div>
+                        <div class="icon-box text-success"><i class="bi bi-person-workspace"></i></div>
+                    </div>
+                    <h3 class="fw-bold text-white mb-0">{{ number_format($stats['Total Guru'] ?? 0) }}</h3>
+                </div>
+            </div>
+
+            {{-- Total Kelas --}}
+            <div class="col-6 col-md-3">
+                <div class="portal-card h-100 p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="text-muted-portal small text-uppercase">Total Kelas</div>
+                        <div class="icon-box text-warning"><i class="bi bi-building"></i></div>
+                    </div>
+                    <h3 class="fw-bold text-white mb-0">{{ number_format($stats['Total Kelas'] ?? 0) }}</h3>
+                </div>
+            </div>
+
+            {{-- Total Peserta Ujian --}}
+            <div class="col-6 col-md-3">
+                <div class="portal-card h-100 p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="text-muted-portal small text-uppercase">Peserta Ujian</div>
+                        <div class="icon-box text-danger"><i class="bi bi-journal-check"></i></div>
+                    </div>
+                    <h3 class="fw-bold text-white mb-0">{{ number_format($stats['Peserta Ujian'] ?? 0) }}</h3>
+                </div>
+            </div>
+        </div>
 
 
-{{-- STATISTIK UTAMA --}}
-<div class="row g-3 mb-4">
-
-    @foreach($statCards as $card)
-
-        <div class="col-6 col-md-4 col-xl-2">
-
-            <div class="card stat-card h-100">
-                <div class="card-body">
-
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-
-                        <div class="stat-icon bg-{{ $card['color'] }}-subtle text-{{ $card['color'] }}">
-                            <i class="bi {{ $card['icon'] }}"></i>
+        <div class="row g-4">
+            {{-- KOLOM KIRI (KONTEN UTAMA: UJIAN & PENGUMUMAN) --}}
+            <div class="col-lg-7">
+                
+                {{-- MONITORING SESI UJIAN --}}
+                <div class="portal-card mb-4">
+                    <div class="card-header-portal d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold mb-0 text-white"><i class="bi bi-display text-accent me-2"></i> Monitoring Sesi Ujian</h5>
+                    </div>
+                    <div class="p-3">
+                        <p class="text-muted-portal small mb-3">Pilih sesi ujian per kelas yang sedang berlangsung untuk memantau aktivitas peserta.</p>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover table-borderless align-middle custom-table">
+                                <thead class="text-muted-portal small border-bottom border-secondary">
+                                    <tr>
+                                        <th>Kelas & Mata Pelajaran</th>
+                                        <th>Sesi</th>
+                                        <th>Status</th>
+                                        <th class="text-end">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($activeSessions as $session)
+                                        <tr>
+                                            <td>
+                                                <div class="fw-semibold text-white">{{ $session->exam->title ?? 'Ujian' }}</div>
+                                                <small class="text-muted-portal">{{ $session->cst->schoolClass->name ?? 'Kelas' }} - {{ $session->cst->subject->name ?? 'Mapel' }}</small>
+                                            </td>
+                                            <td><span class="badge bg-secondary">{{ $session->name ?? 'Sesi 1' }}</span></td>
+                                            <td>
+                                                <span class="text-success small"><i class="bi bi-circle-fill me-1"></i> Berlangsung</span>
+                                            </td>
+                                            <td class="text-end">
+                                                <a href="{{ Route::has('admin.monitoring.session') ? route('admin.monitoring.session', $session->id) : '#' }}" class="btn btn-sm btn-portal-primary">
+                                                    Masuk Sesi
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="4" class="text-center py-4 text-muted-portal">
+                                                Tidak ada sesi ujian yang sedang berlangsung saat ini.
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
                         </div>
-
                     </div>
-
-                    <h4 class="fw-bold mb-1">
-                        {{ number_format((int) $card['value']) }}
-                    </h4>
-
-                    <div class="text-muted small">
-                        {{ $card['label'] }}
-                    </div>
-
-                </div>
-            </div>
-
-        </div>
-
-    @endforeach
-
-</div>
-
-
-{{-- MONITORING DAN AKTIVITAS --}}
-<div class="mb-3">
-    <h5 class="fw-bold mb-1">Ringkasan Aktivitas</h5>
-    <p class="text-muted small mb-0">
-        Pantau aktivitas ujian dan pengelolaan akademik sekolah.
-    </p>
-</div>
-
-<div class="row g-3 mb-4">
-
-    {{-- SESI UJIAN --}}
-    <div class="col-md-4">
-
-        <div class="card activity-card h-100">
-            <div class="card-body">
-
-                <div class="d-flex justify-content-between align-items-center">
-
-                    <div>
-                        <div class="text-muted small mb-2">
-                            Sesi Ujian Berlangsung
-                        </div>
-
-                        <h3 class="fw-bold mb-1">
-                            {{ number_format($sessionsRunning ?? 0) }}
-                        </h3>
-
-                        <span class="text-success small">
-                            <i class="bi bi-circle-fill me-1"></i>
-                            Aktivitas ujian
-                        </span>
-                    </div>
-
-                    <div class="activity-icon bg-primary-subtle text-primary">
-                        <i class="bi bi-display"></i>
-                    </div>
-
                 </div>
 
-                @if(Route::has('admin.monitoring.index'))
-                    <a href="{{ route('admin.monitoring.index') }}"
-                       class="small text-primary text-decoration-none d-inline-block mt-3">
-
-                        Lihat monitoring ujian
-                        <i class="bi bi-arrow-right ms-1"></i>
-
-                    </a>
-                @endif
-
-            </div>
-        </div>
-
-    </div>
-
-
-    {{-- ESAI --}}
-    <div class="col-md-4">
-
-        <div class="card activity-card h-100">
-            <div class="card-body">
-
-                <div class="d-flex justify-content-between align-items-center">
-
-                    <div>
-                        <div class="text-muted small mb-2">
-                            Esai Menunggu Penilaian
-                        </div>
-
-                        <h3 class="fw-bold mb-1">
-                            {{ number_format($pendingEssays ?? 0) }}
-                        </h3>
-
-                        <span class="text-warning small">
-                            <i class="bi bi-clock me-1"></i>
-                            Perlu diperiksa
-                        </span>
+                {{-- PENGUMUMAN --}}
+                <div class="portal-card">
+                    <div class="card-header-portal d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold mb-0 text-white"><i class="bi bi-megaphone text-accent me-2"></i> Papan Pengumuman</h5>
                     </div>
-
-                    <div class="activity-icon bg-warning-subtle text-warning">
-                        <i class="bi bi-file-earmark-text"></i>
-                    </div>
-
-                </div>
-
-            </div>
-        </div>
-
-    </div>
-
-
-    {{-- SISWA BELUM PUNYA KELAS --}}
-    <div class="col-md-4">
-
-        <div class="card activity-card h-100">
-            <div class="card-body">
-
-                <div class="d-flex justify-content-between align-items-center">
-
-                    <div>
-                        <div class="text-muted small mb-2">
-                            Siswa Belum Memiliki Kelas
-                        </div>
-
-                        <h3 class="fw-bold mb-1">
-                            {{ number_format($studentsNoClass ?? 0) }}
-                        </h3>
-
-                        <span class="text-danger small">
-                            <i class="bi bi-info-circle me-1"></i>
-                            Perlu enrollment
-                        </span>
-                    </div>
-
-                    <div class="activity-icon bg-danger-subtle text-danger">
-                        <i class="bi bi-person-exclamation"></i>
-                    </div>
-
-                </div>
-
-                @if(Route::has('admin.enrollments.index'))
-                    <a href="{{ route('admin.enrollments.index') }}"
-                       class="small text-primary text-decoration-none d-inline-block mt-3">
-
-                        Kelola enrollment
-                        <i class="bi bi-arrow-right ms-1"></i>
-
-                    </a>
-                @endif
-
-            </div>
-        </div>
-
-    </div>
-
-</div>
-
-
-{{-- KONTEN BAWAH --}}
-<div class="row g-3">
-
-    {{-- KOLOM KIRI --}}
-    <div class="col-lg-7">
-
-        {{-- PENGUMUMAN --}}
-        <div class="card mb-4">
-
-            <div class="card-header d-flex justify-content-between align-items-center">
-
-                <div>
-                    <i class="bi bi-megaphone-fill text-primary me-2"></i>
-                    Pengumuman Terbaru
-                </div>
-
-                @if(Route::has('announcements.create'))
-                    <a href="{{ route('announcements.create') }}"
-                       class="btn btn-sm btn-primary">
-
-                        <i class="bi bi-plus-lg me-1"></i>
-                        Buat Pengumuman
-
-                    </a>
-                @endif
-
-            </div>
-
-            <div class="card-body p-0">
-
-                @forelse($recentAnnouncements as $announcement)
-
-                    <div class="announcement-item p-3">
-
-                        <div class="d-flex justify-content-between align-items-start gap-2">
-
-                            <div class="flex-grow-1">
-
-                                <h6 class="fw-bold mb-1">
-                                    {{ $announcement->title }}
-                                </h6>
-
-                                <p class="text-muted small mb-2">
-                                    {{ \Illuminate\Support\Str::limit($announcement->content, 130) }}
-                                </p>
-
-                                <small class="text-muted">
-                                    <i class="bi bi-calendar3 me-1"></i>
-                                    {{ $announcement->created_at?->format('d M Y, H:i') ?? '-' }}
-                                </small>
-
-                            </div>
-
-                            <span class="badge bg-primary-subtle text-primary">
-                                Pengumuman
-                            </span>
-
-                        </div>
-
-                        @if(Route::has('announcements.show'))
-                            <a href="{{ route('announcements.show', [
-                                'announcement' => $announcement->announcement_id
-                            ]) }}"
-                               class="small text-decoration-none text-primary">
-
-                                Lihat detail
-                                <i class="bi bi-arrow-right ms-1"></i>
-
-                            </a>
-                        @endif
-
-                    </div>
-
-                @empty
-
-                    <div class="text-center py-5">
-
-                        <i class="bi bi-megaphone display-6 text-muted"></i>
-
-                        <p class="text-muted mt-2 mb-0">
-                            Belum ada pengumuman.
-                        </p>
-
-                    </div>
-
-                @endforelse
-
-            </div>
-
-            <div class="card-footer bg-white text-center">
-
-                @if(Route::has('announcements.index'))
-                    <a href="{{ route('announcements.index') }}"
-                       class="small text-primary text-decoration-none fw-semibold">
-
-                        Lihat Semua Pengumuman
-                        <i class="bi bi-arrow-right ms-1"></i>
-
-                    </a>
-                @endif
-
-            </div>
-
-        </div>
-
-
-        {{-- PELANGGARAN UJIAN --}}
-        <div class="card">
-
-            <div class="card-header">
-                <i class="bi bi-shield-exclamation text-warning me-2"></i>
-                Pelanggaran Ujian Terbaru
-            </div>
-
-            <div class="table-responsive">
-
-                <table class="table table-hover align-middle mb-0">
-
-                    <thead class="table-light">
-                        <tr>
-                            <th class="ps-3">Siswa</th>
-                            <th>Ujian</th>
-                            <th>Jenis Pelanggaran</th>
-                            <th>Waktu</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                        @forelse($violations as $violation)
-
-                            <tr>
-
-                                <td class="ps-3">
-                                    {{ data_get($violation, 'student.user.name', '-') }}
-                                </td>
-
-                                <td>
-                                    {{ data_get($violation, 'session.exam.title', '-') }}
-                                </td>
-
-                                <td>
-                                    <span class="badge bg-warning-subtle text-warning-emphasis">
-                                        {{ data_get($violation, 'type', '-') }}
-                                    </span>
-                                </td>
-
-                                <td class="small text-muted">
-                                    {{ data_get($violation, 'occurred_at')
-                                        ? \Illuminate\Support\Carbon::parse(data_get($violation, 'occurred_at'))->format('d M Y H:i')
-                                        : '-' }}
-                                </td>
-
-                            </tr>
-
-                        @empty
-
-                            <tr>
-                                <td colspan="4" class="text-center py-4 text-muted">
-                                    <i class="bi bi-shield-check fs-4 d-block mb-2"></i>
-                                    Belum ada pelanggaran ujian.
-                                </td>
-                            </tr>
-
-                        @endforelse
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    {{-- KOLOM KANAN --}}
-    <div class="col-lg-5">
-
-        {{-- AKSI CEPAT --}}
-        <div class="card mb-4">
-
-            <div class="card-header">
-                <i class="bi bi-lightning-charge-fill text-warning me-2"></i>
-                Aksi Cepat
-            </div>
-
-            <div class="card-body">
-
-                @php
-                    $quickActions = [
-                        [
-                            'route' => 'admin.students.create',
-                            'label' => 'Tambah Data Siswa',
-                            'icon' => 'bi-person-plus',
-                        ],
-                        [
-                            'route' => 'admin.teachers.create',
-                            'label' => 'Tambah Data Guru',
-                            'icon' => 'bi-person-workspace',
-                        ],
-                        [
-                            'route' => 'admin.classes.create',
-                            'label' => 'Buat Kelas Akademik',
-                            'icon' => 'bi-building-add',
-                        ],
-                        [
-                            'route' => 'admin.subjects.create',
-                            'label' => 'Tambah Mata Pelajaran',
-                            'icon' => 'bi-book',
-                        ],
-                        [
-                            'route' => 'admin.cst.index',
-                            'label' => 'Kelola Guru Pengampu',
-                            'icon' => 'bi-person-check',
-                        ],
-                        [
-                            'route' => 'admin.enrollments.index',
-                            'label' => 'Enrollment Siswa',
-                            'icon' => 'bi-journal-check',
-                        ],
-                    ];
-                @endphp
-
-                <div class="d-grid gap-2">
-
-                    @foreach($quickActions as $action)
-
-                        @if(Route::has($action['route']))
-
-                            <a href="{{ route($action['route']) }}"
-                               class="quick-action">
-
-                                <i class="bi {{ $action['icon'] }}"></i>
-
-                                <span>{{ $action['label'] }}</span>
-
-                                <i class="bi bi-arrow-right ms-auto"></i>
-
-                            </a>
-
-                        @endif
-
-                    @endforeach
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        {{-- DATA SISWA PER KELAS --}}
-        <div class="card">
-
-            <div class="card-header">
-                <i class="bi bi-people-fill text-primary me-2"></i>
-                Data Siswa per Kelas
-            </div>
-
-            <div class="card-body p-0">
-
-                @forelse($classes as $class)
-
-                    <div class="class-item px-3 py-3">
-
-                        <div class="d-flex justify-content-between align-items-center">
-
-                            <div>
-                                <div class="fw-semibold">
-                                    {{ data_get($class, 'name')
-                                        ?? data_get($class, 'class_name')
-                                        ?? 'Kelas' }}
+                    <div class="p-0">
+                        @forelse($recentAnnouncements as $announcement)
+                            <div class="p-3 border-bottom border-secondary">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="fw-bold text-white mb-1">{{ $announcement->title }}</h6>
+                                    <small class="text-muted-portal">{{ $announcement->created_at?->format('d M Y') ?? '-' }}</small>
                                 </div>
-
-                                <small class="text-muted">
-                                    Jumlah siswa terdaftar
-                                </small>
+                                <p class="text-muted-portal small mb-0">{{ \Illuminate\Support\Str::limit($announcement->content, 100) }}</p>
                             </div>
-
-                            <div class="class-count">
-                                {{ number_format(data_get($class, 'students_count', 0)) }}
-                                <small>siswa</small>
+                        @empty
+                            <div class="p-4 text-center text-muted-portal">
+                                Belum ada pengumuman terbaru.
                             </div>
-
-                        </div>
-
+                        @endforelse
                     </div>
-
-                @empty
-
-                    <div class="text-center py-4 text-muted">
-                        Belum ada data kelas.
-                    </div>
-
-                @endforelse
+                </div>
 
             </div>
 
-            @if(Route::has('admin.classes.index'))
-                <div class="card-footer bg-white text-center">
-                    <a href="{{ route('admin.classes.index') }}"
-                       class="small text-decoration-none text-primary fw-semibold">
+            {{-- KOLOM KANAN (MANAJEMEN & DATA KELAS) --}}
+            <div class="col-lg-5">
+                
+                {{-- NAVIGASI MANAJEMEN UTAMA --}}
+                <div class="portal-card mb-4">
+                    <div class="card-header-portal">
+                        <h5 class="fw-bold mb-0 text-white"><i class="bi bi-grid-1x2 text-accent me-2"></i> Manajemen Sistem</h5>
+                    </div>
+                    <div class="p-3 d-flex flex-column gap-2">
+                        
+                        {{-- Manajemen Akun --}}
+                        <a href="{{ Route::has('admin.accounts.index') ? route('admin.accounts.index') : '#' }}" class="action-btn">
+                            <div class="icon-wrapper bg-primary-subtle text-primary"><i class="bi bi-key-fill"></i></div>
+                            <div class="flex-grow-1">
+                                <div class="fw-semibold text-white">Manajemen Akun</div>
+                                <div class="text-muted-portal small">Kelola password & akses pengguna</div>
+                            </div>
+                            <i class="bi bi-chevron-right text-muted-portal"></i>
+                        </a>
 
-                        Lihat Semua Kelas
-                        <i class="bi bi-arrow-right ms-1"></i>
+                        {{-- Akademik (CST & Enrollment) --}}
+                        <a href="{{ Route::has('admin.cst.index') ? route('admin.cst.index') : '#' }}" class="action-btn">
+                            <div class="icon-wrapper bg-success-subtle text-success"><i class="bi bi-journal-bookmark-fill"></i></div>
+                            <div class="flex-grow-1">
+                                <div class="fw-semibold text-white">Akademik (Kelas & CST)</div>
+                                <div class="text-muted-portal small">Buat kelas mapel & integrasi guru</div>
+                            </div>
+                            <i class="bi bi-chevron-right text-muted-portal"></i>
+                        </a>
 
-                    </a>
+                        {{-- Tambah Pengumuman --}}
+                        <a href="{{ Route::has('announcements.create') ? route('announcements.create') : '#' }}" class="action-btn">
+                            <div class="icon-wrapper bg-warning-subtle text-warning"><i class="bi bi-megaphone-fill"></i></div>
+                            <div class="flex-grow-1">
+                                <div class="fw-semibold text-white">Buat Pengumuman</div>
+                                <div class="text-muted-portal small">Kirim info ke guru & siswa</div>
+                            </div>
+                            <i class="bi bi-chevron-right text-muted-portal"></i>
+                        </a>
+
+                    </div>
                 </div>
-            @endif
 
+                {{-- DATA SISWA PER KELAS --}}
+                <div class="portal-card">
+                    <div class="card-header-portal d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold mb-0 text-white"><i class="bi bi-building text-accent me-2"></i> Data Siswa per Kelas</h5>
+                        <a href="{{ Route::has('admin.classes.index') ? route('admin.classes.index') : '#' }}" class="small text-accent text-decoration-none">Lihat Semua</a>
+                    </div>
+                    <div class="p-3">
+                        @forelse($classes as $class)
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
+                                <div>
+                                    <div class="fw-semibold text-white">{{ $class->name ?? 'Nama Kelas' }}</div>
+                                    <div class="text-muted-portal small">Total pendaftar (Enrollment)</div>
+                                </div>
+                                <div class="text-end">
+                                    <span class="fs-5 fw-bold text-accent">{{ number_format($class->students_count ?? 0) }}</span>
+                                    <span class="text-muted-portal small d-block" style="margin-top:-5px;">Siswa</span>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="text-center py-3 text-muted-portal">Belum ada data kelas yang dibuat.</div>
+                        @endforelse
+                    </div>
+                </div>
+
+            </div>
         </div>
-
     </div>
-
 </div>
 
-
-{{-- STYLE KHUSUS DASHBOARD --}}
+{{-- CSS KHUSUS TEMA PORTAL DARK MODE --}}
 <style>
-
-    .stat-card {
-        transition: .2s;
+    /* Basis Tema */
+    .theme-portal {
+        background: linear-gradient(145deg, #131235 0%, #1e1b4b 100%); /* Sesuai warna gambar */
+        color: #ffffff;
+        min-height: 80vh;
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     }
 
-    .stat-card:hover,
-    .activity-card:hover {
-        transform: translateY(-3px);
+    /* Warna Kustom Teks */
+    .text-accent {
+        color: #6366f1 !important; /* Warna ungu/indigo khas button Masuk */
+    }
+    .text-muted-portal {
+        color: #94a3b8 !important;
+    }
+    .border-secondary {
+        border-color: rgba(255, 255, 255, 0.1) !important;
     }
 
-    .stat-icon,
-    .activity-icon {
-        width: 43px;
-        height: 43px;
+    /* Komponen Card */
+    .portal-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+        transition: transform 0.2s;
+    }
+    .card-header-portal {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 12px 12px 0 0;
+    }
+
+    /* Badge & Ikon Header */
+    .portal-badge {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #e2e8f0;
+        font-size: 0.875rem;
+    }
+    .icon-box {
+        width: 38px;
+        height: 38px;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 11px;
-        font-size: 20px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        font-size: 1.2rem;
     }
 
-    .activity-card {
-        transition: .2s;
+    /* Tabel Kustom */
+    .custom-table {
+        --bs-table-bg: transparent;
+        --bs-table-color: #fff;
+        margin-bottom: 0;
+    }
+    .custom-table tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.05) !important;
     }
 
-    .announcement-item {
-        border-bottom: 1px solid #edf0f5;
+    /* Tombol Utama (Sesuai Tombol "Masuk" di gambar) */
+    .btn-portal-primary {
+        background-color: #4f46e5;
+        border-color: #4f46e5;
+        color: white;
+        font-weight: 500;
+        transition: 0.3s;
+    }
+    .btn-portal-primary:hover {
+        background-color: #4338ca;
+        color: white;
     }
 
-    .announcement-item:last-child {
-        border-bottom: none;
-    }
-
-    .quick-action {
+    /* Tombol Aksi Cepat (Navigasi Kanan) */
+    .action-btn {
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 12px 13px;
-        border: 1px solid #e9edf4;
-        border-radius: 9px;
-        color: #334155;
+        gap: 15px;
+        padding: 12px 15px;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
         text-decoration: none;
-        font-size: 13px;
-        transition: .2s;
+        transition: all 0.2s ease;
     }
-
-    .quick-action > i:first-child {
-        font-size: 18px;
-        color: #2563eb;
+    .action-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.15);
+        transform: translateX(5px);
     }
-
-    .quick-action:hover {
-        background: #eff6ff;
-        border-color: #bfdbfe;
-        color: #1d4ed8;
+    .icon-wrapper {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        font-size: 1.2rem;
     }
-
-    .class-item {
-        border-bottom: 1px solid #edf0f5;
-    }
-
-    .class-item:last-child {
-        border-bottom: none;
-    }
-
-    .class-count {
-        font-weight: 700;
-        color: #2563eb;
-        text-align: right;
-    }
-
-    .class-count small {
-        display: block;
-        font-weight: 400;
-        font-size: 10px;
-        color: #94a3b8;
-    }
-
 </style>
 
 @endsection
