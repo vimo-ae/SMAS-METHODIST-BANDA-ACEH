@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\MonitoringController;
 use App\Http\Controllers\Admin\AccountController;
 use App\Http\Controllers\Admin\SubjectController;
+use App\Http\Controllers\Admin\ClassEnrollmentController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\Guru\ClassroomController as GuruClassroom;
 use App\Http\Controllers\Guru\DashboardController as GuruDashboard;
@@ -94,6 +95,16 @@ Route::middleware('auth')->group(function () {
     Route::put('/{id}', [SubjectController::class, 'update'])->name('update');
     Route::delete('/{id}', [SubjectController::class, 'destroy'])->name('destroy');
     });
+
+    //Admin untuk class enrollment management
+    Route::prefix('admin/enrollments')->name('admin.enrollments.')->group(function () {
+    Route::get('/', [ClassEnrollmentController::class, 'index'])->name('index');
+    Route::get('/create', [ClassEnrollmentController::class, 'create'])->name('create');
+    Route::post('/', [ClassEnrollmentController::class, 'store'])->name('store');
+    Route::get('/{enrollment}/edit', [ClassEnrollmentController::class, 'edit'])->name('edit');
+    Route::put('/{enrollment}', [ClassEnrollmentController::class, 'update'])->name('update');
+    Route::delete('/{enrollment}', [ClassEnrollmentController::class, 'destroy'])->name('destroy');
+});
 
     // Admin untuk announcement
     Route::middleware('role:admin')->group(function () {
