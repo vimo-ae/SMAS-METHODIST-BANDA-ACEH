@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\MonitoringController;
+use App\Http\Controllers\Admin\AccountController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\Guru\ClassroomController as GuruClassroom;
 use App\Http\Controllers\Guru\DashboardController as GuruDashboard;
@@ -71,6 +72,16 @@ Route::middleware('auth')->group(function () {
     Route::prefix('admin/monitoring')->name('admin.monitoring.')->group(function () {
     Route::get('/', [MonitoringController::class, 'index'])->name('index');
     Route::get('/session/{id}', [MonitoringController::class, 'show'])->name('show');
+    });
+
+    //Admin untuk account management
+    Route::prefix('admin/accounts')->name('admin.accounts.')->group(function () {
+    Route::get('/', [AccountController::class, 'index'])->name('index');
+    Route::get('/create', [AccountController::class, 'create'])->name('create');
+    Route::post('/', [AccountController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [AccountController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [AccountController::class, 'update'])->name('update');
+    Route::delete('/{id}', [AccountController::class, 'destroy'])->name('destroy');
     });
 
     // Admin untuk announcement
