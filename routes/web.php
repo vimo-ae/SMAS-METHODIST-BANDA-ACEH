@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\MonitoringController;
 use App\Http\Controllers\Admin\AccountController;
+use App\Http\Controllers\Admin\SubjectController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\Guru\ClassroomController as GuruClassroom;
 use App\Http\Controllers\Guru\DashboardController as GuruDashboard;
@@ -82,6 +83,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/{id}/edit', [AccountController::class, 'edit'])->name('edit');
     Route::put('/{id}', [AccountController::class, 'update'])->name('update');
     Route::delete('/{id}', [AccountController::class, 'destroy'])->name('destroy');
+    });
+
+    //Admin untuk subject management
+    Route::prefix('admin/subjects')->name('admin.subjects.')->group(function () {
+    Route::get('/', [SubjectController::class, 'index'])->name('index');
+    Route::get('/create', [SubjectController::class, 'create'])->name('create');
+    Route::post('/', [SubjectController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [SubjectController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [SubjectController::class, 'update'])->name('update');
+    Route::delete('/{id}', [SubjectController::class, 'destroy'])->name('destroy');
     });
 
     // Admin untuk announcement
