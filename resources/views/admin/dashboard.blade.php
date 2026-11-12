@@ -114,7 +114,8 @@
                                                 <span class="text-success small"><i class="bi bi-circle-fill me-1"></i> Berlangsung</span>
                                             </td>
                                             <td class="text-end">
-                                                <a href="{{ Route::has('admin.monitoring.session') ? route('admin.monitoring.session', $session->id) : '#' }}" class="btn btn-sm btn-portal-primary">
+                                                {{-- Menyesuaikan ke rute monitoring ujian jika ada --}}
+                                                <a href="{{ Route::has('admin.monitoring.session') ? route('admin.monitoring.session', $session->id ?? 1) : '#' }}" class="btn btn-sm btn-portal-primary">
                                                     Masuk Sesi
                                                 </a>
                                             </td>
@@ -136,12 +137,17 @@
                 <div class="portal-card">
                     <div class="card-header-portal d-flex justify-content-between align-items-center">
                         <h5 class="fw-bold mb-0 text-white"><i class="bi bi-megaphone text-accent me-2"></i> Papan Pengumuman</h5>
+                        <a href="{{ route('admin.announcements.index') }}" class="small text-accent text-decoration-none">Kelola Semua</a>
                     </div>
                     <div class="p-0">
                         @forelse($recentAnnouncements as $announcement)
                             <div class="p-3 border-bottom border-secondary">
                                 <div class="d-flex justify-content-between">
-                                    <h6 class="fw-bold text-white mb-1">{{ $announcement->title }}</h6>
+                                    <h6 class="fw-bold text-white mb-1">
+                                        <a href="{{ route('admin.announcements.show', $announcement->announcement_id) }}" class="text-white text-decoration-none">
+                                            {{ $announcement->title }}
+                                        </a>
+                                    </h6>
                                     <small class="text-muted-portal">{{ $announcement->created_at?->format('d M Y') ?? '-' }}</small>
                                 </div>
                                 <p class="text-muted-portal small mb-0">{{ \Illuminate\Support\Str::limit($announcement->content, 100) }}</p>
@@ -166,29 +172,48 @@
                     </div>
                     <div class="p-3 d-flex flex-column gap-2">
                         
-                        {{-- Manajemen Akun --}}
-                        <a href="{{ Route::has('admin.accounts.index') ? route('admin.accounts.index') : '#' }}" class="action-btn">
-                            <div class="icon-wrapper bg-primary-subtle text-primary"><i class="bi bi-key-fill"></i></div>
+                        {{-- Manajemen Akun (Mengarah ke Data Siswa/Guru atau manajemen user) --}}
+                        <a href="{{ Route::has('admin.students.index') ? route('admin.students.index') : '#' }}" class="action-btn">
+                            <div class="icon-wrapper bg-primary-subtle text-primary"><i class="bi bi-people-fill"></i></div>
                             <div class="flex-grow-1">
-                                <div class="fw-semibold text-white">Manajemen Akun</div>
-                                <div class="text-muted-portal small">Kelola password & akses pengguna</div>
+                                <div class="fw-semibold text-white">Data Siswa & Akun</div>
+                                <div class="text-muted-portal small">Kelola data & akun siswa</div>
                             </div>
                             <i class="bi bi-chevron-right text-muted-portal"></i>
                         </a>
 
-                        {{-- Akademik (CST & Enrollment) --}}
-                        <a href="{{ Route::has('admin.cst.index') ? route('admin.cst.index') : '#' }}" class="action-btn">
-                            <div class="icon-wrapper bg-success-subtle text-success"><i class="bi bi-journal-bookmark-fill"></i></div>
+                        <a href="{{ Route::has('admin.teachers.index') ? route('admin.teachers.index') : '#' }}" class="action-btn">
+                            <div class="icon-wrapper bg-success-subtle text-success"><i class="bi bi-person-workspace"></i></div>
                             <div class="flex-grow-1">
-                                <div class="fw-semibold text-white">Akademik (Kelas & CST)</div>
-                                <div class="text-muted-portal small">Buat kelas mapel & integrasi guru</div>
+                                <div class="fw-semibold text-white">Data Guru & Akun</div>
+                                <div class="text-muted-portal small">Kelola data & akun pengajar</div>
                             </div>
                             <i class="bi bi-chevron-right text-muted-portal"></i>
                         </a>
 
-                        {{-- Tambah Pengumuman --}}
-                        <a href="{{ Route::has('announcements.create') ? route('announcements.create') : '#' }}" class="action-btn">
-                            <div class="icon-wrapper bg-warning-subtle text-warning"><i class="bi bi-megaphone-fill"></i></div>
+                        {{-- Akademik (Manajemen Kelas / CST) --}}
+                        <a href="{{ Route::has('admin.classes.index') ? route('admin.classes.index') : '#' }}" class="action-btn">
+                            <div class="icon-wrapper bg-warning-subtle text-warning"><i class="bi bi-building"></i></div>
+                            <div class="flex-grow-1">
+                                <div class="fw-semibold text-white">Manajemen Kelas</div>
+                                <div class="text-muted-portal small">Kelola ruangan kelas & rombel</div>
+                            </div>
+                            <i class="bi bi-chevron-right text-muted-portal"></i>
+                        </a>
+
+                        {{-- Enrollment Siswa --}}
+                        <a href="{{ Route::has('admin.enrollments.index') ? route('admin.enrollments.index') : '#' }}" class="action-btn">
+                            <div class="icon-wrapper bg-info-subtle text-info"><i class="bi bi-journal-bookmark-fill"></i></div>
+                            <div class="flex-grow-1">
+                                <div class="fw-semibold text-white">Enrollment Siswa</div>
+                                <div class="text-muted-portal small">Pendaftaran ke kelas mapel</div>
+                            </div>
+                            <i class="bi bi-chevron-right text-muted-portal"></i>
+                        </a>
+
+                        {{-- Tambah Pengumuman (Telah disesuaikan rutenya) --}}
+                        <a href="{{ route('admin.announcements.create') }}" class="action-btn">
+                            <div class="icon-wrapper bg-danger-subtle text-danger"><i class="bi bi-megaphone-fill"></i></div>
                             <div class="flex-grow-1">
                                 <div class="fw-semibold text-white">Buat Pengumuman</div>
                                 <div class="text-muted-portal small">Kirim info ke guru & siswa</div>
@@ -202,7 +227,7 @@
                 {{-- DATA SISWA PER KELAS --}}
                 <div class="portal-card">
                     <div class="card-header-portal d-flex justify-content-between align-items-center">
-                        <h5 class="fw-bold mb-0 text-white"><i class="bi bi-building text-accent me-2"></i> Data Siswa per Kelas</h5>
+                        <h5 class="fw-bold mb-0 text-white"><i class="bi bi-building text-accent me-2"></i> Data Kelas</h5>
                         <a href="{{ Route::has('admin.classes.index') ? route('admin.classes.index') : '#' }}" class="small text-accent text-decoration-none">Lihat Semua</a>
                     </div>
                     <div class="p-3">
@@ -210,7 +235,7 @@
                             <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-secondary">
                                 <div>
                                     <div class="fw-semibold text-white">{{ $class->name ?? 'Nama Kelas' }}</div>
-                                    <div class="text-muted-portal small">Total pendaftar (Enrollment)</div>
+                                    <div class="text-muted-portal small">Kapasitas / Wali Kelas</div>
                                 </div>
                                 <div class="text-end">
                                     <span class="fs-5 fw-bold text-accent">{{ number_format($class->students_count ?? 0) }}</span>
@@ -232,7 +257,7 @@
 <style>
     /* Basis Tema */
     .theme-portal {
-        background: linear-gradient(145deg, #131235 0%, #1e1b4b 100%); /* Sesuai warna gambar */
+        background: linear-gradient(145deg, #131235 0%, #1e1b4b 100%);
         color: #ffffff;
         min-height: 80vh;
         font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -240,7 +265,7 @@
 
     /* Warna Kustom Teks */
     .text-accent {
-        color: #6366f1 !important; /* Warna ungu/indigo khas button Masuk */
+        color: #6366f1 !important;
     }
     .text-muted-portal {
         color: #94a3b8 !important;
@@ -292,7 +317,7 @@
         background-color: rgba(255, 255, 255, 0.05) !important;
     }
 
-    /* Tombol Utama (Sesuai Tombol "Masuk" di gambar) */
+    /* Tombol Utama */
     .btn-portal-primary {
         background-color: #4f46e5;
         border-color: #4f46e5;

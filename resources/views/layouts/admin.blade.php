@@ -218,43 +218,42 @@
         <div class="sidebar-nav">
             
             <div class="menu-category">Menu Utama</div>
-            <a href="{{ Route::has('admin.dashboard') ? route('admin.dashboard') : '#' }}" class="nav-link active">
+            <a href="{{ Route::has('admin.dashboard') ? route('admin.dashboard') : '#' }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                 <i class="bi bi-grid-1x2"></i> Dashboard
             </a>
-            <a href="{{ Route::has('admin.monitoring.index') ? route('admin.monitoring.index') : '#' }}" class="nav-link">
+            <a href="{{ Route::has('admin.monitoring.index') ? route('admin.monitoring.index') : '#' }}" class="nav-link {{ request()->routeIs('admin.monitoring.*') ? 'active' : '' }}">
                 <i class="bi bi-display"></i> Monitoring Ujian
             </a>
-            <a href="{{ Route::has('admin.accounts.index') ? route('admin.accounts.index') : '#' }}" class="nav-link">
+            <a href="{{ Route::has('admin.accounts.index') ? route('admin.accounts.index') : '#' }}" class="nav-link {{ request()->routeIs('admin.accounts.*') ? 'active' : '' }}">
                 <i class="bi bi-people"></i> Manajemen Akun
             </a>
 
             <div class="menu-category">Akademik</div>
-            <a href="{{ Route::has('admin.subjects.index') ? route('admin.subjects.index') : '#' }}" class="nav-link">
+            <a href="{{ Route::has('admin.subjects.index') ? route('admin.subjects.index') : '#' }}" class="nav-link {{ request()->routeIs('admin.subjects.*') ? 'active' : '' }}">
                 <i class="bi bi-book"></i> Mata Pelajaran
             </a>
-            <a href="{{ Route::has('admin.classes.index') ? route('admin.classes.index') : '#' }}" class="nav-link">
+            <a href="{{ Route::has('admin.cst.index') ? route('admin.cst.index') : '#' }}" class="nav-link {{ request()->routeIs('admin.cst.*') ? 'active' : '' }}">
                 <i class="bi bi-building"></i> Manajemen Kelas
             </a>
-            <a href="{{ Route::has('admin.cst.index') ? route('admin.cst.index') : '#' }}" class="nav-link">
-                <i class="bi bi-person-check"></i> Guru Pengampu
-            </a>
-            <a href="{{ Route::has('admin.enrollments.index') ? route('admin.enrollments.index') : '#' }}" class="nav-link">
+            <a href="{{ Route::has('admin.enrollments.index') ? route('admin.enrollments.index') : '#' }}" class="nav-link {{ request()->routeIs('admin.enrollments.*') ? 'active' : '' }}">
                 <i class="bi bi-clipboard-check"></i> Enrollment Siswa
             </a>
 
             <div class="menu-category">Data Sekolah</div>
-            <a href="{{ Route::has('admin.students.index') ? route('admin.students.index') : '#' }}" class="nav-link">
+            <a href="{{ Route::has('admin.students.index') ? route('admin.students.index') : '#' }}" class="nav-link {{ request()->routeIs('admin.students.*') ? 'active' : '' }}">
                 <i class="bi bi-mortarboard"></i> Data Siswa
             </a>
-            <a href="{{ Route::has('admin.teachers.index') ? route('admin.teachers.index') : '#' }}" class="nav-link">
+            <a href="{{ Route::has('admin.teachers.index') ? route('admin.teachers.index') : '#' }}" class="nav-link {{ request()->routeIs('admin.teachers.*') ? 'active' : '' }}">
                 <i class="bi bi-person"></i> Data Guru
             </a>
 
             <div class="menu-category">Informasi</div>
-            <a href="{{ Route::has('announcements.index') ? route('announcements.index') : '#' }}" class="nav-link">
-                <i class="bi bi-megaphone"></i> Pengumuman
-            </a>
-            
+            <li class="nav-item">
+                <a href="{{ route('admin.announcements.index') }}" class="nav-link {{ request()->routeIs('admin.announcements*') ? 'active' : '' }}">
+                    <i class="bi bi-megaphone"></i>
+                    <span>Pengumuman</span>
+                </a>
+            </li>     
         </div>
 
         <!-- Sidebar Footer -->

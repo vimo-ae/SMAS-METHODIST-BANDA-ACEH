@@ -14,22 +14,43 @@ class ClassEnrollmentController extends Controller
 {
     private const STATUSES = ['aktif', 'naik_kelas', 'tinggal_kelas', 'pindah', 'lulus', 'drop_out'];
 
+    /**
+     * Menampilkan daftar siswa secara unik (1 baris per siswa yang memiliki enrollment).
+     */
     public function index(Request $request)
     {
-        $enrollments = ClassEnrollment::with(
-                'student.user',
-                'classSubjectTeacher.subject',
-                'classSubjectTeacher.schoolClass'
-            )
-            ->when($request->filled('academic_year'), fn ($q) => $q->where('academic_year', $request->academic_year))
-            ->when($request->filled('cst_id'), fn ($q) => $q->where('cst_id', $request->cst_id))
-            ->latest('enrollment_id')
+        $search = $request->input('search');
+
+        $students = Student::with(['user', 'schoolClass', 'classEnrollments'])
+            ->has('classEnrollments') // Hanya tampilkan siswa yang sudah terdaftar di kelas mapel
+            ->when($search, function ($query, $search) {
+                $query->where('nis', 'like', "%{$search}%")
+                      ->orWhereHas('user', fn ($q) => $q->where('name', 'like', "%{$search}%"));
+            })
+            ->latest('nis')
             ->paginate(15)
             ->withQueryString();
 
+        return view('admin.enrollments.index', compact('students', 'search'));
+    }
+
+    /**
+     * Menampilkan rincian seluruh kelas mapel yang diikuti oleh satu siswa tertentu.
+     */
+    public function show($nis)
+    {
+        $student = Student::with([
+            'user', 
+            'schoolClass', 
+            'classEnrollments.classSubjectTeacher.subject',
+            'classEnrollments.classSubjectTeacher.schoolClass',
+            'classEnrollments.classSubjectTeacher.teacher.user'
+        ])->where('nis', $nis)->firstOrFail();
+
+        // Data CST yang tersedia untuk pilihan modal tambah kelas
         $csts = ClassSubjectTeacher::with('subject', 'schoolClass')->orderBy('class_id')->get();
 
-        return view('admin.enrollments.index', compact('enrollments', 'csts'));
+        return view('admin.enrollments.show', compact('student', 'csts'));
     }
 
     public function create()
@@ -65,9 +86,10 @@ class ClassEnrollmentController extends Controller
             $this->syncCurrentClass($v['students_id'], $cst, $v['status']);
         });
 
+        // Redirect kembali ke halaman show siswa yang bersangkutan jika ditambahkan dari halaman detail
         return redirect()
-            ->route('admin.enrollments.index')
-            ->with('success', 'Data kelas siswa berhasil ditambahkan.');
+            ->route('admin.enrollments.show', $v['students_id'])
+            ->with('success', 'Siswa berhasil dimasukkan ke kelas mapel.');
     }
 
     public function edit(ClassEnrollment $enrollment)
@@ -101,19 +123,23 @@ class ClassEnrollmentController extends Controller
         });
 
         return redirect()
-            ->route('admin.enrollments.index')
+            ->route('admin.enrollments.show', $enrollment->students_id)
             ->with('success', 'Data kelas siswa berhasil diperbarui.');
     }
 
     public function destroy(ClassEnrollment $enrollment)
     {
+        $studentNis = $enrollment->students_id;
+        
         // students.class_id tidak diubah: hanya riwayat pendaftarannya yang dihapus
         $enrollment->delete();
 
         return redirect()
-            ->route('admin.enrollments.index')
-            ->with('success', 'Data kelas siswa berhasil dihapus.');
+            ->route('admin.enrollments.show', $studentNis)
+            ->with('success', 'Siswa berhasil dikeluarkan dari kelas mapel.');
     }
+
+    
 
     /**
      * Pendaftaran berstatus "aktif" menentukan kelas induk siswa saat ini
