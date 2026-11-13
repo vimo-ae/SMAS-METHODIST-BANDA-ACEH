@@ -59,6 +59,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/guru', [GuruDashboard::class, 'index'])->name('guru.dashboard');
     Route::get('/guru/e-class', [GuruClassroom::class, 'index'])->name('guru.classes.index');
+    Route::get('/guru/e-class/{cst}', [GuruClassroom::class, 'show'])->name('guru.classes.show');
     Route::get('/guru/e-exam', [GuruExam::class, 'index'])->name('guru.exams.index');
 
         Route::get('/admin/dashboard', [AdminDashboard::class, 'index'])
