@@ -101,6 +101,23 @@
     const $ = (id) => document.getElementById(id);
     const endAt = Date.now() + {{ (int) $remaining }} * 1000;
 
+    // ---------- Normalisasi data soal dari database ----------
+    // DB: opsi = daftar biasa, kunci/jawaban = indeks mulai 0. Di layar: opsi berhuruf A, B, C...
+    const TYPE_MAP = { pilihan_ganda: 'pg', pilihan_ganda_kompleks: 'pg_kompleks' };
+    const I2L = (i) => String.fromCharCode(65 + Number(i));   // 0 -> A
+    const L2I = (k) => k.charCodeAt(0) - 65;                  // A -> 0
+    QUESTIONS.forEach((q) => {
+        q.type = TYPE_MAP[q.type] || q.type;
+        if (typeof q.options === 'string') {
+            try { q.options = JSON.parse(q.options); } catch (e) { q.options = []; }
+        }
+        if ((q.type === 'pg' || q.type === 'pg_kompleks') && Array.isArray(q.options)) {
+            const obj = {};
+            q.options.forEach((t, i) => { obj[I2L(i)] = t; });
+            q.options = obj;
+        }
+    });
+
     let current = 0;
     let finishing = false;
     let examStarted = false;
@@ -111,8 +128,15 @@
         const s = (SAVED && SAVED[q.id]) || null;
         if (q.type === 'esai') { answers[q.id] = { file: !!(s && s.file) }; return; }
         let a = s ? s.answer : null;
-        if (a && (q.type === 'pg_kompleks' || q.type === 'menjodohkan')) {
-            try { a = JSON.parse(a); } catch (e) { a = null; }
+        if (a !== null && a !== undefined && a !== '') {
+            if (q.type === 'pg') {
+                a = I2L(a);
+            } else if (['pg_kompleks', 'benar_salah', 'menjodohkan'].includes(q.type)) {
+                try { a = JSON.parse(a); } catch (e) { a = null; }
+                if (q.type === 'pg_kompleks' && Array.isArray(a)) a = a.map(I2L);
+            }
+        } else {
+            a = null;
         }
         answers[q.id] = a;
     });
@@ -136,6 +160,9 @@
         const a = answers[q.id];
         if (q.type === 'esai') return !!(a && a.file);
         if (q.type === 'pg_kompleks') return Array.isArray(a) && a.length > 0;
+        if (q.type === 'benar_salah') {
+            return Array.isArray(a) && a.length === (q.options || []).length && a.every((v) => v === true || v === false);
+        }
         if (q.type === 'menjodohkan') return a && Object.values(a).some((v) => v);
         return !!a;
     }
@@ -143,7 +170,10 @@
     // ---------- Simpan jawaban ----------
     async function saveAnswer(q) {
         const a = answers[q.id];
-        const payload = (q.type === 'pg') ? a : JSON.stringify(a);
+        let payload;
+        if (q.type === 'pg') payload = String(L2I(a));                       // indeks, mis. "3"
+        else if (q.type === 'pg_kompleks') payload = JSON.stringify(a.map(L2I)); // mis. [0,2]
+        else payload = JSON.stringify(a);                                    // benar_salah: [true,false,...]
         setStatus('Menyimpan...');
         try {
             const res = await fetch(URL_ANSWER, {
@@ -189,7 +219,7 @@
 
         const meta = el('div', 'question-card__meta');
         meta.appendChild(el('span', 'question-card__no', 'Soal ' + (current + 1) + ' / ' + QUESTIONS.length));
-        const labels = { pg: 'Pilihan Ganda', pg_kompleks: 'PG Kompleks', menjodohkan: 'Menjodohkan', esai: 'Esai/Uraian' };
+        const labels = { pg: 'Pilihan Ganda', pg_kompleks: 'PG Kompleks', benar_salah: 'Benar / Salah', menjodohkan: 'Menjodohkan', esai: 'Esai/Uraian' };
         meta.appendChild(el('span', '', (labels[q.type] || q.type) + ' · bobot ' + q.weight));
         card.appendChild(meta);
 
@@ -202,6 +232,7 @@
 
         if (q.type === 'pg') card.appendChild(renderPg(q));
         else if (q.type === 'pg_kompleks') card.appendChild(renderKompleks(q));
+        else if (q.type === 'benar_salah') card.appendChild(renderBenarSalah(q));
         else if (q.type === 'menjodohkan') card.appendChild(renderMatch(q));
         else if (q.type === 'esai') card.appendChild(renderEssay(q));
 
@@ -260,6 +291,41 @@
         });
         wrap.appendChild(list);
         return wrap;
+    }
+
+    function renderBenarSalah(q) {
+        const list = el('div', 'option-list');
+        const cur = Array.isArray(answers[q.id]) ? answers[q.id] : [];
+        (q.options || []).forEach((text, i) => {
+            const row = el('div', 'option');
+            row.style.cssText = 'cursor:default; flex-wrap:wrap; justify-content:space-between;';
+            const t = el('span', '', text);
+            t.style.flex = '1 1 260px';
+            row.appendChild(t);
+
+            const grp = el('div');
+            grp.style.cssText = 'display:flex; gap:16px;';
+            [['Benar', true], ['Salah', false]].forEach(([label, val]) => {
+                const lab = el('label');
+                lab.style.cssText = 'display:flex; gap:6px; align-items:center; cursor:pointer; font-weight:600;';
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = 'bs' + q.id + '_' + i;
+                input.checked = cur[i] === val;
+                input.onchange = () => {
+                    const a = Array.isArray(answers[q.id]) ? answers[q.id].slice() : [];
+                    while (a.length < q.options.length) a.push(null);
+                    a[i] = val;
+                    answers[q.id] = a;
+                    saveAnswer(q); renderNav();
+                };
+                lab.append(input, document.createTextNode(label));
+                grp.appendChild(lab);
+            });
+            row.appendChild(grp);
+            list.appendChild(row);
+        });
+        return list;
     }
 
     function renderMatch(q) {

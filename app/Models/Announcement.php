@@ -4,12 +4,29 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+<<<<<<< HEAD
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
 class Announcement extends Model
 {
     protected $primaryKey = 'announcement_id';
+=======
+use App\Models\User;
+
+class Announcement extends Model
+{
+    protected $table = 'announcements';
+
+    protected $primaryKey = 'announcement_id';
+
+    protected $fillable = [
+        'title',
+        'content',
+        'target_roles',
+        'created_by',
+    ];
+>>>>>>> 014121bbfae10bf11aad37e9d5abba9c3797084e
 
     protected $fillable = [
         'title', 'slug', 'category', 'content', 'image',
@@ -31,6 +48,7 @@ class Announcement extends Model
 
     protected static function booted(): void
     {
+<<<<<<< HEAD
         static::creating(function (Announcement $announcement) {
             if (empty($announcement->slug)) {
                 $base = Str::slug($announcement->title) ?: 'pengumuman';
@@ -44,11 +62,20 @@ class Announcement extends Model
                 $announcement->slug = $slug;
             }
         });
+=======
+        return [
+            'target_roles' => 'array',
+        ];
+>>>>>>> 014121bbfae10bf11aad37e9d5abba9c3797084e
     }
 
     public function getRouteKeyName(): string
     {
+<<<<<<< HEAD
         return 'slug';
+=======
+        return $this->belongsTo(User::class, 'created_by', 'user_id');
+>>>>>>> 014121bbfae10bf11aad37e9d5abba9c3797084e
     }
 
     public function scopePublished(Builder $query): Builder

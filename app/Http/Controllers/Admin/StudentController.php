@@ -32,38 +32,24 @@ class StudentController extends Controller
     {
         $v = $request->validate([
             'name' => 'required|string|max:100',
-
             'email' => 'required|email|unique:users,email',
-
-            'nis' => 'required|string|max:30|unique:students,nis',
-
+            'phone' => 'nullable|string|max:20', // Ditambahkan untuk nomor telepon di tabel users
+            'nis' => 'required|string|max:10|unique:students,nis',
             'nisn' => 'nullable|digits:10|unique:students,nisn',
-
             'class_id' => [
                 'nullable',
                 'exists:classes,class_id'
             ],
-
             'gender' => 'required|in:L,P',
-
-            'pob' => 'nullable|string|max:100',
-
+            'pob' => 'nullable|string|max:50',
             'dob' => 'nullable|date',
-
-            'address' => 'nullable|string',
-
+            'address' => 'nullable|string|max:255',
             'district' => 'nullable|string|max:100',
-
             'city' => 'nullable|string|max:100',
-
             'province' => 'nullable|string|max:100',
-
             'parent_name' => 'nullable|string|max:100',
-
             'parent_phone' => 'nullable|string|max:20',
-
             'entry_year' => 'nullable|digits:4',
-
             'status' => ['nullable', Rule::in(['aktif', 'lulus', 'pindah', 'drop_out'])],
         ]);
 
@@ -73,6 +59,7 @@ class StudentController extends Controller
                 'user_id' => $v['nis'],
                 'name' => $v['name'],
                 'email' => $v['email'],
+                'phone' => $v['phone'] ?? null, // Disimpan ke tabel users
                 'password' => Hash::make('password123'),
                 'role' => 'siswa',
             ]);
@@ -119,44 +106,31 @@ class StudentController extends Controller
     {
         $v = $request->validate([
             'name' => 'required|string|max:100',
-
             'email' => [
                 'required',
                 'email',
                 'unique:users,email,' . $student->user?->user_id . ',user_id',
             ],
-
+            'phone' => 'nullable|string|max:20', // Ditambahkan untuk validasi pembaruan phone
             'nisn' => [
                 'nullable',
                 'digits:10',
                 'unique:students,nisn,' . $student->nis . ',nis',
             ],
-
             'class_id' => [
                 'nullable',
                 'exists:classes,class_id'
             ],
-
             'gender' => 'required|in:L,P',
-
-            'pob' => 'nullable|string|max:100',
-
+            'pob' => 'nullable|string|max:50',
             'dob' => 'nullable|date',
-
-            'address' => 'nullable|string',
-
+            'address' => 'nullable|string|max:255',
             'district' => 'nullable|string|max:100',
-
             'city' => 'nullable|string|max:100',
-
             'province' => 'nullable|string|max:100',
-
             'parent_name' => 'nullable|string|max:100',
-
             'parent_phone' => 'nullable|string|max:20',
-
             'entry_year' => 'nullable|digits:4',
-
             'status' => ['nullable', Rule::in(['aktif', 'lulus', 'pindah', 'drop_out'])],
         ]);
 
@@ -181,6 +155,7 @@ class StudentController extends Controller
             $student->user()->update([
                 'name' => $v['name'],
                 'email' => $v['email'],
+                'phone' => $v['phone'] ?? null, // Diperbarui pada tabel users
             ]);
         });
 
