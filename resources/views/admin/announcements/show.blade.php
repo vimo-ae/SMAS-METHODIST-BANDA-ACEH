@@ -1,99 +1,40 @@
-
 @extends('layouts.admin')
+@section('title', 'Detail Pengumuman')
 
 @section('content')
-<div class="container-fluid">
-
-    <div class="mb-4">
-        <a href="{{ route('announcements.index') }}"
-           class="text-decoration-none text-muted">
-            <i class="bi bi-arrow-left"></i> Kembali ke Pengumuman
-        </a>
-
-        <h3 class="fw-bold mt-3 mb-1">Detail Pengumuman</h3>
-        <p class="text-muted">
-            Informasi lengkap mengenai pengumuman.
-        </p>
+<div class="mb-4 d-flex align-items-center gap-3">
+    <a href="{{ route('admin.announcements.index') }}" class="btn btn-white border-0 shadow-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
+        <i class="bi bi-arrow-left text-dark fs-5"></i>
+    </a>
+    <div>
+        <h4 class="fw-bold mb-1 text-dark">Rincian Pengumuman</h4>
     </div>
+</div>
 
-    <div class="card border-0 shadow-sm">
-        <div class="card-body p-4">
-
-            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
-
+<div class="row">
+    <div class="col-lg-10">
+        <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5">
+            <div class="d-flex justify-content-between align-items-center mb-3">
                 <div>
-                    <h4 class="fw-bold mb-3">
-                        {{ $announcement->title }}
-                    </h4>
-
-                    <div>
-                        @forelse ($announcement->target_roles ?? [] as $role)
-                            <span class="badge bg-info text-dark me-1">
-                                {{ ucfirst($role) }}
-                            </span>
-                        @empty
-                            <span class="text-muted">Tidak ada penerima</span>
-                        @endforelse
-                    </div>
+                    @foreach($announcement->target_roles ?? [] as $role)
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 text-uppercase fw-bold me-1">
+                            {{ $role == 'teacher' ? 'Khusus Guru' : 'Khusus Siswa' }}
+                        </span>
+                    @endforeach
                 </div>
-
-                <div class="d-flex gap-2">
-                    <a href="{{ route('announcements.edit', ['announcement' => $announcement->getKey()]) }}"
-                       class="btn btn-warning">
-                        <i class="bi bi-pencil me-1"></i>
-                        Edit
-                    </a>
-
-                    <form action="{{ route('announcements.destroy', ['announcement' => $announcement->getKey()]) }}"
-                          method="POST"
-                          onsubmit="return confirm('Yakin ingin menghapus pengumuman ini?')">
-                        @csrf
-                        @method('DELETE')
-
-                        <button type="submit" class="btn btn-danger">
-                            <i class="bi bi-trash me-1"></i>
-                            Hapus
-                        </button>
-                    </form>
-                </div>
-
+                <span class="text-muted small"><i class="bi bi-calendar-event me-1"></i> {{ $announcement->created_at->format('d M Y, H:i') }}</span>
+            </div>
+            <h3 class="fw-bold text-dark mb-3">{{ $announcement->title }}</h3>
+            <p class="text-muted small mb-4 pb-3 border-bottom">Dipublikasikan oleh: <span class="fw-semibold text-dark">{{ $announcement->creator->name ?? 'Admin' }}</span></p>
+            
+            <div class="text-dark lh-lg" style="white-space: pre-line;">
+                {{ $announcement->content }}
             </div>
 
-            <hr>
-
-            <div class="mb-4">
-                <h6 class="fw-bold mb-3">Isi Pengumuman</h6>
-
-                <div class="text-secondary" style="white-space: pre-wrap; line-height: 1.8;">{{ $announcement->content }}</div>
+            <div class="mt-5 pt-3 border-top d-flex justify-content-end">
+                <a href="{{ route('admin.announcements.index') }}" class="btn btn-light border px-4 rounded-3 fw-medium">Kembali</a>
             </div>
-
-            <hr>
-
-            <div class="row">
-                <div class="col-md-6 mb-2">
-                    <small class="text-muted">Dibuat Oleh</small>
-                    <div class="fw-semibold">
-                        {{ $announcement->creator?->name ?? 'Admin' }}
-                    </div>
-                </div>
-
-                <div class="col-md-6 mb-2">
-                    <small class="text-muted">Tanggal Dibuat</small>
-                    <div class="fw-semibold">
-                        {{ $announcement->created_at?->format('d F Y, H:i') ?? '-' }}
-                    </div>
-                </div>
-
-                <div class="col-md-6 mb-2">
-                    <small class="text-muted">Terakhir Diperbarui</small>
-                    <div class="fw-semibold">
-                        {{ $announcement->updated_at?->format('d F Y, H:i') ?? '-' }}
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
-
 </div>
 @endsection

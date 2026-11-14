@@ -1,651 +1,346 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    
+    <title>@yield('title', 'Admin Panel') - MALAS</title>
 
-@extends('layouts.admin')
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
-@section('title', 'Dashboard Admin')
+    <!-- Custom CSS Styles -->
+    <style>
+        :root {
+            --sidebar-bg: #1c233d; /* Warna background dark navy sesuai gambar */
+            --sidebar-text: #94a3b8; /* Warna teks abu kebiruan */
+            --sidebar-hover-bg: rgba(255, 255, 255, 0.05);
+            --sidebar-active-bg: #2563eb; /* Warna biru cerah untuk menu aktif */
+            --sidebar-active-text: #ffffff;
+        }
 
-@section('content')
+        body {
+            background-color: #f1f5f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        
+        /* SIDEBAR STYLING */
+        .sidebar {
+            width: 270px;
+            min-height: 100vh;
+            background-color: var(--sidebar-bg);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 1000;
+        }
 
-@php
-    $stats = $stats ?? [];
-    $recentAnnouncements = $recentAnnouncements ?? collect();
-    $violations = $violations ?? collect();
-    $classes = $classes ?? collect();
+        /* Sidebar Brand / Logo */
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 20px 18px;
+        }
+        .sidebar-brand-icon {
+            width: 42px;
+            height: 42px;
+            background-color: var(--sidebar-active-bg);
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+        .sidebar-brand-text h5 {
+            font-size: 1.05rem;
+            letter-spacing: 0.5px;
+        }
+        .sidebar-brand-text small {
+            font-size: 0.7rem;
+            color: var(--sidebar-text);
+        }
 
-    $statCards = [
-        [
-            'label' => 'Total Siswa',
-            'value' => $stats['Total Siswa'] ?? 0,
-            'icon' => 'bi-people-fill',
-            'color' => 'primary',
-        ],
-        [
-            'label' => 'Total Guru',
-            'value' => $stats['Total Guru'] ?? 0,
-            'icon' => 'bi-person-workspace',
-            'color' => 'success',
-        ],
-        [
-            'label' => 'Total Kelas',
-            'value' => $stats['Total Kelas'] ?? 0,
-            'icon' => 'bi-building',
-            'color' => 'info',
-        ],
-        [
-            'label' => 'Mata Pelajaran',
-            'value' => $stats['Mata Pelajaran'] ?? 0,
-            'icon' => 'bi-book-half',
-            'color' => 'warning',
-        ],
-        [
-            'label' => 'Total Ujian',
-            'value' => $stats['Total Ujian'] ?? 0,
-            'icon' => 'bi-file-earmark-text',
-            'color' => 'danger',
-        ],
-        [
-            'label' => 'Peserta Ujian',
-            'value' => $stats['Peserta Ujian'] ?? 0,
-            'icon' => 'bi-person-check-fill',
-            'color' => 'primary',
-        ],
-    ];
-@endphp
+        /* Sidebar Navigasi */
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 0 20px 0;
+        }
+        
+        /* Custom Scrollbar untuk Sidebar */
+        .sidebar-nav::-webkit-scrollbar {
+            width: 5px;
+        }
+        .sidebar-nav::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
 
+        /* Kategori Menu (MENU UTAMA, AKADEMIK, dll) */
+        .menu-category {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 15px 18px 8px 18px;
+        }
 
-{{-- HEADER DASHBOARD --}}
-<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        /* Link Menu */
+        .sidebar a.nav-link {
+            color: var(--sidebar-text);
+            text-decoration: none;
+            padding: 10px 15px;
+            margin: 4px 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+        .sidebar a.nav-link i {
+            font-size: 1.1rem;
+        }
+        .sidebar a.nav-link:hover {
+            color: var(--sidebar-active-text);
+            background-color: var(--sidebar-hover-bg);
+        }
+        .sidebar a.nav-link.active {
+            color: var(--sidebar-active-text);
+            background-color: var(--sidebar-active-bg);
+            font-weight: 500;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+        }
 
-    <div>
-        <h4 class="fw-bold mb-1">Dashboard Admin</h4>
+        /* Sidebar Footer (Profil User) */
+        .sidebar-footer {
+            padding: 15px 18px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            background-color: #dbeafe;
+            color: var(--sidebar-active-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        .btn-logout {
+            color: var(--sidebar-text);
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            transition: 0.2s;
+            padding: 0;
+        }
+        .btn-logout:hover {
+            color: white;
+        }
 
-        <p class="text-muted mb-0">
-            Selamat datang, {{ auth()->user()->name ?? 'Administrator' }}!
-            Berikut ringkasan aktivitas akademik MALAS.
-        </p>
-    </div>
+        /* MAIN CONTENT AREA */
+        .main-wrapper {
+            margin-left: 270px; /* Lebar sidebar */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
-    <div class="bg-white border rounded-3 px-3 py-2">
-        <div class="small text-muted">
-            <i class="bi bi-calendar3 me-1"></i>
-            {{ now()->translatedFormat('l, d F Y') }}
-        </div>
-    </div>
+        /* Topbar / Navbar Atas */
+        .topbar {
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,.05);
+            height: 70px;
+            display: flex;
+            align-items: center;
+            padding: 0 25px;
+            justify-content: space-between;
+        }
 
-</div>
+        .main-content {
+            padding: 25px;
+            flex: 1;
+        }
 
+        /* Responsive Sidebar */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .main-wrapper {
+                margin-left: 0;
+            }
+        }
+    </style>
 
-{{-- STATISTIK UTAMA --}}
-<div class="row g-3 mb-4">
+    <!-- Tambahan CSS per Halaman -->
+    @stack('styles')
+</head>
+<body>
 
-    @foreach($statCards as $card)
-
-        <div class="col-6 col-md-4 col-xl-2">
-
-            <div class="card stat-card h-100">
-                <div class="card-body">
-
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-
-                        <div class="stat-icon bg-{{ $card['color'] }}-subtle text-{{ $card['color'] }}">
-                            <i class="bi {{ $card['icon'] }}"></i>
-                        </div>
-
-                    </div>
-
-                    <h4 class="fw-bold mb-1">
-                        {{ number_format((int) $card['value']) }}
-                    </h4>
-
-                    <div class="text-muted small">
-                        {{ $card['label'] }}
-                    </div>
-
-                </div>
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebarMenu">
+        
+        <!-- Sidebar Brand -->
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-icon">
+                <i class="bi bi-mortarboard"></i>
             </div>
-
-        </div>
-
-    @endforeach
-
-</div>
-
-
-{{-- MONITORING DAN AKTIVITAS --}}
-<div class="mb-3">
-    <h5 class="fw-bold mb-1">Ringkasan Aktivitas</h5>
-    <p class="text-muted small mb-0">
-        Pantau aktivitas ujian dan pengelolaan akademik sekolah.
-    </p>
-</div>
-
-<div class="row g-3 mb-4">
-
-    {{-- SESI UJIAN --}}
-    <div class="col-md-4">
-
-        <div class="card activity-card h-100">
-            <div class="card-body">
-
-                <div class="d-flex justify-content-between align-items-center">
-
-                    <div>
-                        <div class="text-muted small mb-2">
-                            Sesi Ujian Berlangsung
-                        </div>
-
-                        <h3 class="fw-bold mb-1">
-                            {{ number_format($sessionsRunning ?? 0) }}
-                        </h3>
-
-                        <span class="text-success small">
-                            <i class="bi bi-circle-fill me-1"></i>
-                            Aktivitas ujian
-                        </span>
-                    </div>
-
-                    <div class="activity-icon bg-primary-subtle text-primary">
-                        <i class="bi bi-display"></i>
-                    </div>
-
-                </div>
-
-                @if(Route::has('admin.monitoring.index'))
-                    <a href="{{ route('admin.monitoring.index') }}"
-                       class="small text-primary text-decoration-none d-inline-block mt-3">
-
-                        Lihat monitoring ujian
-                        <i class="bi bi-arrow-right ms-1"></i>
-
-                    </a>
-                @endif
-
-            </div>
-        </div>
-
-    </div>
-
-
-    {{-- ESAI --}}
-    <div class="col-md-4">
-
-        <div class="card activity-card h-100">
-            <div class="card-body">
-
-                <div class="d-flex justify-content-between align-items-center">
-
-                    <div>
-                        <div class="text-muted small mb-2">
-                            Esai Menunggu Penilaian
-                        </div>
-
-                        <h3 class="fw-bold mb-1">
-                            {{ number_format($pendingEssays ?? 0) }}
-                        </h3>
-
-                        <span class="text-warning small">
-                            <i class="bi bi-clock me-1"></i>
-                            Perlu diperiksa
-                        </span>
-                    </div>
-
-                    <div class="activity-icon bg-warning-subtle text-warning">
-                        <i class="bi bi-file-earmark-text"></i>
-                    </div>
-
-                </div>
-
-            </div>
-        </div>
-
-    </div>
-
-
-    {{-- SISWA BELUM PUNYA KELAS --}}
-    <div class="col-md-4">
-
-        <div class="card activity-card h-100">
-            <div class="card-body">
-
-                <div class="d-flex justify-content-between align-items-center">
-
-                    <div>
-                        <div class="text-muted small mb-2">
-                            Siswa Belum Memiliki Kelas
-                        </div>
-
-                        <h3 class="fw-bold mb-1">
-                            {{ number_format($studentsNoClass ?? 0) }}
-                        </h3>
-
-                        <span class="text-danger small">
-                            <i class="bi bi-info-circle me-1"></i>
-                            Perlu enrollment
-                        </span>
-                    </div>
-
-                    <div class="activity-icon bg-danger-subtle text-danger">
-                        <i class="bi bi-person-exclamation"></i>
-                    </div>
-
-                </div>
-
-                @if(Route::has('admin.enrollments.index'))
-                    <a href="{{ route('admin.enrollments.index') }}"
-                       class="small text-primary text-decoration-none d-inline-block mt-3">
-
-                        Kelola enrollment
-                        <i class="bi bi-arrow-right ms-1"></i>
-
-                    </a>
-                @endif
-
+            <div class="sidebar-brand-text">
+                <h5 class="fw-bold text-white mb-0">MALAS</h5>
+                <small>Methodist Academic Learning</small>
             </div>
         </div>
 
-    </div>
+        <!-- Sidebar Navigation -->
+        <div class="sidebar-nav">
+            
+            <div class="menu-category">Menu Utama</div>
+            <a href="{{ Route::has('admin.dashboard') ? route('admin.dashboard') : '#' }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                <i class="bi bi-grid-1x2"></i> Dashboard
+            </a>
+            <a href="{{ Route::has('admin.monitoring.index') ? route('admin.monitoring.index') : '#' }}" class="nav-link {{ request()->routeIs('admin.monitoring.*') ? 'active' : '' }}">
+                <i class="bi bi-display"></i> Monitoring Ujian
+            </a>
+            <a href="{{ Route::has('admin.accounts.index') ? route('admin.accounts.index') : '#' }}" class="nav-link {{ request()->routeIs('admin.accounts.*') ? 'active' : '' }}">
+                <i class="bi bi-people"></i> Manajemen Akun
+            </a>
 
-</div>
+            <div class="menu-category">Akademik</div>
+            <a href="{{ Route::has('admin.subjects.index') ? route('admin.subjects.index') : '#' }}" class="nav-link {{ request()->routeIs('admin.subjects.*') ? 'active' : '' }}">
+                <i class="bi bi-book"></i> Mata Pelajaran
+            </a>
+            <a href="{{ Route::has('admin.cst.index') ? route('admin.cst.index') : '#' }}" class="nav-link {{ request()->routeIs('admin.cst.*') ? 'active' : '' }}">
+                <i class="bi bi-building"></i> Manajemen Kelas
+            </a>
+            <a href="{{ Route::has('admin.enrollments.index') ? route('admin.enrollments.index') : '#' }}" class="nav-link {{ request()->routeIs('admin.enrollments.*') ? 'active' : '' }}">
+                <i class="bi bi-clipboard-check"></i> Enrollment Siswa
+            </a>
 
+            <div class="menu-category">Data Sekolah</div>
+            <a href="{{ Route::has('admin.students.index') ? route('admin.students.index') : '#' }}" class="nav-link {{ request()->routeIs('admin.students.*') ? 'active' : '' }}">
+                <i class="bi bi-mortarboard"></i> Data Siswa
+            </a>
+            <a href="{{ Route::has('admin.teachers.index') ? route('admin.teachers.index') : '#' }}" class="nav-link {{ request()->routeIs('admin.teachers.*') ? 'active' : '' }}">
+                <i class="bi bi-person"></i> Data Guru
+            </a>
 
-{{-- KONTEN BAWAH --}}
-<div class="row g-3">
+            <div class="menu-category">Informasi</div>
+            <li class="nav-item">
+                <a href="{{ route('admin.announcements.index') }}" class="nav-link {{ request()->routeIs('admin.announcements*') ? 'active' : '' }}">
+                    <i class="bi bi-megaphone"></i>
+                    <span>Pengumuman</span>
+                </a>
+            </li>     
+        </div>
 
-    {{-- KOLOM KIRI --}}
-    <div class="col-lg-7">
-
-        {{-- PENGUMUMAN --}}
-        <div class="card mb-4">
-
-            <div class="card-header d-flex justify-content-between align-items-center">
-
+        <!-- Sidebar Footer -->
+        <div class="sidebar-footer">
+            <div class="d-flex align-items-center gap-2">
+                <div class="user-avatar">
+                    <i class="bi bi-person"></i>
+                </div>
                 <div>
-                    <i class="bi bi-megaphone-fill text-primary me-2"></i>
-                    Pengumuman Terbaru
+                    <div class="text-white fw-bold" style="font-size: 0.85rem;">{{ auth()->user()->name ?? 'Administrator' }}</div>
+                    <div style="color: #94a3b8; font-size: 0.75rem;">Administrator</div>
                 </div>
-
-                @if(Route::has('announcements.create'))
-                    <a href="{{ route('announcements.create') }}"
-                       class="btn btn-sm btn-primary">
-
-                        <i class="bi bi-plus-lg me-1"></i>
-                        Buat Pengumuman
-
-                    </a>
-                @endif
-
             </div>
-
-            <div class="card-body p-0">
-
-                @forelse($recentAnnouncements as $announcement)
-
-                    <div class="announcement-item p-3">
-
-                        <div class="d-flex justify-content-between align-items-start gap-2">
-
-                            <div class="flex-grow-1">
-
-                                <h6 class="fw-bold mb-1">
-                                    {{ $announcement->title }}
-                                </h6>
-
-                                <p class="text-muted small mb-2">
-                                    {{ \Illuminate\Support\Str::limit($announcement->content, 130) }}
-                                </p>
-
-                                <small class="text-muted">
-                                    <i class="bi bi-calendar3 me-1"></i>
-                                    {{ $announcement->created_at?->format('d M Y, H:i') ?? '-' }}
-                                </small>
-
-                            </div>
-
-                            <span class="badge bg-primary-subtle text-primary">
-                                Pengumuman
-                            </span>
-
-                        </div>
-
-                        @if(Route::has('announcements.show'))
-                            <a href="{{ route('announcements.show', [
-                                'announcement' => $announcement->announcement_id
-                            ]) }}"
-                               class="small text-decoration-none text-primary">
-
-                                Lihat detail
-                                <i class="bi bi-arrow-right ms-1"></i>
-
-                            </a>
-                        @endif
-
-                    </div>
-
-                @empty
-
-                    <div class="text-center py-5">
-
-                        <i class="bi bi-megaphone display-6 text-muted"></i>
-
-                        <p class="text-muted mt-2 mb-0">
-                            Belum ada pengumuman.
-                        </p>
-
-                    </div>
-
-                @endforelse
-
-            </div>
-
-            <div class="card-footer bg-white text-center">
-
-                @if(Route::has('announcements.index'))
-                    <a href="{{ route('announcements.index') }}"
-                       class="small text-primary text-decoration-none fw-semibold">
-
-                        Lihat Semua Pengumuman
-                        <i class="bi bi-arrow-right ms-1"></i>
-
-                    </a>
-                @endif
-
-            </div>
-
+            
+            <!-- Tombol Logout Bawah -->
+            <form action="{{ Route::has('logout') ? route('logout') : '#' }}" method="POST" class="m-0">
+                @csrf
+                <button type="submit" class="btn-logout" title="Keluar Sistem">
+                    <i class="bi bi-arrow-down-circle"></i>
+                </button>
+            </form>
         </div>
+        
+    </aside>
 
-
-        {{-- PELANGGARAN UJIAN --}}
-        <div class="card">
-
-            <div class="card-header">
-                <i class="bi bi-shield-exclamation text-warning me-2"></i>
-                Pelanggaran Ujian Terbaru
+    <!-- WRAPPER KONTEN UTAMA -->
+    <div class="main-wrapper">
+        
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <!-- Tombol Toggle Sidebar untuk Mobile -->
+            <button class="btn btn-light d-md-none" type="button" id="sidebarToggleBtn">
+                <i class="bi bi-list fs-4"></i>
+            </button>
+            
+            <div class="d-none d-md-block">
+                <!-- Breadcrumb atau judul halaman bisa diletakkan di sini jika perlu -->
             </div>
 
-            <div class="table-responsive">
-
-                <table class="table table-hover align-middle mb-0">
-
-                    <thead class="table-light">
-                        <tr>
-                            <th class="ps-3">Siswa</th>
-                            <th>Ujian</th>
-                            <th>Jenis Pelanggaran</th>
-                            <th>Waktu</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                        @forelse($violations as $violation)
-
-                            <tr>
-
-                                <td class="ps-3">
-                                    {{ data_get($violation, 'student.user.name', '-') }}
-                                </td>
-
-                                <td>
-                                    {{ data_get($violation, 'session.exam.title', '-') }}
-                                </td>
-
-                                <td>
-                                    <span class="badge bg-warning-subtle text-warning-emphasis">
-                                        {{ data_get($violation, 'type', '-') }}
-                                    </span>
-                                </td>
-
-                                <td class="small text-muted">
-                                    {{ data_get($violation, 'occurred_at')
-                                        ? \Illuminate\Support\Carbon::parse(data_get($violation, 'occurred_at'))->format('d M Y H:i')
-                                        : '-' }}
-                                </td>
-
-                            </tr>
-
-                        @empty
-
-                            <tr>
-                                <td colspan="4" class="text-center py-4 text-muted">
-                                    <i class="bi bi-shield-check fs-4 d-block mb-2"></i>
-                                    Belum ada pelanggaran ujian.
-                                </td>
-                            </tr>
-
-                        @endforelse
-
-                    </tbody>
-
-                </table>
-
+            <!-- User Menu Kanan Atas -->
+            <div class="dropdown">
+                <button class="btn btn-light bg-white border-0 shadow-sm rounded-pill px-3 py-2 d-flex align-items-center gap-2 dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
+                        <i class="bi bi-person-fill small"></i>
+                    </div>
+                    <span class="fw-semibold small text-dark">{{ auth()->user()->name ?? 'Administrator' }}</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-3">
+                    <li><a class="dropdown-item py-2" href="#"><i class="bi bi-person me-2 text-muted"></i> Profil Saya</a></li>
+                    <li><a class="dropdown-item py-2" href="#"><i class="bi bi-gear me-2 text-muted"></i> Pengaturan</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <form action="{{ Route::has('logout') ? route('logout') : '#' }}" method="POST">
+                            @csrf
+                            <button type="submit" class="dropdown-item py-2 text-danger">
+                                <i class="bi bi-box-arrow-right me-2"></i> Keluar
+                            </button>
+                        </form>
+                    </li>
+                </ul>
             </div>
+        </header>
 
-        </div>
-
+        <!-- KONTEN DINAMIS DARI DASHBOARD (yield) -->
+        <main class="main-content">
+            @yield('content')
+        </main>
+        
+        <!-- FOOTER -->
+        <footer class="bg-white border-top text-center py-3 mt-auto">
+            <small class="text-muted">&copy; {{ date('Y') }} MALAS - Methodist Academic Learning. All rights reserved.</small>
+        </footer>
+        
     </div>
 
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Script Toggle Sidebar untuk Mobile -->
+    <script>
+        document.getElementById('sidebarToggleBtn').addEventListener('click', function() {
+            document.getElementById('sidebarMenu').classList.toggle('show');
+        });
+    </script>
 
-    {{-- KOLOM KANAN --}}
-    <div class="col-lg-5">
+    <!-- Tambahan JS per Halaman -->
+    @stack('scripts')
 
-        {{-- AKSI CEPAT --}}
-        <div class="card mb-4">
-
-            <div class="card-header">
-                <i class="bi bi-lightning-charge-fill text-warning me-2"></i>
-                Aksi Cepat
-            </div>
-
-            <div class="card-body">
-
-                @php
-                    $quickActions = [
-                        [
-                            'route' => 'admin.students.create',
-                            'label' => 'Tambah Data Siswa',
-                            'icon' => 'bi-person-plus',
-                        ],
-                        [
-                            'route' => 'admin.teachers.create',
-                            'label' => 'Tambah Data Guru',
-                            'icon' => 'bi-person-workspace',
-                        ],
-                        [
-                            'route' => 'admin.classes.create',
-                            'label' => 'Buat Kelas Akademik',
-                            'icon' => 'bi-building-add',
-                        ],
-                        [
-                            'route' => 'admin.subjects.create',
-                            'label' => 'Tambah Mata Pelajaran',
-                            'icon' => 'bi-book',
-                        ],
-                        [
-                            'route' => 'admin.cst.index',
-                            'label' => 'Kelola Guru Pengampu',
-                            'icon' => 'bi-person-check',
-                        ],
-                        [
-                            'route' => 'admin.enrollments.index',
-                            'label' => 'Enrollment Siswa',
-                            'icon' => 'bi-journal-check',
-                        ],
-                    ];
-                @endphp
-
-                <div class="d-grid gap-2">
-
-                    @foreach($quickActions as $action)
-
-                        @if(Route::has($action['route']))
-
-                            <a href="{{ route($action['route']) }}"
-                               class="quick-action">
-
-                                <i class="bi {{ $action['icon'] }}"></i>
-
-                                <span>{{ $action['label'] }}</span>
-
-                                <i class="bi bi-arrow-right ms-auto"></i>
-
-                            </a>
-
-                        @endif
-
-                    @endforeach
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        {{-- DATA SISWA PER KELAS --}}
-        <div class="card">
-
-            <div class="card-header">
-                <i class="bi bi-people-fill text-primary me-2"></i>
-                Data Siswa per Kelas
-            </div>
-
-            <div class="card-body p-0">
-
-                @forelse($classes as $class)
-
-                    <div class="class-item px-3 py-3">
-
-                        <div class="d-flex justify-content-between align-items-center">
-
-                            <div>
-                                <div class="fw-semibold">
-                                    {{ data_get($class, 'name')
-                                        ?? data_get($class, 'class_name')
-                                        ?? 'Kelas' }}
-                                </div>
-
-                                <small class="text-muted">
-                                    Jumlah siswa terdaftar
-                                </small>
-                            </div>
-
-                            <div class="class-count">
-                                {{ number_format(data_get($class, 'students_count', 0)) }}
-                                <small>siswa</small>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                @empty
-
-                    <div class="text-center py-4 text-muted">
-                        Belum ada data kelas.
-                    </div>
-
-                @endforelse
-
-            </div>
-
-            @if(Route::has('admin.classes.index'))
-                <div class="card-footer bg-white text-center">
-                    <a href="{{ route('admin.classes.index') }}"
-                       class="small text-decoration-none text-primary fw-semibold">
-
-                        Lihat Semua Kelas
-                        <i class="bi bi-arrow-right ms-1"></i>
-
-                    </a>
-                </div>
-            @endif
-
-        </div>
-
-    </div>
-
-</div>
-
-
-{{-- STYLE KHUSUS DASHBOARD --}}
-<style>
-
-    .stat-card {
-        transition: .2s;
-    }
-
-    .stat-card:hover,
-    .activity-card:hover {
-        transform: translateY(-3px);
-    }
-
-    .stat-icon,
-    .activity-icon {
-        width: 43px;
-        height: 43px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 11px;
-        font-size: 20px;
-    }
-
-    .activity-card {
-        transition: .2s;
-    }
-
-    .announcement-item {
-        border-bottom: 1px solid #edf0f5;
-    }
-
-    .announcement-item:last-child {
-        border-bottom: none;
-    }
-
-    .quick-action {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 12px 13px;
-        border: 1px solid #e9edf4;
-        border-radius: 9px;
-        color: #334155;
-        text-decoration: none;
-        font-size: 13px;
-        transition: .2s;
-    }
-
-    .quick-action > i:first-child {
-        font-size: 18px;
-        color: #2563eb;
-    }
-
-    .quick-action:hover {
-        background: #eff6ff;
-        border-color: #bfdbfe;
-        color: #1d4ed8;
-    }
-
-    .class-item {
-        border-bottom: 1px solid #edf0f5;
-    }
-
-    .class-item:last-child {
-        border-bottom: none;
-    }
-
-    .class-count {
-        font-weight: 700;
-        color: #2563eb;
-        text-align: right;
-    }
-
-    .class-count small {
-        display: block;
-        font-weight: 400;
-        font-size: 10px;
-        color: #94a3b8;
-    }
-
-</style>
-
-@endsection
+</body>
+</html>

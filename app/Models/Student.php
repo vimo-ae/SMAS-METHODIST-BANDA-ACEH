@@ -116,7 +116,7 @@ class Student extends Model
         return $this->hasMany(ExamViolation::class, 'students_id', 'nis');
     }
 
-    public function enrollments()
+    public function classEnrollments()
     {
         return $this->hasMany(ClassEnrollment::class, 'students_id', 'nis');
     }
