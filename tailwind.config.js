@@ -12,7 +12,13 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Plus Jakarta Sans', ...defaultTheme.fontFamily.sans],
+                serif: ['Playfair Display', ...defaultTheme.fontFamily.serif],
+            },
+            colors: {
+                cream: '#F7F2E8',
+                navy: '#17365D',
+                softblue: '#8EADD0',
             },
         },
     },
