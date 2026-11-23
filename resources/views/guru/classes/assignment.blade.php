@@ -169,7 +169,7 @@
                 </div>
             </div>
 
-            {{-- DAFTAR SISWA & PENGUMPULAN --}}
+            {{-- DAFTAR SISWA dan PENGUMPULAN --}}
             <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 bg-slate-50/70 px-6 py-5">
                     <div>
@@ -181,7 +181,7 @@
                                 </svg>
                             </div>
                             <h3 class="text-base font-black text-[#101C35]">
-                                Berkas Pengumpulan & Penilaian Siswa
+                                Berkas Pengumpulan dan Penilaian Siswa
                             </h3>
                         </div>
                         <p class="mt-1 text-xs text-slate-500">
@@ -202,7 +202,7 @@
                         @endphp
                         <div class="p-6 transition hover:bg-slate-50/70">
                             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                                {{-- INFORMASI SISWA & STATUS PENGUMPULAN --}}
+                                {{-- INFORMASI SISWA dan STATUS PENGUMPULAN --}}
                                 <div class="flex items-start gap-4">
                                     <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#123B60] to-[#267BB5] text-sm font-black text-white shadow-sm">
                                         {{ strtoupper(substr($studentName, 0, 2)) }}

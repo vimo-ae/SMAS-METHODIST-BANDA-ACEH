@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Data Kelas & Daftar Siswa - Portal Akademik')
+@section('title', 'Data Kelas dan Daftar Siswa - Portal Akademik')
 
 @section('content')
 
@@ -10,7 +10,7 @@
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 p-4 border-bottom">
         <div>
             <div class="text-uppercase tracking-wide text-accent fw-bold small mb-1">Manajemen Akademik</div>
-            <h2 class="fw-bold mb-1 text-dark">Data Kelas, Wali Kelas & Siswa</h2>
+            <h2 class="fw-bold mb-1 text-dark">Data Kelas, Wali Kelas dan Siswa</h2>
             <p class="text-muted-portal mb-0">
                 Daftar seluruh kelas beserta wali kelas pengampu dan jumlah siswa terdaftar.
             </p>
@@ -52,7 +52,7 @@
             </div>
         @endif
 
-        {{-- FORM PENCARIAN & FILTER --}}
+        {{-- FORM PENCARIAN dan FILTER --}}
         <form method="GET" action="{{ route('admin.classes.index') }}" class="portal-card p-3 mb-4">
             <div class="row g-2 align-items-center">
                 <div class="col-12 col-lg-6">

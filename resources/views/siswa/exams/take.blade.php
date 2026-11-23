@@ -248,7 +248,7 @@
         const prev = el('button', 'btn btn-outline', '← Sebelumnya');
         prev.disabled = current === 0;
         prev.onclick = () => go(current - 1);
-        const next = el('button', 'btn btn-primary', current === QUESTIONS.length - 1 ? 'Tinjau & Selesai' : 'Berikutnya →');
+        const next = el('button', 'btn btn-primary', current === QUESTIONS.length - 1 ? 'Tinjau dan Selesai' : 'Berikutnya →');
         next.onclick = () => (current === QUESTIONS.length - 1 ? openFinish() : go(current + 1));
         nav.append(prev, next);
         card.appendChild(nav);
@@ -496,7 +496,7 @@
         navigator.sendBeacon(URL_LEAVE, fd);
     });
 
-    // ---------- Tombol & modal ----------
+    // ---------- Tombol dan modal ----------
     $('btn-start').onclick = () => {
         const root = document.documentElement;
         const req = root.requestFullscreen ? root.requestFullscreen() : Promise.resolve();

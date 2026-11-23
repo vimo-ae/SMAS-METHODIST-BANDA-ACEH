@@ -68,7 +68,7 @@
                         <tr>
                             <th class="ps-4 text-center" style="width: 60px;">No</th>
                             <th>Mata Pelajaran</th>
-                            <th>Kelas & Tahun Ajaran</th>
+                            <th>Kelas dan Tahun Ajaran</th>
                             <th>Guru Pengampu</th>
                             <th class="text-center">Status</th>
                             <th>Tgl Masuk / Keluar</th>
@@ -253,7 +253,7 @@
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Kelas Mata Pelajaran <span class="text-danger">*</span></label>
                     <select name="cst_id" class="form-select" required>
-                        <option value="">-- Pilih Kelas & Mapel --</option>
+                        <option value="">-- Pilih Kelas dan Mapel --</option>
                         @foreach($csts as $cst)
                             <option value="{{ $cst->cst_id }}">
                                 {{ $cst->schoolClass->name ?? 'Kelas #' . $cst->class_id }} —

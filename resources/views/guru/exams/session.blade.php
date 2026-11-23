@@ -28,7 +28,7 @@
     <div class="min-h-screen bg-[#FAF9F6] py-8">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
 
-            {{-- BREADCRUMB & TOMBOL KEMBALI --}}
+            {{-- BREADCRUMB dan TOMBOL KEMBALI --}}
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div class="flex items-center gap-2 text-xs font-medium text-slate-400">
                     <a href="{{ route('guru.exams.results', $exam) }}" class="transition hover:text-blue-600">
@@ -126,7 +126,7 @@
             </div>
 
             <!-- ======================================================== -->
-            <!-- LEMBAR JAWABAN & FORM KOREKSI ESAI                       -->
+            <!-- LEMBAR JAWABAN dan FORM KOREKSI ESAI                       -->
             <!-- ======================================================== -->
             <form action="{{ route('guru.exams.grade-essay', $session->exam_session_id) }}" method="POST">
                 @csrf

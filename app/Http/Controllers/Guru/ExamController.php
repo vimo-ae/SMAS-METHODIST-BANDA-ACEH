@@ -9,6 +9,7 @@ use App\Models\ExamQuestion;
 use App\Models\ExamSession;
 use App\Services\Access;
 use App\Services\ExamGrader;
+use App\Services\ExamTokenService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -93,7 +94,36 @@ class ExamController extends Controller
         $this->syncQuestionWeights($exam);
         $exam->load('questions');
 
-        return view('guru.exams.show', compact('exam'));
+        $examToken = null;
+        if ($exam->isOpen()) {
+            try {
+                $examToken = app(ExamTokenService::class)->activeToken($exam);
+            } catch (\RuntimeException) {
+                $examToken = null;
+            }
+        }
+
+        return view('guru.exams.show', compact('exam', 'examToken'));
+    }
+
+    public function activeToken(Request $request, Exam $exam, ExamTokenService $examTokens)
+    {
+        $this->own($request, $exam);
+
+        if (! $exam->isOpen()) {
+            return response()->json([
+                'token' => null,
+                'expires_at' => null,
+            ]);
+        }
+
+        $token = $examTokens->activeToken($exam);
+
+        return response()->json([
+            'token' => $token->plainToken(),
+            'expires_at' => $token->expires_at->toIso8601String(),
+            'expires_at_display' => $token->expires_at->format('H:i:s'),
+        ]);
     }
 
     public function edit(Request $request, Exam $exam)

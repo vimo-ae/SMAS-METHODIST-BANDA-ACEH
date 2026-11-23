@@ -19,14 +19,14 @@
     <div class="min-h-screen bg-[#FAF9F6] py-8">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
 
-            {{-- BREADCRUMB & TOMBOL KEMBALI --}}
+            {{-- BREADCRUMB dan TOMBOL KEMBALI --}}
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div class="flex items-center gap-2 text-xs font-medium text-slate-400">
                     <a href="{{ route('guru.exams.index') }}" class="transition hover:text-blue-600">
                         E-Exam
                     </a>
                     <span>/</span>
-                    <span class="font-bold text-blue-700">Hasil &amp; Nilai</span>
+                    <span class="font-bold text-blue-700">Hasil dan Nilai</span>
                 </div>
 
                 <a href="{{ route('guru.exams.index') }}"
@@ -88,8 +88,8 @@
                         <thead class="bg-slate-50 text-xs uppercase text-slate-700 border-b border-slate-200">
                             <tr>
                                 <th class="px-4 py-3">Nama Siswa</th>
-                                <th class="px-4 py-3 text-center">Waktu & Durasi</th>
-                                <th class="px-4 py-3 text-center">Status & Pelanggaran</th>
+                                <th class="px-4 py-3 text-center">Waktu dan Durasi</th>
+                                <th class="px-4 py-3 text-center">Status dan Pelanggaran</th>
                                 <th class="px-4 py-3 text-center">Nilai Akhir</th>
                                 <th class="px-4 py-3 text-center">Aksi</th>
                             </tr>
@@ -114,7 +114,7 @@
                                         </div>
                                     </td>
 
-                                    <!-- WAKTU & DURASI -->
+                                    <!-- WAKTU dan DURASI -->
                                     <td class="px-4 py-3 text-center text-xs">
                                         <div class="flex items-center justify-center gap-3 flex-wrap">
                                             <div class="text-slate-500">
@@ -141,7 +141,7 @@
                                         </div>
                                     </td>
 
-                                    <!-- STATUS & PELANGGARAN -->
+                                    <!-- STATUS dan PELANGGARAN -->
                                     <td class="px-4 py-3 text-center">
                                         <div class="flex items-center justify-center gap-2 flex-wrap">
                                             @if($session->status === 'selesai')
@@ -187,7 +187,7 @@
                                         </div>
                                     </td>
 
-                                    <!-- NILAI AKHIR & STATUS REMEDIAL -->
+                                    <!-- NILAI AKHIR dan STATUS REMEDIAL -->
                                     <td class="px-4 py-3 text-center">
                                         <div class="font-bold text-lg {{ $finalScore >= $exam->pass_score ? 'text-[#123B60]' : 'text-rose-600' }}">
                                             {{ number_format($finalScore, 2) }}

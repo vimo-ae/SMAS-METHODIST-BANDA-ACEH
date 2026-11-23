@@ -261,7 +261,7 @@
     <div class="lms-page min-h-screen bg-[#f5f8fc] py-6 sm:py-8">
         <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
 
-            {{-- BREADCRUMB & TOMBOL KEMBALI --}}
+            {{-- BREADCRUMB dan TOMBOL KEMBALI --}}
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div class="flex items-center gap-2 text-xs font-medium text-slate-400">
                     <a href="{{ route('guru.classes.index') }}"
@@ -465,7 +465,7 @@
                     <p class="mt-4 text-3xl font-extrabold text-slate-800">
                         {{ $examCount }}
                     </p>
-                    <p class="mt-1 text-xs text-slate-400">Ujian & kuis</p>
+                    <p class="mt-1 text-xs text-slate-400">Ujian dan kuis</p>
                 </div>
 
                 <div class="lms-card lms-stat p-5">
@@ -518,7 +518,7 @@
                                 <th class="px-6 py-3.5 font-bold">Durasi</th>
                                 <th class="px-6 py-3.5 font-bold">Mata Pelajaran</th>
                                 <th class="px-6 py-3.5 font-bold">Kelas</th>
-                                <th class="px-6 py-3.5 font-bold">Semester & T.A.</th>
+                                <th class="px-6 py-3.5 font-bold">Semester dan T.A.</th>
                                 <th class="px-6 py-3.5 font-bold">Status</th>
                             </tr>
                         </thead>
@@ -852,7 +852,7 @@
             </section>
 
             {{-- ==========================================
-                 STUDENT DIRECTORY (DIREKTORI SISWA KELAS INI - LENGKAP DENGAN SEARCH & AKSI)
+                 STUDENT DIRECTORY (DIREKTORI SISWA KELAS INI - LENGKAP DENGAN SEARCH dan AKSI)
             =========================================== --}}
             <section class="lms-card overflow-hidden">
                 <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-gradient-to-r from-emerald-50/70 to-white px-6 py-5">
@@ -1098,7 +1098,7 @@
                             <svg class="h-5 w-5 text-[#4338A8]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m9 11 3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11M7 10h4M7 14h6M7 18h8"/>
                             </svg>
-                            <h2 class="lms-section-title">Ujian & Kuis</h2>
+                            <h2 class="lms-section-title">Ujian dan Kuis</h2>
                         </div>
                         <p class="mt-1 text-xs text-slate-400">
                             Daftar ujian dan kuis online untuk kelas <span class="font-bold text-[#123B60]">{{ $fullClassTitle }}</span>.

@@ -8,6 +8,8 @@ use App\Models\ExamAnswer;
 use App\Models\ExamSession;
 use App\Models\ExamViolation;
 use App\Services\ExamGrader;
+use App\Services\ExamTokenService;
+use Illuminate\Support\Facades\Cache;
 use App\Support\AnnouncementContentSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -62,10 +64,19 @@ class ExamController extends Controller
         $session = $this->closeIfExpired(ExamSession::where(['exam_id' => $exam->exam_id, 'student_id' => $student->nis])->first());
         $exam->loadCount('questions');
 
-        return view('siswa.exams.show', compact('exam', 'session'));
+        $examToken = null;
+        if ($exam->isOpen() && ! $session) {
+            try {
+                $examToken = app(ExamTokenService::class)->activeToken($exam);
+            } catch (\RuntimeException) {
+                $examToken = null;
+            }
+        }
+
+        return view('siswa.exams.show', compact('exam', 'session', 'examToken'));
     }
 
-    public function start(Request $request, Exam $exam)
+    public function start(Request $request, Exam $exam, ExamTokenService $examTokens)
     {
         $student = $this->authorizeExam($request, $exam);
         abort_unless($exam->isOpen(), 403, 'Ujian belum dibuka atau sudah ditutup.');
@@ -78,12 +89,43 @@ class ExamController extends Controller
             return redirect()->route('siswa.exams.take', $exam);
         }
 
-        ExamSession::create([
-            'exam_id' => $exam->exam_id,
-            'student_id' => $student->nis,
-            'started_at' => now(),
-            'status' => 'berlangsung',
-        ]);
+        $submittedToken = strtoupper(trim((string) $request->validate([
+            'exam_token' => 'required|string|max:10',
+        ])['exam_token']));
+
+        $attemptKey = 'exam-token-attempt:' . $exam->exam_id . ':' . $student->nis;
+        $attempts = (int) Cache::get($attemptKey, 0);
+
+        if ($attempts >= 5) {
+            return back()->withErrors([
+                'exam_token' => 'Terlalu banyak percobaan salah. Coba lagi 15 menit kemudian.',
+            ]);
+        }
+
+        if (! $examTokens->validate($exam, $submittedToken)) {
+            Cache::put($attemptKey, $attempts + 1, now()->addMinutes(15));
+            return back()->withErrors([
+                'exam_token' => 'Token ujian salah atau sudah kedaluwarsa.',
+            ]);
+        }
+
+        Cache::forget($attemptKey);
+
+        DB::transaction(function () use ($exam, $student) {
+            $exists = ExamSession::where([
+                'exam_id' => $exam->exam_id,
+                'student_id' => $student->nis,
+            ])->exists();
+
+            abort_if($exists, 409, 'Sesi ujian sudah ada.');
+
+            ExamSession::create([
+                'exam_id' => $exam->exam_id,
+                'student_id' => $student->nis,
+                'started_at' => now(),
+                'status' => 'berlangsung',
+            ]);
+        });
 
         return redirect()->route('siswa.exams.take', $exam);
     }

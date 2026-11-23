@@ -18,7 +18,7 @@
 
     <div class="min-h-screen bg-[#FAF9F6] py-8">
         <div class="mx-auto max-w-4xl sm:px-6 lg:px-8 space-y-4">
-            {{-- BREADCRUMB & TOMBOL KEMBALI --}}
+            {{-- BREADCRUMB dan TOMBOL KEMBALI --}}
             <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
                 <div class="flex items-center gap-2 text-xs font-medium text-slate-400">
                     <a href="{{ route('guru.exams.index') }}" class="transition hover:text-blue-600">
@@ -52,11 +52,11 @@
                 <form action="{{ route('guru.exams.store') }}" method="POST" class="space-y-6">
                     @csrf
 
-                    <!-- Pilih Kelas & Mata Pelajaran -->
+                    <!-- Pilih Kelas dan Mata Pelajaran -->
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">Kelas & Mata Pelajaran</label>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Kelas dan Mata Pelajaran</label>
                         <select name="cst_id" required class="w-full rounded-xl border-slate-300 shadow-sm focus:border-[#267BB5] focus:ring-[#267BB5] text-sm">
-                            <option value="">-- Pilih Kelas & Mapel --</option>
+                            <option value="">-- Pilih Kelas dan Mapel --</option>
                             @foreach($csts as $cst)
                                 <option value="{{ $cst->cst_id }}" {{ old('cst_id') == $cst->cst_id ? 'selected' : '' }}>
                                     {{ $cst->schoolClass->name }} — {{ $cst->subject->name }}
@@ -82,7 +82,7 @@
                         </select>
                     </div>
 
-                    <!-- Grid Waktu Mulai & Selesai -->
+                    <!-- Grid Waktu Mulai dan Selesai -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-semibold text-slate-700 mb-1">Waktu Mulai</label>
@@ -96,7 +96,7 @@
                         </div>
                     </div>
 
-                    <!-- Grid Durasi & KKM -->
+                    <!-- Grid Durasi dan KKM -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-semibold text-slate-700 mb-1">Durasi Pengerjaan (Menit)</label>
@@ -137,7 +137,7 @@
                             Batal
                         </a>
                         <button type="submit" class="px-6 py-2.5 rounded-xl bg-[#123B60] text-sm font-semibold text-white shadow-sm hover:bg-[#267BB5]">
-                            Simpan & Lanjutkan Tambah Soal
+                            Simpan dan Lanjutkan Tambah Soal
                         </button>
                     </div>
 

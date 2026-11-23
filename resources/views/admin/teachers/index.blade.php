@@ -38,7 +38,7 @@
             </div>
         @endif
 
-        {{-- FORM PENCARIAN & FILTER --}}
+        {{-- FORM PENCARIAN dan FILTER --}}
         <form method="GET" action="{{ route('admin.teachers.index') }}" class="portal-card p-3 mb-4">
             <div class="row g-2 align-items-center">
                 <div class="col-12 col-lg-6">
@@ -86,8 +86,8 @@
                         <tr>
                             <th class="ps-4" style="width: 60px;">No</th>
                             <th>NIP</th>
-                            <th>Nama & Kontak</th>
-                            <th>Spesialisasi & Pendidikan</th>
+                            <th>Nama dan Kontak</th>
+                            <th>Spesialisasi dan Pendidikan</th>
                             <th>Tgl Bergabung</th>
                             <th class="text-center">Status</th>
                             <th class="text-end pe-4">Aksi</th>

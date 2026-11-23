@@ -20,7 +20,7 @@
         <div class="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
             <div class="grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
 
-                {{-- Kolom Kiri: Copywriting & CTA Utama --}}
+                {{-- Kolom Kiri: Copywriting dan CTA Utama --}}
                 <div class="lg:col-span-7">
                     <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3.5 py-1.5 text-xs font-semibold text-white/90 backdrop-blur-md">
                         <span class="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -28,7 +28,7 @@
                     </div>
 
                     <h1 class="mt-5 font-serif text-3xl font-bold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
-                        Membangun Generasi Unggul, Berkarakter & Berprestasi.
+                        Membangun Generasi Unggul, Berkarakter dan Berprestasi.
                     </h1>
 
                     <p class="mt-5 max-w-xl text-base leading-relaxed text-slate-200 sm:text-lg">
@@ -98,7 +98,7 @@
                             Pantau kemajuan akademik putra-putri Anda secara transparan. Buka halaman Cek Nilai, lalu masukkan NISN dan Tanggal Lahir siswa.
                         </p>
 
-                        {{-- Tombol menuju halaman Cek Nilai (NISN & tanggal lahir diisi di sana) --}}
+                        {{-- Tombol menuju halaman Cek Nilai (NISN dan tanggal lahir diisi di sana) --}}
                         <a href="{{ Route::has('cek-nilai-ujian.index') ? route('cek-nilai-ujian.index') : '#' }}"
                            class="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-softblue to-sky-400 px-5 py-3.5 text-sm font-bold text-[#101C35] shadow-lg transition-all duration-200 hover:brightness-105 hover:shadow-xl active:scale-[0.99]">
                             Buka Halaman Cek Nilai
@@ -161,7 +161,7 @@
                 </div>
                 <div>
                     <p class="font-serif text-2xl font-bold text-emerald-600 sm:text-3xl">100%</p>
-                    <p class="text-xs font-semibold text-slate-500">Digital & Terpusat</p>
+                    <p class="text-xs font-semibold text-slate-500">Digital dan Terpusat</p>
                 </div>
             </div>
 
@@ -209,7 +209,7 @@
                 <div class="mt-6 grid gap-3 sm:grid-cols-2">
                     <div class="flex items-start gap-2.5 rounded-xl bg-slate-50 p-3">
                         <div class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-navy/10 text-navy font-bold text-xs">&#10003;</div>
-                        <span class="text-xs font-medium text-slate-700">Materi dokumen, video & foto</span>
+                        <span class="text-xs font-medium text-slate-700">Materi dokumen, video dan foto</span>
                     </div>
                     <div class="flex items-start gap-2.5 rounded-xl bg-slate-50 p-3">
                         <div class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-navy/10 text-navy font-bold text-xs">&#10003;</div>
@@ -235,12 +235,12 @@
                         </svg>
                     </div>
                     <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                        Otomatis & Jujur
+                        Otomatis dan Jujur
                     </span>
                 </div>
 
                 <h3 class="mt-6 font-serif text-2xl font-bold text-navy">
-                    E-Exam: Evaluasi Teruji & Akurat
+                    E-Exam: Evaluasi Teruji dan Akurat
                 </h3>
                 <p class="mt-2 text-sm leading-relaxed text-slate-600">
                     Sistem ujian daring komprehensif dengan pengacakan soal instan dan penilaian objektif otomatis tanpa hambatan koreksi manual.
@@ -249,11 +249,11 @@
                 <ul class="mt-6 space-y-3">
                     <li class="flex items-center gap-2.5 text-xs font-medium text-slate-700">
                         <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 font-bold">&#10003;</span>
-                        Pilihan Ganda, Benar/Salah, Menjodohkan, & Esai
+                        Pilihan Ganda, Benar/Salah, Menjodohkan, dan Esai
                     </li>
                     <li class="flex items-center gap-2.5 text-xs font-medium text-slate-700">
                         <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 font-bold">&#10003;</span>
-                        Pengacakan urutan soal & opsi per siswa
+                        Pengacakan urutan soal dan opsi per siswa
                     </li>
                     <li class="flex items-center gap-2.5 text-xs font-medium text-slate-700">
                         <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 font-bold">&#10003;</span>
@@ -269,7 +269,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                     </svg>
                 </div>
-                <h4 class="mt-4 font-serif text-lg font-bold text-navy">Integritas & Anti-Curang</h4>
+                <h4 class="mt-4 font-serif text-lg font-bold text-navy">Integritas dan Anti-Curang</h4>
                 <p class="mt-1.5 text-xs leading-relaxed text-slate-600">
                     Deteksi otomatis saat siswa berganti tab browser, keluar dari mode layar penuh, atau melakukan salin-tempel.
                 </p>
@@ -377,7 +377,7 @@
         </div>
     </section>
 
-    {{-- PENGUMUMAN & BERITA SEKOLAH --}}
+    {{-- PENGUMUMAN dan BERITA SEKOLAH --}}
     @php
         $hasDynamicAnnouncements = isset($announcements) && count($announcements) > 0;
         $sampleAnnouncements = [
@@ -398,7 +398,7 @@
             [
                 'category' => 'Akademik',
                 'date' => '25 Okt 2026',
-                'title' => 'Sosialisasi E-Learning & Pembagian Akun Siswa Baru',
+                'title' => 'Sosialisasi E-Learning dan Pembagian Akun Siswa Baru',
                 'desc' => 'Panduan pengenalan sistem pembelajaran daring terpadu bagi siswa dan wali murid SMAS Methodist Banda Aceh.',
                 'gradient' => 'from-slate-800 via-navy to-softblue',
             ],
@@ -413,7 +413,7 @@
                     Informasi Terkini
                 </span>
                 <h2 class="mt-2 font-serif text-3xl font-bold text-navy sm:text-4xl">
-                    Pengumuman & Berita Sekolah
+                    Pengumuman dan Berita Sekolah
                 </h2>
                 <p class="mt-1 text-sm text-slate-600">
                     Kabar terkini seputar kegiatan akademik dan pengumuman resmi SMAS Methodist Banda Aceh.

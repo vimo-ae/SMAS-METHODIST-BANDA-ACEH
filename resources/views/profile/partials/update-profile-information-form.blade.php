@@ -66,7 +66,7 @@
                     </button>
                 </div>
 
-                {{-- ACTION BUTTONS & HINT --}}
+                {{-- ACTION BUTTONS dan HINT --}}
                 <div class="flex-1 space-y-2">
                     <input
                         type="file"

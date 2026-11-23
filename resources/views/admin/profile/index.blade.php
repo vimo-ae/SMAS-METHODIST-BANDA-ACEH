@@ -161,14 +161,14 @@
                         </li>
                         <li class="d-flex align-items-center gap-2">
                             <i class="bi bi-check2-circle text-success fs-6"></i>
-                            <span>Monitoring ujian & riwayat aktivitas sistem</span>
+                            <span>Monitoring ujian dan riwayat aktivitas sistem</span>
                         </li>
                     </ul>
                 </div>
 
             </div>
 
-            {{-- KOLOM KANAN: FORM EDIT INFORMASI & GANTI PASSWORD --}}
+            {{-- KOLOM KANAN: FORM EDIT INFORMASI dan GANTI PASSWORD --}}
             <div class="col-lg-8">
 
                 {{-- FORM 1: INFORMASI PROFIL --}}
@@ -178,7 +178,7 @@
                             <div class="icon-box text-accent" style="width: 32px; height: 32px; font-size: 1rem;">
                                 <i class="bi bi-person-fill"></i>
                             </div>
-                            <h5 class="fw-bold mb-0 text-dark">Informasi Pribadi & Kontak</h5>
+                            <h5 class="fw-bold mb-0 text-dark">Informasi Pribadi dan Kontak</h5>
                         </div>
                         <span class="text-muted-portal small">Data Akun Admin</span>
                     </div>
@@ -316,7 +316,7 @@
                             <div class="icon-box text-warning" style="width: 32px; height: 32px; font-size: 1rem;">
                                 <i class="bi bi-shield-lock-fill"></i>
                             </div>
-                            <h5 class="fw-bold mb-0 text-dark">Keamanan & Kata Sandi</h5>
+                            <h5 class="fw-bold mb-0 text-dark">Keamanan dan Kata Sandi</h5>
                         </div>
                         <span class="text-muted-portal small">Perbarui Password</span>
                     </div>
@@ -462,7 +462,7 @@
     }
 </style>
 
-{{-- JAVASCRIPT PREVIEW FOTO & TOGGLE PASSWORD --}}
+{{-- JAVASCRIPT PREVIEW FOTO dan TOGGLE PASSWORD --}}
 @push('scripts')
 <script>
     function togglePassword(inputId, btn) {

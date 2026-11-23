@@ -35,6 +35,7 @@ class ActivityLogController extends Controller
         'grades'                 => ['Pembelajaran', 'Nilai', ['grade_id', 'students_id', 'cst_id', 'grade_type', 'old_score', 'new_score']],
         // Ujian
         'exams'           => ['Ujian', 'Ujian', ['exam_id', 'cst_id', 'title', 'exam_type']],
+        'exam_token'      => ['Ujian', 'Token Ujian', ['exam_token_id', 'exam_id', 'issued_at', 'expires_at', 'is_active']],
         'exam_questions'  => ['Ujian', 'Soal Ujian', ['exam_question_id', 'exam_id', 'question_type', 'score_weight']],
         'exam_sessions'   => ['Ujian', 'Sesi Ujian', ['exam_session_id', 'exam_id', 'student_id', 'status']],
         'exam_answers'    => ['Ujian', 'Jawaban Ujian', ['exam_answer_id', 'exam_id', 'students_id', 'score']],

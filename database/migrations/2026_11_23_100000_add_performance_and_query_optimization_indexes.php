@@ -87,7 +87,7 @@ return new class extends Migration
             'users_logs', 'students_logs', 'teachers_logs', 'classes_logs',
             'subjects_logs', 'class_subject_teacher_logs', 'announcements_logs',
             'assignments_logs', 'assignment_submissions_logs', 'exams_logs',
-            'exam_sessions_logs', 'materials_logs', 'grade_logs',
+            'exam_sessions_logs', 'exam_token_logs', 'materials_logs', 'grade_logs',
         ];
 
         foreach ($logTables as $lt) {

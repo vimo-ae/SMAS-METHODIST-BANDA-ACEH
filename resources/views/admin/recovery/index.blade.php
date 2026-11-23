@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Pusat Pemulihan & Cadangan - Portal Akademik')
+@section('title', 'Pusat Pemulihan dan Cadangan - Portal Akademik')
 
 @section('content')
 
@@ -15,9 +15,9 @@
                     <i class="bi bi-grid-1x2 me-1"></i> Dashboard
                 </a>
                 <span class="text-muted-portal small">/</span>
-                <span class="text-accent small fw-semibold">Pemulihan & Cadangan</span>
+                <span class="text-accent small fw-semibold">Pemulihan dan Cadangan</span>
             </div>
-            <h2 class="fw-bold mb-1 text-dark">Pusat Pemulihan & Cadangan Basis Data</h2>
+            <h2 class="fw-bold mb-1 text-dark">Pusat Pemulihan dan Cadangan Basis Data</h2>
             <p class="text-muted-portal mb-0">
                 Kelola strategi backup (Full/Logical Backup), Point-in-Time Recovery, dan pemulihan rekaman terhapus.
             </p>
@@ -62,7 +62,7 @@
             <div class="col-12 col-sm-6 col-lg-3">
                 <div class="portal-card h-100 p-3">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <div class="text-muted-portal small text-uppercase">Engine & Transaksi</div>
+                        <div class="text-muted-portal small text-uppercase">Engine dan Transaksi</div>
                         <div class="icon-box text-success"><i class="bi bi-shield-check"></i></div>
                     </div>
                     <h5 class="fw-bold text-dark mb-1">{{ $stats['engine'] }}</h5>
@@ -240,10 +240,10 @@
                 </div>
             </div>
 
-            {{-- DOKUMENTASI SOP RECOVERY & OPTIMALISASI --}}
+            {{-- DOKUMENTASI SOP RECOVERY dan OPTIMALISASI --}}
             <div class="col-lg-4">
                 
-                {{-- KARTU RPO & RTO RECOVERY PLAN --}}
+                {{-- KARTU RPO dan RTO RECOVERY PLAN --}}
                 <div class="portal-card p-4 mb-4">
                     <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom border-secondary">
                         <i class="bi bi-journal-medical text-accent fs-5"></i>
@@ -252,7 +252,7 @@
                     <div class="d-flex flex-column gap-3 small">
                         <div>
                             <span class="text-muted-portal d-block">Recovery Point Objective (RPO):</span>
-                            <span class="fw-bold text-dark">< 5 Menit (Audit Triggers & Log Tables Aktif)</span>
+                            <span class="fw-bold text-dark">< 5 Menit (Audit Triggers dan Log Tables Aktif)</span>
                         </div>
                         <div>
                             <span class="text-muted-portal d-block">Recovery Time Objective (RTO):</span>

@@ -221,6 +221,10 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
         Route::get('/{exam}', [GuruExam::class, 'show'])
             ->name('show');
 
+        // Token ujian aktif
+        Route::get('/{exam}/token', [GuruExam::class, 'activeToken'])
+            ->name('token');
+
         // Edit ujian
         Route::get('/{exam}/edit', [GuruExam::class, 'edit'])
             ->name('edit');
@@ -286,6 +290,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/', [MonitoringController::class, 'index'])->name('index');
     Route::get('/class/{classId}', [MonitoringController::class, 'classExams'])->name('class.exams');
     Route::get('/exam/{id}', [MonitoringController::class, 'show'])->name('show');
+    Route::get('/exam/{id}/token', [MonitoringController::class, 'activeToken'])->name('token');
 });
 
 

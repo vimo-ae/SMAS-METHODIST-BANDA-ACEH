@@ -8,6 +8,7 @@
     // Variabel dummy fallback jika data belum dikirim dari Controller
     $stats = $stats ?? ['Total Siswa' => 0, 'Total Guru' => 0, 'Total Kelas' => 0];
     $activeSessions = $activeSessions ?? collect(); // Untuk monitoring sesi ujian
+    $examMonitors = $examMonitors ?? collect();
     $recentAnnouncements = $recentAnnouncements ?? collect();
     $classes = $classes ?? collect();
 @endphp
@@ -70,50 +71,68 @@
 
 
         <div class="row g-4">
-            {{-- KOLOM KIRI (KONTEN UTAMA: UJIAN & PENGUMUMAN) --}}
+            {{-- KOLOM KIRI (KONTEN UTAMA: UJIAN dan PENGUMUMAN) --}}
             <div class="col-lg-7">
                 
                 {{-- MONITORING SESI UJIAN --}}
                 <div class="portal-card mb-4">
                     <div class="card-header-portal d-flex justify-content-between align-items-center">
                         <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-display text-accent me-2"></i> Monitoring Sesi Ujian</h5>
+                        <a href="{{ route('admin.monitoring.index') }}" class="small text-accent text-decoration-none">
+                            Lihat Semua
+                        </a>
                     </div>
                     <div class="p-3">
                         <div class="table-responsive">
                             <table class="table table-hover table-borderless align-middle custom-table">
                                 <thead class="text-muted-portal small border-bottom border-secondary">
                                     <tr>
-                                        <th>Kelas & Mata Pelajaran</th>
-                                        <th>Sesi</th>
+                                        <th>Kelas dan Mata Pelajaran</th>
+                                        <th class="text-center">Peserta</th>
                                         <th>Status</th>
                                         <th class="text-end">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse($activeSessions as $session)
+                                    @forelse($examMonitors as $exam)
+                                        @php
+                                            $now = now();
+                                            $isUpcoming = $now->lt($exam->start_time);
+                                            $isFinished = $now->gt($exam->end_time);
+                                            $isRunning = ! $isUpcoming && ! $isFinished && (int) $exam->running_count > 0;
+                                            $isOpen = ! $isUpcoming && ! $isFinished;
+                                        @endphp
                                         <tr>
                                             <td>
-                                                <div class="fw-semibold text-dark">{{ $session->exam->title ?? 'Ujian' }}</div>
+                                                <div class="fw-semibold text-dark">{{ $exam->title }}</div>
                                                <small class="text-muted-portal">
-                                                    {{ $session->exam->classSubjectTeacher->schoolClass->name ?? 'Kelas' }} · 
-                                                    {{ $session->exam->classSubjectTeacher->subject->name ?? 'Mapel' }}
+                                                    {{ $exam->class_name }} · {{ $exam->subject_name ?? 'Mata Pelajaran' }}
                                                 </small>
                                             </td>
-                                            <td><span class="badge bg-secondary">{{ $session->name ?? 'Sesi 1' }}</span></td>
+                                            <td class="text-center">
+                                                <span class="badge bg-secondary">{{ (int) $exam->participants_count }} siswa</span>
+                                            </td>
                                             <td>
-                                                <span class="text-success small"><i class="bi bi-circle-fill me-1"></i> Berlangsung</span>
+                                                @if($isFinished)
+                                                    <span class="text-secondary small"><i class="bi bi-circle-fill me-1"></i> Selesai</span>
+                                                @elseif($isUpcoming)
+                                                    <span class="text-warning small"><i class="bi bi-circle-fill me-1"></i> Belum dibuka</span>
+                                                @elseif($isRunning)
+                                                    <span class="text-success small"><i class="bi bi-circle-fill me-1"></i> Berlangsung</span>
+                                                @elseif($isOpen)
+                                                    <span class="text-primary small"><i class="bi bi-circle-fill me-1"></i> Dibuka</span>
+                                                @endif
                                             </td>
                                             <td class="text-end">
-                                                {{-- Menyesuaikan ke rute monitoring ujian jika ada --}}
-                                                <a href="{{ route('admin.monitoring.show', $session->exam_id) }}" class="btn btn-sm btn-portal-primary">
-                                                    Masuk Sesi
+                                                <a href="{{ route('admin.monitoring.show', $exam->exam_id) }}" class="btn btn-sm btn-portal-primary">
+                                                    Monitoring
                                                 </a>
                                             </td>
                                         </tr>
                                     @empty
                                         <tr>
                                             <td colspan="4" class="text-center py-4 text-muted-portal">
-                                                Tidak ada sesi ujian yang sedang berlangsung saat ini.
+                                                Belum ada ujian yang dipublikasikan.
                                             </td>
                                         </tr>
                                     @endforelse
@@ -152,7 +171,7 @@
 
             </div>
 
-            {{-- KOLOM KANAN (MANAJEMEN SISTEM & LOG AKTIVITAS NILAI) --}}
+            {{-- KOLOM KANAN (MANAJEMEN SISTEM dan LOG AKTIVITAS NILAI) --}}
             <div class="col-lg-5">
                 
                 {{-- NAVIGASI MANAJEMEN UTAMA --}}
@@ -165,8 +184,8 @@
                         <a href="{{ Route::has('admin.students.index') ? route('admin.students.index') : '#' }}" class="action-btn">
                             <div class="icon-wrapper bg-primary-subtle text-primary"><i class="bi bi-people-fill"></i></div>
                             <div class="flex-grow-1">
-                                <div class="fw-semibold text-dark">Data Siswa & Akun</div>
-                                <div class="text-muted-portal small">Kelola data & akun siswa</div>
+                                <div class="fw-semibold text-dark">Data Siswa dan Akun</div>
+                                <div class="text-muted-portal small">Kelola data dan akun siswa</div>
                             </div>
                             <i class="bi bi-chevron-right text-muted-portal"></i>
                         </a>
@@ -174,8 +193,8 @@
                         <a href="{{ Route::has('admin.teachers.index') ? route('admin.teachers.index') : '#' }}" class="action-btn">
                             <div class="icon-wrapper bg-success-subtle text-success"><i class="bi bi-person-workspace"></i></div>
                             <div class="flex-grow-1">
-                                <div class="fw-semibold text-dark">Data Guru & Akun</div>
-                                <div class="text-muted-portal small">Kelola data & akun pengajar</div>
+                                <div class="fw-semibold text-dark">Data Guru dan Akun</div>
+                                <div class="text-muted-portal small">Kelola data dan akun pengajar</div>
                             </div>
                             <i class="bi bi-chevron-right text-muted-portal"></i>
                         </a>
@@ -202,7 +221,7 @@
                             <div class="icon-wrapper bg-danger-subtle text-danger"><i class="bi bi-megaphone-fill"></i></div>
                             <div class="flex-grow-1">
                                 <div class="fw-semibold text-dark">Buat Pengumuman</div>
-                                <div class="text-muted-portal small">Kirim info ke guru & siswa</div>
+                                <div class="text-muted-portal small">Kirim info ke guru dan siswa</div>
                             </div>
                             <i class="bi bi-chevron-right text-muted-portal"></i>
                         </a>
@@ -210,8 +229,8 @@
                         <a href="{{ route('admin.profile.index') }}" class="action-btn">
                             <div class="icon-wrapper" style="background: #e0e7ff; color: #4338ca;"><i class="bi bi-person-gear"></i></div>
                             <div class="flex-grow-1">
-                                <div class="fw-semibold text-dark">Profil & Keamanan Akun</div>
-                                <div class="text-muted-portal small">Kelola data profil admin & kata sandi</div>
+                                <div class="fw-semibold text-dark">Profil dan Keamanan Akun</div>
+                                <div class="text-muted-portal small">Kelola data profil admin dan kata sandi</div>
                             </div>
                             <i class="bi bi-chevron-right text-muted-portal"></i>
                         </a>
@@ -338,7 +357,7 @@
         border-radius: 12px 12px 0 0;
     }
 
-    /* Badge & Ikon Header */
+    /* Badge dan Ikon Header */
     .portal-badge {
         background: #f1f5f9;
         border: 1px solid #e2e8f0;

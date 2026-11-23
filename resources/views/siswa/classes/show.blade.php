@@ -242,7 +242,7 @@
                 </div>
             @endif
 
-            {{-- BREADCRUMB & TOMBOL KEMBALI (DI BAWAH HEADER) --}}
+            {{-- BREADCRUMB dan TOMBOL KEMBALI (DI BAWAH HEADER) --}}
             <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
                 <div class="flex items-center gap-2 text-xs font-medium text-slate-400">
                     <a href="{{ route('siswa.classes.index') }}" class="hover:text-blue-600 transition">
@@ -462,7 +462,7 @@
                         </div>
                         <div>
                             <p class="text-[10px] font-extrabold uppercase tracking-[.18em] text-indigo-600">Assignments</p>
-                            <h2 class="mt-1 text-lg font-extrabold tracking-tight text-slate-800">Tugas & Pengumpulan</h2>
+                            <h2 class="mt-1 text-lg font-extrabold tracking-tight text-slate-800">Tugas dan Pengumpulan</h2>
                             <p class="mt-0.5 text-xs text-slate-500">Pantau deadline dan status pengumpulan tugasmu.</p>
                         </div>
                     </div>
@@ -678,7 +678,7 @@
                         </div>
                         <div>
                             <p class="text-[10px] font-extrabold uppercase tracking-[.18em] text-sky-600">Assessment Center</p>
-                            <h2 class="mt-1 text-lg font-extrabold tracking-tight text-slate-800">Ujian & Kuis</h2>
+                            <h2 class="mt-1 text-lg font-extrabold tracking-tight text-slate-800">Ujian dan Kuis</h2>
                             <p class="mt-0.5 text-xs text-slate-500">Daftar ujian yang telah dipublikasikan oleh guru.</p>
                         </div>
                     </div>

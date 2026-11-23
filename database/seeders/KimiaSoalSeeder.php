@@ -10,7 +10,8 @@ use Illuminate\Database\Seeder;
  * Nomor 2 dan 16 belum ada di PDF ("OTW"), tambahkan nanti di method soal().
  *
  * Jalankan: php artisan db:seed --class=KimiaSoalSeeder
- * Seeder akan menanyakan exam_id ujian Kimia, lalu MENGGANTI semua soal di ujian itu.
+ * Seeder otomatis mencari ujian Kimia. Anda juga dapat menentukan exam_id melalui
+ * environment KIMIA_EXAM_ID saat menjalankan seeder secara khusus.
  *
  * Kunci jawaban (hasil hitung sendiri, mohon dicek ulang dengan guru/pembahasan resmi):
  *  1 A | 3 D | 4 A | 5 D | 6 B,C | 7 A,B,D | 8 A,B | 9 A,B | 10 E | 11 E | 12 E | 13 B
@@ -31,8 +32,27 @@ class KimiaSoalSeeder extends Seeder
 
     public function run(): void
     {
-        $default = Exam::where('title', 'like', '%Kimia%')->value('exam_id');
-        $id = $this->command->ask('Masukkan exam_id ujian Kimia (soal lama di ujian ini akan diganti)', $default);
+        $id = filter_var(env('KIMIA_EXAM_ID'), FILTER_VALIDATE_INT, [
+            'options' => ['min_range' => 1],
+        ]);
+
+        if (! $id) {
+            $id = Exam::where('title', 'like', '%Kimia%')
+                ->value('exam_id');
+        }
+
+        if (! $id) {
+            $id = Exam::whereHas('classSubjectTeacher.subject', function ($query) {
+                $query->where('name', 'like', '%Kimia%')
+                    ->orWhere('code', 'like', '%Kimia%');
+            })->value('exam_id');
+        }
+
+        if (! $id) {
+            $this->command?->warn('Ujian Kimia tidak ditemukan. Seeder Kimia dilewati.');
+            return;
+        }
+
         $exam = Exam::find($id);
         if (! $exam) {
             $this->command->error("Ujian dengan id {$id} tidak ditemukan.");

@@ -34,7 +34,7 @@
             ],
             'bahasa indonesia' => [
                 'symbol' => 'IDN',
-                'category' => 'BAHASA & SASTRA INDONESIA',
+                'category' => 'BAHASA dan SASTRA INDONESIA',
                 'description' => 'Mengembangkan literasi dan kekuatan berbahasa',
                 'background' => 'linear-gradient(135deg,#123B60,#267BB5)',
                 'image' => asset('images/subjects/indonesia.jpg'),
@@ -1101,7 +1101,7 @@
         </div>
     </main>
 
-    {{-- GURU CLASS SLIDE & SEARCH SCRIPT --}}
+    {{-- GURU CLASS SLIDE dan SEARCH SCRIPT --}}
     @if($classes->isNotEmpty())
         <script>
             document.addEventListener('DOMContentLoaded', function () {

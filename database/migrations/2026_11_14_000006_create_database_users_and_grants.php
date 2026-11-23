@@ -55,7 +55,7 @@ return new class extends Migration
             'dml' => [
                 'class_subject_teacher', 'cst_students', 'announcements', 'material',
                 'assignments', 'assignment_submissions',
-                'exams', 'exam_questions', 'exam_sessions', 'exam_answers', 'exam_violations',
+                'exams', 'exam_token', 'exam_questions', 'exam_sessions', 'exam_answers', 'exam_violations',
                 'grades',
             ],
             'views' => [
@@ -80,6 +80,7 @@ return new class extends Migration
             'dml' => [
                 'cst_students', 'assignment_submissions',
                 'exam_sessions', 'exam_answers', 'exam_violations',
+                'exam_token',
                 'grades',
                 'sessions', 'cache', 'cache_locks',
             ],

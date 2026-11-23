@@ -62,7 +62,7 @@
                                     {{ number_format((float) $exam->objective_score, 2) }}
                                     <span class="text-base font-semibold text-slate-400">/ {{ number_format((float) $exam->objective_max_score, 2) }}</span>
                                 </p>
-                                <p class="mt-1 text-[11px] text-slate-500">Poin diperoleh / maksimal · Pilihan ganda & soal non-esai</p>
+                                <p class="mt-1 text-[11px] text-slate-500">Poin diperoleh / maksimal · Pilihan ganda dan soal non-esai</p>
                             </div>
 
                             <div class="rounded-xl border border-slate-100 bg-slate-50 p-4">

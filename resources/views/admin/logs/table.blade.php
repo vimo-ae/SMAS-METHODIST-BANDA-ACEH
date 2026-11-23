@@ -6,7 +6,7 @@
 @section('content')
 
 <div class="theme-portal rounded-4 shadow-sm">
-    {{-- HEADER & BREADCRUMB --}}
+    {{-- HEADER dan BREADCRUMB --}}
     <div class="p-4 border-bottom">
         <nav aria-label="breadcrumb" class="mb-2">
             <ol class="breadcrumb small mb-0">
@@ -48,7 +48,7 @@
     </div>
 
     <div class="p-4">
-        {{-- KARTU FILTER & PENCARIAN --}}
+        {{-- KARTU FILTER dan PENCARIAN --}}
         <div class="portal-card p-3 p-sm-4 mb-4">
             <form method="GET" action="{{ route('admin.activity-logs.table', $table) }}"
                   class="row g-2 align-items-center">

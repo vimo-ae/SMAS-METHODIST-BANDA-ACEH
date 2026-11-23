@@ -225,7 +225,7 @@
     <div class="p-page pt-6">
         <div class="mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-8 space-y-6">
 
-            {{-- BREADCRUMB & BACK BUTTON --}}
+            {{-- BREADCRUMB dan BACK BUTTON --}}
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div class="flex items-center gap-2 text-xs font-medium text-slate-400">
                     <a href="{{ route('siswa.exams.index') }}" class="hover:text-[#267BB5] transition flex items-center gap-1.5 font-semibold text-slate-600">
@@ -298,7 +298,7 @@
                 </div>
             </section>
 
-            {{-- 2 KOLOM LAYOUT: INFORMASI & PANEL EKSEKUSI --}}
+            {{-- 2 KOLOM LAYOUT: INFORMASI dan PANEL EKSEKUSI --}}
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
                 {{-- KOLOM KIRI (7/12): DETAIL, PANDUAN, ATURAN --}}
@@ -358,13 +358,13 @@
                                 <svg class="h-4 w-4 text-[#267BB5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                 </svg>
-                                Panduan &amp; Tata Cara
+                                Panduan dan Tata Cara
                             </h3>
                         </div>
                         <div class="p-card-body">
                             <ol class="p-steps">
                                 <li>
-                                    <strong class="text-slate-800">Siapkan perangkat &amp; internet stabil.</strong> Pastikan baterai mencukupi dan koneksi internet stabil. Tutup aplikasi/tab lain yang tidak berkepentingan.
+                                    <strong class="text-slate-800">Siapkan perangkat dan internet stabil.</strong> Pastikan baterai mencukupi dan koneksi internet stabil. Tutup aplikasi/tab lain yang tidak berkepentingan.
                                 </li>
                                 <li>
                                     <strong class="text-slate-800">Mode Layar Penuh (Fullscreen).</strong> Ujian berjalan otomatis dalam layar penuh untuk menjaga integritas dan ketenangan pengerjaan.
@@ -379,14 +379,14 @@
                         </div>
                     </div>
 
-                    {{-- KARTU 3: ATURAN & PENGAWASAN SISTEM --}}
+                    {{-- KARTU 3: ATURAN dan PENGAWASAN SISTEM --}}
                     <div class="p-card">
                         <div class="p-card-header bg-rose-50/50 border-rose-100">
                             <h3 class="font-bold text-sm text-rose-800 flex items-center gap-2">
                                 <svg class="h-4 w-4 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                                 </svg>
-                                Integritas &amp; Pengawasan Pelanggaran
+                                Integritas dan Pengawasan Pelanggaran
                             </h3>
                         </div>
                         <div class="p-card-body">
@@ -413,7 +413,7 @@
 
                 </div>
 
-                {{-- KOLOM KANAN (5/12): KESIAPAN & TOMBOL AKSI --}}
+                {{-- KOLOM KANAN (5/12): KESIAPAN dan TOMBOL AKSI --}}
                 <div class="lg:col-span-5 sticky top-6">
                     <div class="p-card border-[#BBD7E9] bg-white">
                         <div class="p-card-header bg-[#123B60] text-white">
@@ -421,7 +421,7 @@
                                 <svg class="h-4 w-4 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
-                                Status &amp; Panel Mulai
+                                Status dan Panel Mulai
                             </h3>
                         </div>
 
@@ -514,6 +514,24 @@
                                 <form action="{{ route('siswa.exams.start', $exam) }}" method="POST" id="startExamForm" class="space-y-4 pt-2">
                                     @csrf
 
+                                    <label class="block text-xs font-bold text-slate-700" for="exam_token">
+                                        Token Ujian
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="exam_token"
+                                        name="exam_token"
+                                        value="{{ old('exam_token') }}"
+                                        maxlength="10"
+                                        autocomplete="off"
+                                        placeholder="Masukkan token 6 karakter"
+                                        class="w-full rounded-xl border-slate-300 py-3 text-center font-mono text-lg font-black uppercase tracking-[0.35em] text-[#123B60] focus:border-[#267BB5] focus:ring-[#267BB5]"
+                                        required
+                                    >
+                                    @error('exam_token')
+                                        <p class="text-xs font-semibold text-rose-600">{{ $message }}</p>
+                                    @enderror
+
                                     <label class="flex items-start gap-2.5 cursor-pointer text-xs leading-relaxed text-slate-600" for="agreeRules">
                                         <input type="checkbox" id="agreeRules" class="mt-0.5 h-4 w-4 rounded border-slate-300 text-[#123B60] focus:ring-[#267BB5] cursor-pointer">
                                         <span>Saya telah membaca panduan dan aturan ujian, dan siap mengerjakan dengan jujur dan penuh tanggung jawab.</span>
@@ -543,6 +561,7 @@
         const form = document.getElementById('startExamForm');
         const chkNet = document.getElementById('chkNet');
         const chkFs = document.getElementById('chkFs');
+        const examToken = document.getElementById('exam_token');
 
         function setCheck(el, ok, text) {
             if (!el) return;
@@ -553,8 +572,8 @@
         }
 
         function refreshButton() {
-            if (!btn || !agree) return;
-            btn.disabled = !(agree.checked && navigator.onLine);
+            if (!btn || !agree || !examToken) return;
+            btn.disabled = !(agree.checked && navigator.onLine && examToken.value.trim().length >= 6);
         }
 
         function checkNet() {
@@ -572,6 +591,12 @@
         }
 
         if (agree) agree.addEventListener('change', refreshButton);
+        if (examToken) {
+            examToken.addEventListener('input', function () {
+                this.value = this.value.toUpperCase().replace(/[^A-Z2-9]/g, '').slice(0, 6);
+                refreshButton();
+            });
+        }
 
         if (form) {
             form.addEventListener('submit', function (e) {

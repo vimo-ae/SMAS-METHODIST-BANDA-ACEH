@@ -135,7 +135,30 @@
 
         <div class="mx-auto max-w-6xl sm:px-6 lg:px-8 space-y-6">
 
-            {{-- BREADCRUMB & TOMBOL KEMBALI --}}
+            @if(isset($examToken) && $examToken)
+                <div class="rounded-2xl border border-[#B9D5EA] bg-[#EAF4FB] p-5 shadow-sm"
+                     id="exam-token-card"
+                     data-expires="{{ $examToken->expires_at->toIso8601String() }}">
+                    <div class="flex flex-wrap items-center justify-between gap-4">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-[0.18em] text-[#267BB5]">Token Ujian Aktif</p>
+                            <p class="mt-1 text-sm text-slate-600">Token diperbarui otomatis setiap 10 menit.</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <code id="exam-token-value" class="rounded-xl border border-[#9DC3DE] bg-white px-5 py-3 font-mono text-2xl font-black tracking-[0.35em] text-[#123B60]">
+                                {{ $examToken->plainToken() }}
+                            </code>
+                            <div class="text-right">
+                                <p class="text-[10px] font-bold uppercase text-slate-400">Berlaku sampai</p>
+                                <p class="text-sm font-bold text-slate-700">{{ $examToken->expires_at->format('H:i:s') }}</p>
+                                <p class="text-[10px] font-semibold text-[#267BB5]" id="exam-token-countdown"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            {{-- BREADCRUMB dan TOMBOL KEMBALI --}}
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div class="flex items-center gap-2 text-xs font-medium text-slate-400">
                     <a href="{{ route('guru.exams.index') }}" class="transition hover:text-blue-600">
@@ -194,7 +217,7 @@
             @endif
 
             {{-- ======================================================== --}}
-            {{-- TOP CONTROL BAR: INFORMASI SOAL & TOMBOL TAMBAH/EDIT     --}}
+            {{-- TOP CONTROL BAR: INFORMASI SOAL dan TOMBOL TAMBAH/EDIT     --}}
             {{-- ======================================================== --}}
             @php
                 $totalQuestions = $exam->questions->count();
@@ -236,7 +259,7 @@
                         </div>
                     </div>
 
-                    {{-- TOMBOL UTAMA: BUKA / TUTUP FORM TAMBAH & EDIT SOAL --}}
+                    {{-- TOMBOL UTAMA: BUKA / TUTUP FORM TAMBAH dan EDIT SOAL --}}
                     <div>
                         <button type="button"
                                 @click="toggleForm()"
@@ -336,7 +359,7 @@
                             <option value="pilihan_ganda">Pilihan Ganda Biasa (1 Kunci)</option>
                             <option value="pilihan_ganda_kompleks">Pilihan Ganda Kompleks (Banyak Kunci)</option>
                             <option value="benar_salah">Pernyataan Benar / Salah</option>
-                            <option value="menjodohkan">Menjodohkan (Pairing Kiri & Kanan)</option>
+                            <option value="menjodohkan">Menjodohkan (Pairing Kiri dan Kanan)</option>
                             <option value="esai">Esai / Uraian Bebas</option>
                         </select>
                     </div>
@@ -490,7 +513,7 @@
 
                             <div class="space-y-2 pt-3 border-t border-slate-200">
                                 <div class="flex items-center justify-between">
-                                    <label class="text-xs font-bold text-slate-700 uppercase tracking-wide">Daftar Pernyataan Kiri (Premis) &amp; Kunci Target</label>
+                                    <label class="text-xs font-bold text-slate-700 uppercase tracking-wide">Daftar Pernyataan Kiri (Premis) dan Kunci Target</label>
                                     <button type="button" @click="addMatchLeft()" class="text-xs font-bold text-[#123B60] hover:underline">+ Tambah Premis Kiri</button>
                                 </div>
                                 <template x-for="(lItem, lIdx) in matchLeft" :key="lIdx">
@@ -584,7 +607,7 @@
                             </div>
                         </div>
 
-                        {{-- ISI PERTANYAAN & GAMBAR --}}
+                        {{-- ISI PERTANYAAN dan GAMBAR --}}
                         <div class="p-5 sm:p-6 space-y-4">
                             <div class="prose prose-slate max-w-none text-sm text-slate-800 leading-relaxed">
                                 {!! $q->question_text !!}
@@ -598,7 +621,7 @@
                                 </div>
                             @endif
 
-                            {{-- PREVIEW JAWABAN & KUNCI --}}
+                            {{-- PREVIEW JAWABAN dan KUNCI --}}
                             @if($q->question_type === 'pilihan_ganda' && is_array($q->options))
                                 <div class="mt-4 pt-3 border-t border-slate-100">
                                     <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Pilihan Jawaban:</p>
@@ -653,7 +676,7 @@
                                 </div>
                             @elseif($q->question_type === 'benar_salah' && is_array($q->options))
                                 <div class="mt-4 pt-3 border-t border-slate-100 space-y-2">
-                                    <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Daftar Pernyataan &amp; Kunci:</p>
+                                    <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Daftar Pernyataan dan Kunci:</p>
                                     @foreach($q->options as $bsIdx => $bsText)
                                         @php
                                             $isTrue = !empty($q->correct_answer[$bsIdx]);
@@ -720,6 +743,60 @@
 
         </div>
     </div>
+
+    @if(isset($examToken) && $examToken)
+        <script>
+            (() => {
+                const card = document.getElementById('exam-token-card');
+                const countdown = document.getElementById('exam-token-countdown');
+                if (!card) return;
+
+                let expiresAt = new Date(card.dataset.expires).getTime();
+                let refreshed = false;
+                const refreshToken = async () => {
+                    if (refreshed) return;
+                    refreshed = true;
+
+                    try {
+                        const response = await fetch(@json(route('guru.exams.token', $exam)), {
+                            headers: { 'Accept': 'application/json' },
+                        });
+                        const data = await response.json();
+
+                        if (data.token) {
+                            document.getElementById('exam-token-value').textContent = data.token;
+                            const expiryText = document.querySelector('#exam-token-card p.text-sm.font-bold');
+                            if (expiryText) expiryText.textContent = data.expires_at_display;
+
+                            expiresAt = new Date(data.expires_at).getTime();
+                            refreshed = false;
+                        }
+                    } catch (error) {
+                        refreshed = false;
+                    }
+                };
+
+                const tick = () => {
+                    const remaining = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
+                    const minutes = Math.floor(remaining / 60);
+                    const seconds = remaining % 60;
+
+                    if (countdown) {
+                        countdown.textContent = remaining > 0
+                            ? `Refresh dalam ${minutes}:${String(seconds).padStart(2, '0')}`
+                            : 'Token kedaluwarsa, memuat token baru...';
+                    }
+
+                    if (remaining === 0 && !refreshed) {
+                        refreshToken();
+                    }
+                };
+
+                tick();
+                setInterval(tick, 1000);
+            })();
+        </script>
+    @endif
 
     <!-- Init CKEditor 5 -->
     <script>
