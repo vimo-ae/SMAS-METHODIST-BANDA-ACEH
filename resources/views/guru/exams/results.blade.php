@@ -40,7 +40,7 @@
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div class="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
                     <div class="text-xs font-semibold text-slate-500">Esai menunggu koreksi</div>
-                    <div class="mt-1 text-2xl font-bold text-amber-600">{{ $pendingEssays->count() }}</div>
+                    <div class="mt-1 text-2xl font-bold text-amber-600">{{ $pendingEssayCount }}</div>
                 </div>
                 <div class="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
                     <div class="text-xs font-semibold text-slate-500">Total pelanggaran tercatat</div>
@@ -102,6 +102,7 @@
                                     $finalScore = $res ? (float) $res->final_score : 0;
                                     $isFinished = in_array($session->status, ['selesai', 'keluar'], true);
                                     $waktuSelesai = $session->finished_at ?? ($isFinished ? $session->updated_at : null);
+                                    $gradedEssayCount = (int) $gradedEssayCounts->get($session->student_id, 0);
                                 @endphp
                                 <tr class="hover:bg-slate-50 transition-colors">
                                     
@@ -161,6 +162,26 @@
                                             @else
                                                 <span class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-500">
                                                     Aman (0 Pelanggaran)
+                                                </span>
+                                            @endif
+
+                                            @if($essayQuestionCount > 0)
+                                                @if($gradedEssayCount >= $essayQuestionCount)
+                                                    <span class="inline-flex items-center rounded-md bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
+                                                        Esai dicek {{ $gradedEssayCount }}/{{ $essayQuestionCount }}
+                                                    </span>
+                                                @elseif($gradedEssayCount > 0)
+                                                    <span class="inline-flex items-center rounded-md bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-700">
+                                                        Esai sebagian dicek {{ $gradedEssayCount }}/{{ $essayQuestionCount }}
+                                                    </span>
+                                                @else
+                                                    <span class="inline-flex items-center rounded-md bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-700">
+                                                        Esai belum dicek 0/{{ $essayQuestionCount }}
+                                                    </span>
+                                                @endif
+                                            @else
+                                                <span class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-500">
+                                                    Tidak ada esai
                                                 </span>
                                             @endif
                                         </div>

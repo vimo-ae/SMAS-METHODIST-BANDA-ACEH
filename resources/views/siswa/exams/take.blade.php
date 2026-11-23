@@ -217,7 +217,9 @@
         meta.appendChild(el('span', '', (labels[q.type] || q.type) + ' · bobot ' + q.weight));
         card.appendChild(meta);
 
-        card.appendChild(el('div', 'question-card__text', q.text));
+        const questionText = el('div', 'question-card__text');
+        questionText.innerHTML = q.text || '';
+        card.appendChild(questionText);
         // Menampilkan gambar soal jika tersedia
         if (q.image) {
             const img = el('img', 'question-card__image');
@@ -375,7 +377,8 @@
         const wrap = el('div', 'space-y-3');
         const hint = el('p', 'text-sm text-slate-600', 'Ketik jawaban esai langsung pada kolom di bawah ini. Jawaban tersimpan otomatis.');
         const textarea = document.createElement('textarea');
-        textarea.className = 'w-full min-h-48 rounded-xl border border-slate-300 p-4 text-slate-800 focus:border-sky-500 focus:ring-sky-500';
+        textarea.className = 'essay-answer';
+        textarea.rows = 12;
         textarea.placeholder = 'Tulis jawabanmu di sini...';
         textarea.maxLength = 20000;
         textarea.value = (answers[q.id] && answers[q.id].text) || '';

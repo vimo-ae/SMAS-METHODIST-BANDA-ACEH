@@ -349,24 +349,6 @@
                         <textarea name="question_text" id="editor" class="w-full rounded-xl border-slate-300 text-xs">{{ old('question_text') }}</textarea>
                     </div>
 
-                    <!-- Upload Gambar Soal -->
-                    <div class="rounded-2xl bg-[#E8F1F8]/80 border border-[#D9EAF5] p-4 space-y-2">
-                        <label class="block text-xs font-bold text-[#123B60]">
-                            Gambar Ilustrasi Soal (Opsional)
-                        </label>
-                        <input type="file"
-                               name="image"
-                               accept="image/jpeg,image/png,image/webp"
-                               class="block w-full text-xs text-slate-600
-                                   file:mr-3 file:py-2 file:px-4
-                                   file:rounded-xl file:border-0
-                                   file:bg-[#123B60] file:text-white
-                                   file:font-bold hover:file:bg-[#267BB5] cursor-pointer">
-                        <p class="text-[11px] text-slate-500">
-                            Format JPG, PNG, atau WEBP. Maksimal 5 MB. Kosongkan jika tidak ingin mengganti gambar saat mengedit soal.
-                        </p>
-                    </div>
-
                     <!-- UI Opsi Jawaban Sesuai Tipe -->
                     <div class="rounded-2xl bg-slate-50 border border-slate-200/80 p-5 space-y-4">
 
@@ -741,8 +723,17 @@
 
     <!-- Init CKEditor 5 -->
     <script>
+        const imageUploadUrl = @json(route('guru.exams.upload-image'));
+        const csrfToken = @json(csrf_token());
+
         ClassicEditor
             .create(document.querySelector('#editor'), {
+                simpleUpload: {
+                    uploadUrl: imageUploadUrl,
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken
+                    }
+                },
                 toolbar: [
                     'heading', '|',
                     'bold', 'italic', 'underline', 'strikethrough', '|',
@@ -753,14 +744,42 @@
             })
             .then(editor => {
                 window.editorInstance = editor;
-                editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
+                editor.plugins.get('FileRepository').createUploadAdapter = loader => {
+                    let controller;
+
                     return {
-                        upload: () => loader.file.then(file => new Promise((resolve, reject) => {
-                            const reader = new FileReader();
-                            reader.onload = () => resolve({ default: reader.result });
-                            reader.onerror = error => reject(error);
-                            reader.readAsDataURL(file);
-                        }))
+                        upload: async () => {
+                            const file = await loader.file;
+                            const formData = new FormData();
+                            formData.append('upload', file);
+                            controller = new AbortController();
+
+                            const response = await fetch(imageUploadUrl, {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': csrfToken,
+                                    'Accept': 'application/json'
+                                },
+                                body: formData,
+                                signal: controller.signal
+                            });
+                            const result = await response.json();
+
+                            if (!response.ok) {
+                                throw new Error(
+                                    result.errors?.upload?.[0] ||
+                                    result.message ||
+                                    'Gagal mengunggah gambar.'
+                                );
+                            }
+
+                            if (!result.url) {
+                                throw new Error('Server tidak mengembalikan URL gambar.');
+                            }
+
+                            return { default: result.url };
+                        },
+                        abort: () => controller?.abort()
                     };
                 };
             })

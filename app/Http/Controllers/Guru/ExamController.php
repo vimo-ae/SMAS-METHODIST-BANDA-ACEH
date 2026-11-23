@@ -175,6 +175,23 @@ class ExamController extends Controller
     // SOAL UJIAN
     // =========================================================
 
+    public function uploadImage(Request $request)
+    {
+        $request->validate([
+            'upload' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        $path = $request->file('upload')->store('exam-questions', 'public');
+
+        if ($path === false) {
+            throw new \RuntimeException('Gagal menyimpan gambar soal.');
+        }
+
+        return response()->json([
+            'url' => Storage::disk('public')->url($path),
+        ]);
+    }
+
     public function storeQuestion(Request $request, Exam $exam)
     {
         $this->own($request, $exam);
@@ -561,6 +578,32 @@ class ExamController extends Controller
             ->get()
             ->keyBy('student_id');
 
+        $essayQuestionIds = $exam->questions
+            ->where('question_type', 'esai')
+            ->pluck('exam_question_id');
+        $finishedSessions = $sessions->whereIn('status', ['selesai', 'keluar']);
+        $gradedEssayCounts = collect();
+
+        if ($essayQuestionIds->isNotEmpty() && $finishedSessions->isNotEmpty()) {
+            $gradedEssayCounts = DB::connection('mysql_guru')
+                ->table('exam_answers')
+                ->where('exam_id', $exam->exam_id)
+                ->whereIn('question_id', $essayQuestionIds)
+                ->whereIn('students_id', $finishedSessions->pluck('student_id'))
+                ->whereNotNull('graded_at')
+                ->whereNotNull('score')
+                ->select('students_id')
+                ->selectRaw('COUNT(DISTINCT question_id) AS graded_count')
+                ->groupBy('students_id')
+                ->pluck('graded_count', 'students_id');
+        }
+
+        $essayQuestionCount = $essayQuestionIds->count();
+        $pendingEssayCount = max(
+            0,
+            ($essayQuestionCount * $finishedSessions->count()) - $gradedEssayCounts->sum()
+        );
+
         if ($weightsChanged) {
             foreach ($sessions->whereIn('status', ['selesai', 'keluar']) as $session) {
                 $grader->gradeAnswers($session);
@@ -587,20 +630,6 @@ class ExamController extends Controller
             ->where('exam_id', $exam->exam_id)
             ->first();
 
-        $pendingEssays = DB::connection('mysql_guru')
-            ->table('exam_answers as ea')
-            ->join('exam_questions as q', 'q.exam_question_id', '=', 'ea.question_id')
-            ->join('exam_sessions as es', function ($join) {
-                $join->on('es.exam_id', '=', 'ea.exam_id')
-                    ->on('es.student_id', '=', 'ea.students_id');
-            })
-            ->where('q.exam_id', $exam->exam_id)
-            ->where('q.question_type', 'esai')
-            ->whereIn('es.status', ['selesai', 'keluar'])
-            ->whereNull('ea.graded_at')
-            ->select('ea.exam_answer_id')
-            ->get();
-
         $violationSummaries = DB::connection('mysql_guru')
             ->table('v_violation_summary')
             ->where('exam_id', $exam->exam_id)
@@ -612,7 +641,9 @@ class ExamController extends Controller
             'sessions',
             'examResultsView',
             'examStats',
-            'pendingEssays',
+            'essayQuestionCount',
+            'gradedEssayCounts',
+            'pendingEssayCount',
             'violationSummaries'
         ));
     }

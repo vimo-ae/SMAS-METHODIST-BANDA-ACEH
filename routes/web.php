@@ -202,6 +202,10 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
 
     Route::prefix('guru/e-exam')->name('guru.exams.')->group(function () {
 
+        // Upload gambar pertanyaan dari CKEditor
+        Route::post('/upload-image', [GuruExam::class, 'uploadImage'])
+            ->name('upload-image');
+
         // Daftar ujian
         Route::get('/', [GuruExam::class, 'index'])
             ->name('index');
@@ -259,6 +263,8 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
         // Koreksi esai
         Route::patch('/session/{session}/grade-essay', [GuruExam::class, 'gradeEssay'])
             ->name('grade-essay');
+
+        
     });
 });
 

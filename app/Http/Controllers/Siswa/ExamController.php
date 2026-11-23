@@ -8,6 +8,7 @@ use App\Models\ExamAnswer;
 use App\Models\ExamSession;
 use App\Models\ExamViolation;
 use App\Services\ExamGrader;
+use App\Support\AnnouncementContentSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -87,7 +88,11 @@ class ExamController extends Controller
         return redirect()->route('siswa.exams.take', $exam);
     }
 
-    public function take(Request $request, Exam $exam)
+    public function take(
+        Request $request,
+        Exam $exam,
+        AnnouncementContentSanitizer $sanitizer
+    )
     {
         $student = $this->authorizeExam($request, $exam);
         $session = ExamSession::where(['exam_id' => $exam->exam_id, 'student_id' => $student->nis])->first();
@@ -99,7 +104,8 @@ class ExamController extends Controller
 
         // Kunci jawaban TIDAK dikirim ke browser
         $questions = $exam->questions()->get()->map(fn ($q) => [
-            'id' => $q->exam_question_id, 'type' => $q->question_type, 'text' => $q->question_text,
+            'id' => $q->exam_question_id, 'type' => $q->question_type,
+            'text' => $sanitizer->sanitizeExamQuestion((string) $q->question_text),
             'options' => $q->options, 'weight' => $q->score_weight,
             'image' => $q->image_path ? asset('storage/'.$q->image_path) : null,
         ])->values();

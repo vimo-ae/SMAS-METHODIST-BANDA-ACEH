@@ -58,8 +58,11 @@
                         <div class="grid gap-3 p-5 sm:grid-cols-2 lg:grid-cols-4 sm:p-6">
                             <div class="rounded-xl border border-slate-100 bg-slate-50 p-4">
                                 <p class="text-xs font-semibold text-slate-500">Skor Objektif</p>
-                                <p class="mt-1 text-2xl font-bold text-navy">{{ number_format((float) $exam->objective_score, 2) }}</p>
-                                <p class="mt-1 text-[11px] text-slate-500">Pilihan ganda & soal non-esai</p>
+                                <p class="mt-1 text-2xl font-bold text-navy">
+                                    {{ number_format((float) $exam->objective_score, 2) }}
+                                    <span class="text-base font-semibold text-slate-400">/ {{ number_format((float) $exam->objective_max_score, 2) }}</span>
+                                </p>
+                                <p class="mt-1 text-[11px] text-slate-500">Poin diperoleh / maksimal · Pilihan ganda & soal non-esai</p>
                             </div>
 
                             <div class="rounded-xl border border-slate-100 bg-slate-50 p-4">
@@ -67,7 +70,10 @@
                                 @if ($essayCount === 0)
                                     <p class="mt-1 text-base font-semibold text-slate-500">Tidak ada soal esai</p>
                                 @else
-                                    <p class="mt-1 text-2xl font-bold text-navy">{{ number_format((float) $exam->essay_score, 2) }}</p>
+                                    <p class="mt-1 text-2xl font-bold text-navy">
+                                        {{ number_format((float) $exam->essay_score, 2) }}
+                                        <span class="text-base font-semibold text-slate-400">/ {{ number_format((float) $exam->essay_max_score, 2) }}</span>
+                                    </p>
                                     <p class="mt-1 text-[11px] {{ $pendingEssayCount > 0 ? 'font-semibold text-amber-700' : 'text-slate-500' }}">
                                         {{ $essayCount - $pendingEssayCount }} dari {{ $essayCount }} soal dikoreksi
                                         @if ($pendingEssayCount > 0)
