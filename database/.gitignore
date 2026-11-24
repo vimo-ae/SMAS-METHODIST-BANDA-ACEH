@@ -1,1 +1,17 @@
+﻿# ==========================================
+# LOCAL DATABASE FILES
+# ==========================================
 *.sqlite*
+
+# ==========================================
+# PRIVATE SCHOOL SOURCE DATA (DO NOT COMMIT)
+# ==========================================
+/seeders/data/students_2026_2027.php
+/seeders/data/school_structure_2026_2027.php
+/seeders/data/pending_students_2026_2027.php
+/seeders/data/ortu_perlu_dilengkapi.csv
+/seeders/data/parent_profiles_2026_2027.csv
+/seeders/data/parent_profiles_2026_2027.php
+
+# Roster schedules contain class/subject/time only and may be committed.
+# Sample files and this README are also safe for the repository.
