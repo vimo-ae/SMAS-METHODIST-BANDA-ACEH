@@ -81,6 +81,12 @@ Route::middleware(['auth', 'role:siswa'])->group(function () {
 
         Route::post('/assignments/{assignment}/submit', [SiswaClassroom::class, 'submit'])
             ->name('assignments.submit');
+
+        Route::get('/assignments/{assignment}/download', [SiswaClassroom::class, 'downloadSubmission'])
+            ->name('assignments.download');
+
+        Route::get('/assignments/{assignment}/view', [SiswaClassroom::class, 'viewSubmission'])
+            ->name('assignments.view');
     });
 
     // E-Exam Siswa
@@ -192,6 +198,9 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
 
     Route::get('/assignments/{assignment}/students/{nis}/download', [GuruClassroom::class, 'downloadSubmission'])
         ->name('assignments.download');
+
+    Route::get('/assignments/{assignment}/students/{nis}/view', [GuruClassroom::class, 'viewSubmission'])
+        ->name('assignments.view');
     });
 
 

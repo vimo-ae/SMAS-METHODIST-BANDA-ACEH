@@ -242,15 +242,22 @@
                                     </div>
                                 </div>
 
-                                {{-- AKSI UNDUH JAWABAN JIKA ADA --}}
+                                {{-- AKSI UNDUH & LIHAT JAWABAN JIKA ADA --}}
                                 @if($submission)
-                                    <div class="flex items-center gap-3 self-start lg:self-center">
+                                    <div class="flex items-center gap-2 self-start lg:self-center flex-wrap">
+                                        <a href="{{ route('guru.classes.assignments.view', ['assignment' => $assignment->assignment_id, 'nis' => $student->nis]) }}"
+                                           target="_blank"
+                                           class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 shadow-2xs transition hover:bg-slate-50 hover:border-slate-300">
+                                            <svg class="h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                            <span>Buka / Pratinjau</span>
+                                        </a>
+
                                         <a href="{{ route('guru.classes.assignments.download', ['assignment' => $assignment->assignment_id, 'nis' => $student->nis]) }}"
-                                           class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-[#123B60] shadow-sm transition hover:bg-blue-50 hover:border-blue-200">
-                                            <svg class="h-4 w-4 text-[#267BB5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                           class="inline-flex items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-bold text-[#123B60] shadow-2xs transition hover:bg-blue-100">
+                                            <svg class="h-3.5 w-3.5 text-[#267BB5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                                             </svg>
-                                            <span>Unduh Berkas Jawaban</span>
+                                            <span>Unduh Berkas</span>
                                         </a>
 
                                         @if($submission->score !== null)

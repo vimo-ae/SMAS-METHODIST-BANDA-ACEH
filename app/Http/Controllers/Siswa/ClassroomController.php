@@ -101,4 +101,40 @@ class ClassroomController extends Controller
 
         return back()->with('success', 'Tugas berhasil dikumpulkan.');
     }
+
+    /**
+     * Unduh berkas jawaban tugas milik siswa sendiri.
+     */
+    public function downloadSubmission(Request $request, Assignment $assignment)
+    {
+        $user = $request->user();
+        $student = $user->student;
+        abort_unless($student, 403);
+
+        $submission = AssignmentSubmission::where('assignment_id', $assignment->assignment_id)
+            ->where('students_id', $student->nis)
+            ->firstOrFail();
+
+        abort_unless($submission->file_path && Storage::disk('local')->exists($submission->file_path), 404);
+
+        return Storage::disk('local')->download($submission->file_path, basename($submission->file_path));
+    }
+
+    /**
+     * Buka / pratinjau berkas jawaban tugas milik siswa sendiri.
+     */
+    public function viewSubmission(Request $request, Assignment $assignment)
+    {
+        $user = $request->user();
+        $student = $user->student;
+        abort_unless($student, 403);
+
+        $submission = AssignmentSubmission::where('assignment_id', $assignment->assignment_id)
+            ->where('students_id', $student->nis)
+            ->firstOrFail();
+
+        abort_unless($submission->file_path && Storage::disk('local')->exists($submission->file_path), 404);
+
+        return response()->file(Storage::disk('local')->path($submission->file_path));
+    }
 }
