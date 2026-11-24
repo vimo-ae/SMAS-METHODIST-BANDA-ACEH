@@ -133,7 +133,7 @@
             </div>
         </div>
 
-        {{-- DAFTAR KELAS MATA PELAJARAN (Database View: v_class_roster & Stored Function: fn_student_average) --}}
+        {{-- DAFTAR KELAS MATA PELAJARAN (Database View: v_class_roster dan Stored Function: fn_student_average) --}}
         <div class="portal-card mb-4 overflow-hidden">
             <div class="card-header-portal d-flex justify-content-between align-items-center">
                 <h5 class="fw-bold mb-0 text-dark">

@@ -401,7 +401,7 @@
                                         <div class="eclass-cover-overlay"></div>
                                     @endif
 
-                                    {{-- HEADER BAR: KELAS & SEMESTER --}}
+                                    {{-- HEADER BAR: KELAS dan SEMESTER --}}
                                     <div class="relative z-10 flex items-center justify-between gap-2">
                                         <span class="inline-flex items-center rounded-lg bg-white/20 backdrop-blur-md px-2.5 py-1 text-[10px] font-bold text-white border border-white/30">
                                             {{ $className }}
@@ -411,7 +411,7 @@
                                         </span>
                                     </div>
 
-                                    {{-- FOOTER BAR: KATEGORI & MONOGRAM --}}
+                                    {{-- FOOTER BAR: KATEGORI dan MONOGRAM --}}
                                     <div class="relative z-10 flex items-end justify-between gap-3 mt-6">
                                         <div>
                                             <p class="text-[9px] font-extrabold uppercase tracking-[.15em] text-white/80">
@@ -488,7 +488,7 @@
         </div>
     </div>
 
-    {{-- CLASS SLIDE & SEARCH SCRIPT --}}
+    {{-- CLASS SLIDE dan SEARCH SCRIPT --}}
     @if($joined->isNotEmpty())
         <script>
             document.addEventListener('DOMContentLoaded', function () {

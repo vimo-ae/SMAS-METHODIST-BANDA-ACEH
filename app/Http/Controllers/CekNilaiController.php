@@ -42,6 +42,25 @@ class CekNilaiController extends Controller
             ->orderByDesc('exam_session_id')
             ->get();
 
+        $examMaxScores = $connection->table('exam_questions')
+            ->whereIn('exam_id', $exams->pluck('exam_id'))
+            ->select('exam_id')
+            ->selectRaw("
+                COALESCE(SUM(CASE WHEN question_type <> 'esai' THEN score_weight ELSE 0 END), 0)
+                    AS objective_max_score,
+                COALESCE(SUM(CASE WHEN question_type = 'esai' THEN score_weight ELSE 0 END), 0)
+                    AS essay_max_score
+            ")
+            ->groupBy('exam_id')
+            ->get()
+            ->keyBy('exam_id');
+
+        foreach ($exams as $exam) {
+            $maxScores = $examMaxScores->get($exam->exam_id);
+            $exam->objective_max_score = (float) ($maxScores->objective_max_score ?? 0);
+            $exam->essay_max_score = (float) ($maxScores->essay_max_score ?? 0);
+        }
+
         return response()
             ->view('cek-nilai-ujian.show', compact('student', 'exams'))
             ->header('Cache-Control', 'private, no-store, max-age=0')

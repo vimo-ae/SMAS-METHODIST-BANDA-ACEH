@@ -115,7 +115,7 @@
     <div class="lms-page min-h-screen bg-[#f5f8fc] py-6 sm:py-8">
         <div class="mx-auto max-w-4xl space-y-6 px-4 sm:px-6 lg:px-8">
 
-            {{-- BREADCRUMB & TOMBOL KEMBALI (DI BAWAH HEADER) --}}
+            {{-- BREADCRUMB dan TOMBOL KEMBALI (DI BAWAH HEADER) --}}
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div class="flex items-center gap-2 text-xs font-semibold text-slate-400">
                     <a href="{{ route('guru.classes.index') }}" class="hover:text-blue-600 transition">E-Class</a>
@@ -191,7 +191,7 @@
                     </div>
 
                     <div>
-                        <label class="lms-label">Instruksi & Petunjuk Pengerjaan</label>
+                        <label class="lms-label">Instruksi dan Petunjuk Pengerjaan</label>
                         <div id="editor-assignment-create"></div>
                         <input type="hidden"
                                name="description"

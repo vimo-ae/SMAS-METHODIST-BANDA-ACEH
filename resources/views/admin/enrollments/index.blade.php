@@ -162,7 +162,7 @@
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Pilih Kelas Mata Pelajaran (CST) <span class="text-danger">*</span></label>
                     <select name="cst_id" id="bulkCstSelect" class="form-select" required>
-                        <option value="">-- Pilih Kelas & Mata Pelajaran --</option>
+                        <option value="">-- Pilih Kelas dan Mata Pelajaran --</option>
                         @foreach($csts as $cst)
                             <option value="{{ $cst->cst_id }}" data-class-id="{{ $cst->class_id }}">
                                 {{ $cst->schoolClass->name ?? 'Kelas #' . $cst->class_id }} —

@@ -217,7 +217,9 @@
         meta.appendChild(el('span', '', (labels[q.type] || q.type) + ' · bobot ' + q.weight));
         card.appendChild(meta);
 
-        card.appendChild(el('div', 'question-card__text', q.text));
+        const questionText = el('div', 'question-card__text');
+        questionText.innerHTML = q.text || '';
+        card.appendChild(questionText);
         // Menampilkan gambar soal jika tersedia
         if (q.image) {
             const img = el('img', 'question-card__image');
@@ -246,7 +248,7 @@
         const prev = el('button', 'btn btn-outline', '← Sebelumnya');
         prev.disabled = current === 0;
         prev.onclick = () => go(current - 1);
-        const next = el('button', 'btn btn-primary', current === QUESTIONS.length - 1 ? 'Tinjau & Selesai' : 'Berikutnya →');
+        const next = el('button', 'btn btn-primary', current === QUESTIONS.length - 1 ? 'Tinjau dan Selesai' : 'Berikutnya →');
         next.onclick = () => (current === QUESTIONS.length - 1 ? openFinish() : go(current + 1));
         nav.append(prev, next);
         card.appendChild(nav);
@@ -375,7 +377,8 @@
         const wrap = el('div', 'space-y-3');
         const hint = el('p', 'text-sm text-slate-600', 'Ketik jawaban esai langsung pada kolom di bawah ini. Jawaban tersimpan otomatis.');
         const textarea = document.createElement('textarea');
-        textarea.className = 'w-full min-h-48 rounded-xl border border-slate-300 p-4 text-slate-800 focus:border-sky-500 focus:ring-sky-500';
+        textarea.className = 'essay-answer';
+        textarea.rows = 12;
         textarea.placeholder = 'Tulis jawabanmu di sini...';
         textarea.maxLength = 20000;
         textarea.value = (answers[q.id] && answers[q.id].text) || '';
@@ -493,7 +496,7 @@
         navigator.sendBeacon(URL_LEAVE, fd);
     });
 
-    // ---------- Tombol & modal ----------
+    // ---------- Tombol dan modal ----------
     $('btn-start').onclick = () => {
         const root = document.documentElement;
         const req = root.requestFullscreen ? root.requestFullscreen() : Promise.resolve();

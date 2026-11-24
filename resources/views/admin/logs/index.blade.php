@@ -8,7 +8,7 @@
     {{-- HEADER HALAMAN --}}
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 p-4 border-bottom">
         <div>
-            <div class="text-uppercase tracking-wide text-accent fw-bold small mb-1">Audit & Riwayat Sistem</div>
+            <div class="text-uppercase tracking-wide text-accent fw-bold small mb-1">Audit dan Riwayat Sistem</div>
             <h2 class="fw-bold mb-1 text-dark">Log Aktivitas Database</h2>
             <p class="text-muted-portal mb-0">
                 Pilih tabel di bawah untuk meninjau riwayat perubahan data secara mendetail &middot;
@@ -23,7 +23,7 @@
         </div>
     </div>
 
-    {{-- DAFTAR KELOMPOK & KARTU TABEL --}}
+    {{-- DAFTAR KELOMPOK dan KARTU TABEL --}}
     <div class="p-4">
         @foreach ($groups as $groupName => $items)
             <div class="{{ !$loop->first ? 'mt-5' : '' }}">
@@ -42,7 +42,7 @@
                         <div class="col-12 col-md-6 col-xl-3">
                             <div class="log-card h-100 position-relative d-flex flex-column justify-content-between p-3 p-sm-4">
                                 <div>
-                                    {{-- Judul Tabel & Total Catatan --}}
+                                    {{-- Judul Tabel dan Total Catatan --}}
                                     <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
                                         <div>
                                             <h6 class="fw-bold text-dark mb-1">{{ $s['label'] }}</h6>
@@ -67,7 +67,7 @@
                                     </div>
                                 </div>
 
-                                {{-- Waktu Aktivitas Terakhir & Ikon Arah --}}
+                                {{-- Waktu Aktivitas Terakhir dan Ikon Arah --}}
                                 <div class="pt-3 border-top border-light-subtle d-flex justify-content-between align-items-center small text-muted-portal">
                                     <span>
                                         @if ($s['last_at'])

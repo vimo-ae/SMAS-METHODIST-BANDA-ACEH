@@ -47,7 +47,7 @@
                 <div class="col-md-6">
                     <label class="form-label fw-semibold">Kelas Mata Pelajaran (CST) <span class="text-danger">*</span></label>
                     <select name="cst_id" class="form-select" required>
-                        <option value="">-- Pilih Kelas & Mapel --</option>
+                        <option value="">-- Pilih Kelas dan Mapel --</option>
                         @foreach($csts as $cst)
                             <option value="{{ $cst->cst_id }}" {{ (string) old('cst_id') === (string) $cst->cst_id ? 'selected' : '' }}>
                                 {{ $cst->schoolClass->name ?? 'Kelas #' . $cst->class_id }} —

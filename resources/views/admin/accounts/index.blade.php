@@ -31,7 +31,7 @@
             </div>
         @endif
 
-        {{-- FORM PENCARIAN & FILTER RAPI --}}
+        {{-- FORM PENCARIAN dan FILTER RAPI --}}
         <form method="GET" action="{{ route('admin.accounts.index') }}" class="portal-card p-3 mb-4">
             <div class="row g-2 align-items-center">
                 <div class="col-12 col-lg-6">
@@ -79,7 +79,7 @@
                         <tr>
                             <th class="ps-4 text-center" style="width: 60px;">No</th>
                             <th style="width: 150px;">User ID</th>
-                            <th>Nama & Email</th>
+                            <th>Nama dan Email</th>
                             <th style="width: 130px;">Role</th>
                             <th class="text-center" style="width: 150px;">Rata-rata Nilai</th>
                             <th class="text-end pe-4 text-nowrap" style="width: 140px;">Aksi</th>

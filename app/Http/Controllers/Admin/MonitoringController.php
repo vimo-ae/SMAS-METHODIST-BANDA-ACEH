@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Exam;
 use App\Models\ExamSession;
 use App\Services\ExamGrader;
+use App\Services\ExamTokenService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -139,7 +141,27 @@ class MonitoringController extends Controller
         ]);
     }
 
-    public function show($id, ExamGrader $grader)
+    public function activeToken($id, ExamTokenService $examTokens)
+    {
+        $exam = Exam::on('mysql_admin')->findOrFail($id);
+
+        if (! $exam->isOpen()) {
+            return response()->json([
+                'token' => null,
+                'expires_at' => null,
+            ]);
+        }
+
+        $token = $examTokens->activeToken($exam);
+
+        return response()->json([
+            'token' => $token->plainToken(),
+            'expires_at' => $token->expires_at->toIso8601String(),
+            'expires_at_display' => $token->expires_at->format('H:i:s'),
+        ]);
+    }
+
+    public function show($id, ExamGrader $grader, ExamTokenService $examTokens)
     {
         $conn = $this->db();
 
@@ -196,6 +218,19 @@ class MonitoringController extends Controller
             'schoolClass' => (object) ['name' => $rawSession->class_name],
             'subject'     => (object) ['name' => $rawSession->subject_name],
         ];
+
+        $session->exam_token = null;
+        $session->exam_token_expires_at = null;
+        $exam = Exam::on('mysql_admin')->find($id);
+        if ($exam && $exam->isOpen()) {
+            try {
+                $activeToken = $examTokens->activeToken($exam);
+                $session->exam_token = $activeToken->plainToken();
+                $session->exam_token_expires_at = $activeToken->expires_at;
+            } catch (\RuntimeException) {
+                // Tidak menampilkan token jika ujian tidak aktif.
+            }
+        }
 
         // 3. Hasil per sesi dari View v_exam_results (memakai fn_exam_objective_score & fn_violation_count)
         $resultsByNis = $conn->table('v_exam_results')

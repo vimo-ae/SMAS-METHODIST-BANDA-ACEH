@@ -202,6 +202,10 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
 
     Route::prefix('guru/e-exam')->name('guru.exams.')->group(function () {
 
+        // Upload gambar pertanyaan dari CKEditor
+        Route::post('/upload-image', [GuruExam::class, 'uploadImage'])
+            ->name('upload-image');
+
         // Daftar ujian
         Route::get('/', [GuruExam::class, 'index'])
             ->name('index');
@@ -216,6 +220,10 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
         // Detail ujian
         Route::get('/{exam}', [GuruExam::class, 'show'])
             ->name('show');
+
+        // Token ujian aktif
+        Route::get('/{exam}/token', [GuruExam::class, 'activeToken'])
+            ->name('token');
 
         // Edit ujian
         Route::get('/{exam}/edit', [GuruExam::class, 'edit'])
@@ -259,6 +267,8 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
         // Koreksi esai
         Route::patch('/session/{session}/grade-essay', [GuruExam::class, 'gradeEssay'])
             ->name('grade-essay');
+
+        
     });
 });
 
@@ -280,6 +290,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/', [MonitoringController::class, 'index'])->name('index');
     Route::get('/class/{classId}', [MonitoringController::class, 'classExams'])->name('class.exams');
     Route::get('/exam/{id}', [MonitoringController::class, 'show'])->name('show');
+    Route::get('/exam/{id}/token', [MonitoringController::class, 'activeToken'])->name('token');
 });
 
 

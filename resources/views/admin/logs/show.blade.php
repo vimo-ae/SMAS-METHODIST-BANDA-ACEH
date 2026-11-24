@@ -14,7 +14,7 @@
 @endphp
 
 <div class="theme-portal rounded-4 shadow-sm">
-    {{-- HEADER & BREADCRUMB --}}
+    {{-- HEADER dan BREADCRUMB --}}
     <div class="p-4 border-bottom">
         <nav aria-label="breadcrumb" class="mb-2">
             <ol class="breadcrumb small mb-0">

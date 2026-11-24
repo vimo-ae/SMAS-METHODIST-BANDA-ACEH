@@ -792,7 +792,7 @@
 
                 <div class="grid items-center gap-8 lg:grid-cols-12">
                     
-                    {{-- Sapaan & Detail Profil Siswa --}}
+                    {{-- Sapaan dan Detail Profil Siswa --}}
                     <div class="lg:col-span-8">
                         <div class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1 text-xs font-semibold text-white/90 backdrop-blur-md">
                             <span class="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -957,7 +957,7 @@
             {{-- KONTEN UTAMA: 2 KOLOM (KOLOM KIRI 8 COLS, KOLOM KANAN 4 COLS) --}}
             <div class="grid gap-8 lg:grid-cols-12">
                 
-                {{-- KOLOM KIRI (8 COLS): KELAS SAYA & TUGAS PENDING --}}
+                {{-- KOLOM KIRI (8 COLS): KELAS SAYA dan TUGAS PENDING --}}
                 <div class="space-y-8 lg:col-span-8">
                     
                     {{-- Section: Mata Pelajaran Aktif (E-Class) --}}
@@ -1273,7 +1273,7 @@
                         @endif
                     </div>
 
-                    {{-- Widget 3: Warta & Pengumuman Sekolah --}}
+                    {{-- Widget 3: Warta dan Pengumuman Sekolah --}}
                     <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                             <h3 class="font-serif text-base font-bold text-slate-800">Warta Sekolah</h3>

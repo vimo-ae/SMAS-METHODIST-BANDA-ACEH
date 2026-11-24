@@ -19,14 +19,14 @@
     <div class="min-h-screen bg-[#FAF9F6] py-8">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
 
-            {{-- BREADCRUMB & TOMBOL KEMBALI --}}
+            {{-- BREADCRUMB dan TOMBOL KEMBALI --}}
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div class="flex items-center gap-2 text-xs font-medium text-slate-400">
                     <a href="{{ route('guru.exams.index') }}" class="transition hover:text-blue-600">
                         E-Exam
                     </a>
                     <span>/</span>
-                    <span class="font-bold text-blue-700">Hasil &amp; Nilai</span>
+                    <span class="font-bold text-blue-700">Hasil dan Nilai</span>
                 </div>
 
                 <a href="{{ route('guru.exams.index') }}"
@@ -40,7 +40,7 @@
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div class="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
                     <div class="text-xs font-semibold text-slate-500">Esai menunggu koreksi</div>
-                    <div class="mt-1 text-2xl font-bold text-amber-600">{{ $pendingEssays->count() }}</div>
+                    <div class="mt-1 text-2xl font-bold text-amber-600">{{ $pendingEssayCount }}</div>
                 </div>
                 <div class="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
                     <div class="text-xs font-semibold text-slate-500">Total pelanggaran tercatat</div>
@@ -88,8 +88,8 @@
                         <thead class="bg-slate-50 text-xs uppercase text-slate-700 border-b border-slate-200">
                             <tr>
                                 <th class="px-4 py-3">Nama Siswa</th>
-                                <th class="px-4 py-3 text-center">Waktu & Durasi</th>
-                                <th class="px-4 py-3 text-center">Status & Pelanggaran</th>
+                                <th class="px-4 py-3 text-center">Waktu dan Durasi</th>
+                                <th class="px-4 py-3 text-center">Status dan Pelanggaran</th>
                                 <th class="px-4 py-3 text-center">Nilai Akhir</th>
                                 <th class="px-4 py-3 text-center">Aksi</th>
                             </tr>
@@ -102,6 +102,7 @@
                                     $finalScore = $res ? (float) $res->final_score : 0;
                                     $isFinished = in_array($session->status, ['selesai', 'keluar'], true);
                                     $waktuSelesai = $session->finished_at ?? ($isFinished ? $session->updated_at : null);
+                                    $gradedEssayCount = (int) $gradedEssayCounts->get($session->student_id, 0);
                                 @endphp
                                 <tr class="hover:bg-slate-50 transition-colors">
                                     
@@ -113,7 +114,7 @@
                                         </div>
                                     </td>
 
-                                    <!-- WAKTU & DURASI -->
+                                    <!-- WAKTU dan DURASI -->
                                     <td class="px-4 py-3 text-center text-xs">
                                         <div class="flex items-center justify-center gap-3 flex-wrap">
                                             <div class="text-slate-500">
@@ -140,7 +141,7 @@
                                         </div>
                                     </td>
 
-                                    <!-- STATUS & PELANGGARAN -->
+                                    <!-- STATUS dan PELANGGARAN -->
                                     <td class="px-4 py-3 text-center">
                                         <div class="flex items-center justify-center gap-2 flex-wrap">
                                             @if($session->status === 'selesai')
@@ -163,10 +164,30 @@
                                                     Aman (0 Pelanggaran)
                                                 </span>
                                             @endif
+
+                                            @if($essayQuestionCount > 0)
+                                                @if($gradedEssayCount >= $essayQuestionCount)
+                                                    <span class="inline-flex items-center rounded-md bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
+                                                        Esai dicek {{ $gradedEssayCount }}/{{ $essayQuestionCount }}
+                                                    </span>
+                                                @elseif($gradedEssayCount > 0)
+                                                    <span class="inline-flex items-center rounded-md bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-700">
+                                                        Esai sebagian dicek {{ $gradedEssayCount }}/{{ $essayQuestionCount }}
+                                                    </span>
+                                                @else
+                                                    <span class="inline-flex items-center rounded-md bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-700">
+                                                        Esai belum dicek 0/{{ $essayQuestionCount }}
+                                                    </span>
+                                                @endif
+                                            @else
+                                                <span class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-500">
+                                                    Tidak ada esai
+                                                </span>
+                                            @endif
                                         </div>
                                     </td>
 
-                                    <!-- NILAI AKHIR & STATUS REMEDIAL -->
+                                    <!-- NILAI AKHIR dan STATUS REMEDIAL -->
                                     <td class="px-4 py-3 text-center">
                                         <div class="font-bold text-lg {{ $finalScore >= $exam->pass_score ? 'text-[#123B60]' : 'text-rose-600' }}">
                                             {{ number_format($finalScore, 2) }}

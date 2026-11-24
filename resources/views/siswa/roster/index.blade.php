@@ -28,7 +28,7 @@
         }"
         class="space-y-6 py-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
     >
-        {{-- BREADCRUMB & AKSI CEPAT --}}
+        {{-- BREADCRUMB dan AKSI CEPAT --}}
         <div class="flex flex-wrap items-center justify-between gap-3 print:hidden">
             <div class="flex items-center gap-2 text-xs font-medium text-slate-400">
                 <a href="{{ route('siswa.dashboard') }}" class="transition hover:text-blue-600">
@@ -80,12 +80,12 @@
                             ROSTER PELAJARAN KELAS {{ strtoupper($selectedClass) }}
                         </h1>
                         <p class="text-xs text-slate-200 sm:text-sm print:text-xs print:text-slate-600 mt-1">
-                            Tahun Ajaran {{ $metadata['academic_year'] }} &bull; Berlaku Efektif Semester Ganjil &amp; Genap
+                            Tahun Ajaran {{ $metadata['academic_year'] }} &bull; Berlaku Efektif Semester Ganjil dan Genap
                         </p>
                     </div>
                 </div>
 
-                {{-- SWITCH VIEW MODE & PILIHAN KELAS --}}
+                {{-- SWITCH VIEW MODE dan PILIHAN KELAS --}}
                 <div class="flex flex-wrap items-center gap-2.5 border-t border-white/10 pt-4 md:border-t-0 md:pt-0 print:hidden">
                     <button
                         type="button"
@@ -240,7 +240,7 @@
                                 </span>
                             </div>
 
-                            {{-- DAFTAR LES & MAPEL --}}
+                            {{-- DAFTAR LES dan MAPEL --}}
                             <div class="divide-y divide-slate-100">
                                 @php
                                     $groupedSlots = App\Services\RosterService::groupConsecutiveSlots($dayData['items'] ?? []);
@@ -377,14 +377,14 @@
         </div>
 
         {{-- ========================================================
-             DAFTAR KODE GURU & MATA PELAJARAN (LEGENDA RESMI)
+             DAFTAR KODE GURU dan MATA PELAJARAN (LEGENDA RESMI)
              ======================================================== --}}
         <div x-data="{ openTeachers: false }" class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
             <div class="flex items-center justify-between cursor-pointer select-none" @click="openTeachers = !openTeachers">
                 <div class="flex items-center gap-2.5">
                     <span class="h-2 w-2 rounded-full bg-[#123B60]"></span>
                     <h3 class="font-black text-sm text-slate-800 uppercase tracking-wider">
-                        Daftar Guru Pengampu &amp; Kode Mapel Resmi
+                        Daftar Guru Pengampu dan Kode Mapel Resmi
                     </h3>
                     <span class="text-[11px] text-slate-400 font-semibold hidden sm:inline">
                         ({{ count($teachers) }} Tenaga Pendidik)

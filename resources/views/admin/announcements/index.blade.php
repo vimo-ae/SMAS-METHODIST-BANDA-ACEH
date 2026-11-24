@@ -5,7 +5,7 @@
 @section('content')
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
     <div>
-        <h4 class="fw-bold mb-1 text-dark">Pengumuman & Informasi</h4>
+        <h4 class="fw-bold mb-1 text-dark">Pengumuman dan Informasi</h4>
         <p class="text-muted small mb-0">Kelola pengumuman untuk halaman publik (guest), guru, dan siswa.</p>
     </div>
     <a href="{{ route('admin.announcements.create') }}" class="btn btn-primary rounded-3 shadow-sm">
@@ -84,7 +84,7 @@
                         {{ ($announcement->published_at ?? $announcement->created_at)?->format('d M Y, H:i') }}
                     </div>
 
-                    {{-- Judul & Ringkasan --}}
+                    {{-- Judul dan Ringkasan --}}
                     <h5 class="fw-bold text-dark mb-2">{{ $announcement->title }}</h5>
                     <p class="text-muted small mb-3">
                         {{ $announcement->excerpt }}

@@ -37,24 +37,6 @@
         Lewati ke konten
     </a>
 
-    {{-- TOP BAR --}}
-    <div class="hidden bg-navy md:block">
-        <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-2 text-[11px] font-medium tracking-wide text-white/75 lg:px-8">
-            <div class="flex items-center gap-2">
-                <svg class="h-3.5 w-3.5 text-softblue" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21s7-5.5 7-12a7 7 0 10-14 0c0 6.5 7 12 7 12z"/>
-                    <circle cx="12" cy="9" r="2"/>
-                </svg>
-                Jl. Pocut Baren No. 3, Banda Aceh
-            </div>
-
-            <a href="mailto:official_smasmethodist@gmail.com"
-               class="transition hover:text-white">
-                official_smasmethodist@gmail.com
-            </a>
-        </div>
-    </div>
-
     {{-- HEADER --}}
     <header class="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 shadow-sm backdrop-blur-xl">
 
@@ -88,7 +70,7 @@
                 @endforeach
             </nav>
 
-            {{-- LOGIN & MOBILE BUTTON --}}
+            {{-- LOGIN dan MOBILE BUTTON --}}
             <div class="flex shrink-0 items-center gap-3">
                 <a href="{{ route('login') }}"
                    class="hidden items-center gap-2 rounded-lg bg-navy px-5 py-3 text-xs font-bold text-white shadow-sm transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-softblue focus:ring-offset-2 sm:inline-flex">
@@ -145,9 +127,9 @@
     {{-- FOOTER --}}
     <footer id="kontak" class="scroll-mt-24 bg-[#101C35] text-white">
 
-        <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
+        <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8 lg:py-16">
 
-            <div class="grid gap-12 md:grid-cols-2 lg:grid-cols-12">
+            <div class="grid gap-8 md:grid-cols-2 md:gap-10 lg:grid-cols-12 lg:gap-12">
 
                 {{-- SCHOOL IDENTITY --}}
                 <div class="lg:col-span-5">
@@ -268,13 +250,13 @@
             </div>
 
             {{-- FOOTER BOTTOM --}}
-            <div class="mt-14 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+            <div class="mt-10 flex flex-col items-center gap-2 border-t border-white/10 pt-6 text-center text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between sm:text-left lg:mt-14">
                 <p>
                     &copy; {{ date('Y') }} SMAS Methodist Banda Aceh. All rights reserved.
                 </p>
 
                 <p>
-                    Portal E-Learning & E-Exam
+                    Portal E-Learning dan E-Exam
                 </p>
             </div>
 

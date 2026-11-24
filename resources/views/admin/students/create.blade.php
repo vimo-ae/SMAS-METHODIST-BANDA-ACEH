@@ -30,7 +30,7 @@
         <form action="{{ route('admin.students.store') }}" method="POST" class="portal-card p-4">
             @csrf
 
-            <h6 class="fw-bold text-accent mb-3">1. Identitas Akun & Akademik</h6>
+            <h6 class="fw-bold text-accent mb-3">1. Identitas Akun dan Akademik</h6>
             <div class="row g-3 mb-4">
                 <div class="col-md-4">
                     <label class="form-label fw-semibold">NIS <span class="text-danger">*</span></label>
@@ -89,7 +89,7 @@
                 </div>
             </div>
 
-            <h6 class="fw-bold text-accent mb-3">2. Biodata, Alamat & Orang Tua</h6>
+            <h6 class="fw-bold text-accent mb-3">2. Biodata, Alamat dan Orang Tua</h6>
             <div class="row g-3">
                 <div class="col-md-4">
                     <label class="form-label fw-semibold">Tempat Lahir</label>

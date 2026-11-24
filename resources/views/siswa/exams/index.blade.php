@@ -268,7 +268,7 @@
             @endif
 
             {{-- ==========================================
-                 FILTER & PENCARIAN UJIAN
+                 FILTER dan PENCARIAN UJIAN
                  ========================================== --}}
             <section class="space-y-6">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -277,7 +277,7 @@
                             <span class="h-1.5 w-6 rounded-full bg-[#123B60]"></span>
                             <p class="text-[10px] font-extrabold uppercase tracking-[.2em] text-[#267BB5]">Daftar Evaluasi Siswa</p>
                         </div>
-                        <h2 class="mt-1 text-2xl font-black text-slate-800 sm:text-3xl">Ujian &amp; Kuis Terdaftar</h2>
+                        <h2 class="mt-1 text-2xl font-black text-slate-800 sm:text-3xl">Ujian dan Kuis Terdaftar</h2>
                         <p class="mt-1 text-xs sm:text-sm text-slate-500">Pilih ujian untuk melihat petunjuk pengerjaan dan mulai mengerjakan asesmen daring.</p>
                     </div>
 
@@ -345,7 +345,7 @@
                                 $className = $exam->classSubjectTeacher->schoolClass->name ?? 'Kelas Siswa';
                                 $isOpen = $exam->isOpen();
 
-                                // Status text & styling
+                                // Status text dan styling
                                 if ($session && $session->status !== 'berlangsung') {
                                     $statusCode = 'done';
                                     $statusBadge = 'Selesai';
@@ -392,7 +392,7 @@
                                         <div class="eexam-cover-overlay"></div>
                                     @endif
 
-                                    {{-- HEADER BAR: MAPEL & TIPE UJIAN --}}
+                                    {{-- HEADER BAR: MAPEL dan TIPE UJIAN --}}
                                     <div class="relative z-10 flex items-center justify-between gap-2">
                                         <span class="inline-flex items-center rounded-lg bg-white/20 backdrop-blur-md px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-white border border-white/30">
                                             {{ strtoupper($exam->exam_type) }}
@@ -403,7 +403,7 @@
                                         </span>
                                     </div>
 
-                                    {{-- FOOTER BAR: KATEGORI & MONOGRAM --}}
+                                    {{-- FOOTER BAR: KATEGORI dan MONOGRAM --}}
                                     <div class="relative z-10 flex items-end justify-between gap-3 mt-5">
                                         <div>
                                             <p class="text-[10px] font-bold uppercase tracking-[.18em] text-cyan-200">
@@ -431,7 +431,7 @@
                                             {{ $exam->title }}
                                         </h4>
 
-                                        {{-- WAKTU MULAI & JADWAL --}}
+                                        {{-- WAKTU MULAI dan JADWAL --}}
                                         <div class="mt-3.5 space-y-1.5 border-t border-slate-100 pt-3 text-xs text-slate-500">
                                             <div class="flex items-center gap-2">
                                                 <svg class="h-4 w-4 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -495,7 +495,7 @@
         </div>
     </div>
 
-    {{-- SISWA EXAM SLIDE & FILTER SCRIPT --}}
+    {{-- SISWA EXAM SLIDE dan FILTER SCRIPT --}}
     @if($exams->isNotEmpty())
         <script>
             document.addEventListener('DOMContentLoaded', function () {

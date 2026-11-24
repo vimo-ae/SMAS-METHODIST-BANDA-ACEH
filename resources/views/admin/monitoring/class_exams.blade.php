@@ -8,7 +8,7 @@
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 p-4 border-bottom">
         <div>
             <div class="text-uppercase tracking-wide text-accent fw-bold small mb-1">Monitoring Kelas {{ $schoolClass->name }}</div>
-            <h2 class="fw-bold mb-1 text-dark">Daftar Mata Pelajaran & Ujian</h2>
+            <h2 class="fw-bold mb-1 text-dark">Daftar Mata Pelajaran dan Ujian</h2>
             <p class="text-muted-portal mb-0">Pilih ujian mata pelajaran untuk memantau aktivitas siswa secara real-time.</p>
         </div>
         <a href="{{ route('admin.monitoring.index') }}" class="btn btn-outline-secondary btn-sm px-3 py-2 rounded-3">
