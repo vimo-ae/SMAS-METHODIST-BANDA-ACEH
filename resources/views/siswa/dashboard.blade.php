@@ -124,7 +124,7 @@
         .student-wrap {
             max-width: 1160px;
             margin: 0 auto;
-            padding: 0 24px;
+            padding: 0;
         }
 
         /* TOP INFORMATION */
@@ -673,10 +673,6 @@
                 padding: 28px 0 50px;
             }
 
-            .student-wrap {
-                padding: 0 16px;
-            }
-
             .student-hero {
                 min-height: auto;
                 padding: 28px 23px;
@@ -774,7 +770,7 @@
             @endif
 
             {{-- HERO BANNER IDENTITAS SISWA (FOTO SISWA SMAS METHODIST DENGAN OVERLAY RESMI) --}}
-            <section class="relative isolate overflow-hidden rounded-3xl bg-[#071326] p-6 text-white shadow-2xl sm:p-10">
+            <section class="relative isolate overflow-hidden rounded-3xl bg-[#071326] p-5 text-white shadow-2xl sm:p-8 lg:p-10">
                 {{-- Foto Siswa SMAS Methodist Banda Aceh --}}
                 <img src="{{ asset('images/methodist-students.jpg') }}"
                      alt="Siswa SMAS Methodist Banda Aceh"
@@ -790,17 +786,17 @@
                 <div class="absolute -right-20 -top-20 -z-10 h-80 w-80 rounded-full bg-blue-500/20 blur-3xl"></div>
                 <div class="absolute -bottom-20 left-1/3 -z-10 h-80 w-80 rounded-full bg-sky-400/15 blur-3xl"></div>
 
-                <div class="grid items-center gap-8 lg:grid-cols-12">
+                <div class="grid min-w-0 items-start gap-6 lg:grid-cols-12 lg:items-center lg:gap-8">
                     
                     {{-- Sapaan dan Detail Profil Siswa --}}
-                    <div class="lg:col-span-8">
-                        <div class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1 text-xs font-semibold text-white/90 backdrop-blur-md">
+                    <div class="min-w-0 lg:col-span-8">
+                        <div class="inline-flex max-w-full items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1 text-xs font-semibold text-white/90 backdrop-blur-md">
                             <span class="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                            <span>Siswa Aktif SMAS Methodist</span>
+                            <span class="min-w-0 break-words">Siswa Aktif SMAS Methodist</span>
                         </div>
 
                         <h1 class="mt-4 font-serif text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
-                            Halo, <span class="text-sky-300">{{ $user->name }}</span>!
+                            Halo, <span class="break-words [overflow-wrap:anywhere] text-sky-300">{{ $user->name }}</span>!
                         </h1>
 
                         <p class="mt-3 max-w-2xl text-sm leading-relaxed text-slate-200 sm:text-base">
@@ -808,62 +804,62 @@
                         </p>
 
                         {{-- Metadata Siswa (NIS, Kelas, Wali Kelas) --}}
-                        <div class="mt-6 flex flex-wrap items-center gap-2.5 sm:gap-3 text-xs">
-                            <div class="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3.5 py-2 backdrop-blur-md">
-                                <span class="text-slate-400">NIS:</span>
-                                <span class="font-mono font-bold text-white">{{ $student->nis ?? '-' }}</span>
+                        <div class="mt-6 flex min-w-0 flex-wrap items-start gap-2.5 text-xs sm:gap-3">
+                            <div class="inline-flex max-w-full min-w-0 items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3.5 py-2 backdrop-blur-md">
+                                <span class="shrink-0 text-slate-400">NIS:</span>
+                                <span class="min-w-0 break-all font-mono font-bold text-white">{{ $student->nis ?? '-' }}</span>
                             </div>
 
-                            <div class="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3.5 py-2 backdrop-blur-md">
-                                <span class="text-slate-400">NISN:</span>
-                                <span class="font-mono font-bold text-white">{{ $student->nisn ?? '-' }}</span>
+                            <div class="inline-flex max-w-full min-w-0 items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3.5 py-2 backdrop-blur-md">
+                                <span class="shrink-0 text-slate-400">NISN:</span>
+                                <span class="min-w-0 break-all font-mono font-bold text-white">{{ $student->nisn ?? '-' }}</span>
                             </div>
 
-                            <div class="inline-flex items-center gap-2 rounded-xl border border-sky-400/40 bg-sky-500/20 px-3.5 py-2 backdrop-blur-md">
-                                <span class="text-sky-200">Kelas:</span>
-                                <span class="font-bold text-white">{{ $student->schoolClass->name ?? 'Belum Ditentukan' }}</span>
+                            <div class="inline-flex max-w-full min-w-0 items-center gap-2 rounded-xl border border-sky-400/40 bg-sky-500/20 px-3.5 py-2 backdrop-blur-md">
+                                <span class="shrink-0 text-sky-200">Kelas:</span>
+                                <span class="min-w-0 break-words font-bold text-white">{{ $student->schoolClass->name ?? 'Belum Ditentukan' }}</span>
                             </div>
 
-                            <div class="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3.5 py-2 backdrop-blur-md">
-                                <span class="text-slate-400">Wali Kelas:</span>
-                                <span class="font-semibold text-white">
+                            <div class="inline-flex max-w-full min-w-0 items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3.5 py-2 backdrop-blur-md">
+                                <span class="shrink-0 text-slate-400">Wali Kelas:</span>
+                                <span class="min-w-0 break-words font-semibold text-white">
                                     {{ $student->schoolClass?->homeroomTeacher?->user?->name ?? 'Belum Ditugaskan' }}
                                 </span>
                             </div>
                         </div>
 
                         {{-- Tombol Aksi Cepat --}}
-                        <div class="mt-8 flex flex-wrap items-center gap-3">
+                        <div class="mt-6 flex min-w-0 flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap sm:items-center">
                             <a href="{{ route('siswa.classes.index') }}"
-                               class="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-xs sm:text-sm font-bold text-[#101C35] shadow-lg shadow-black/20 transition hover:bg-slate-100 hover:shadow-xl hover:-translate-y-0.5">
+                               class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-xs font-bold text-[#101C35] shadow-lg shadow-black/20 transition hover:bg-slate-100 hover:shadow-xl hover:-translate-y-0.5 sm:w-auto sm:text-sm">
                                 <svg class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.25v13m0-13C10.83 5.48 9.25 5 7.5 5S4.17 5.48 3 6.25v13C4.17 18.48 5.75 18 7.5 18s3.33.48 4.5 1.25m0-13C13.17 5.48 14.75 5 16.5 5c1.75 0 3.33.48 4.5 1.25v13C19.83 18.48 18.25 18 16.5 18c-1.75 0-3.33.48-4.5 1.25"/>
                                 </svg>
-                                <span>Buka E-Class Saya</span>
+                                <span class="min-w-0 text-center">Buka E-Class Saya</span>
                             </a>
 
                             <a href="{{ route('siswa.exams.index') }}"
-                               class="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-5 py-3 text-xs sm:text-sm font-semibold text-white backdrop-blur-md transition hover:bg-white/20 hover:-translate-y-0.5">
+                               class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-5 py-3 text-xs font-semibold text-white backdrop-blur-md transition hover:bg-white/20 hover:-translate-y-0.5 sm:w-auto sm:text-sm">
                                 <svg class="h-4 w-4 text-sky-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                 </svg>
-                                <span>Jadwal Ujian (E-Exam)</span>
+                                <span class="min-w-0 text-center">Jadwal Ujian (E-Exam)</span>
                             </a>
 
                             <a href="{{ route('siswa.roster') }}"
-                               class="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-5 py-3 text-xs sm:text-sm font-semibold text-white backdrop-blur-md transition hover:bg-white/20 hover:-translate-y-0.5">
+                               class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-5 py-3 text-xs font-semibold text-white backdrop-blur-md transition hover:bg-white/20 hover:-translate-y-0.5 sm:w-auto sm:text-sm">
                                 <svg class="h-4 w-4 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <rect x="3" y="4" width="18" height="18" rx="2" stroke-width="2"/>
                                     <path d="M16 2v4M8 2v4M3 10h18"/>
                                 </svg>
-                                <span>Roster Pelajaran</span>
+                                <span class="min-w-0 text-center">Roster Pelajaran</span>
                             </a>
                         </div>
                     </div>
 
                     {{-- Kartu Ringkasan Samping (Visual Card) --}}
-                    <div class="lg:col-span-4">
-                        <div class="rounded-2xl border border-white/20 bg-white/10 p-6 backdrop-blur-xl shadow-xl">
+                    <div class="min-w-0 lg:col-span-4">
+                        <div class="rounded-2xl border border-white/20 bg-white/10 p-4 shadow-xl backdrop-blur-xl sm:p-6">
                             <div class="flex items-center gap-4">
                                 <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-600 to-sky-400 text-2xl font-bold text-white shadow-lg shadow-sky-500/30">
                                     {{ strtoupper(substr($user->name, 0, 1)) }}

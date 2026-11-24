@@ -13,7 +13,8 @@ test('a guru cannot access admin pages even when an admin page was the intended 
 
     $this->actingAs($guru)
         ->get('/admin/dashboard')
-        ->assertForbidden();
+        ->assertForbidden()
+        ->assertSee('Halaman ini tidak bisa dibuka');
 });
 
 test('a student cannot access guru pages', function () {

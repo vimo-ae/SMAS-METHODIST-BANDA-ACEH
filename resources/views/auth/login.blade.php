@@ -1,6 +1,14 @@
 <x-login-layout>
     <div class="sl-card">
-        <div class="sl-card-head">
+        <a href="{{ route('home') }}" class="sl-link inline-flex items-center gap-2">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M19 12H5m7 7-7-7 7-7"/>
+            </svg>
+            Kembali ke Beranda
+        </a>
+
+        <div class="sl-card-head mt-3">
             <h1 class="sl-welcome">Selamat Datang Kembali</h1>
             <p class="sl-welcome-sub">
                 Silakan masuk menggunakan akun sekolah Anda untuk melanjutkan

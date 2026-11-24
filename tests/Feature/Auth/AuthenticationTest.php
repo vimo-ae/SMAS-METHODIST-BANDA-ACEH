@@ -6,6 +6,8 @@ test('login screen can be rendered', function () {
     $response = $this->get('/login');
 
     $response->assertStatus(200);
+    $response->assertSee('Kembali ke Beranda');
+    $response->assertSee('href="' . route('home') . '"', false);
     $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
 });
 
