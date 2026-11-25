@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', 'Pengumuman & Berita | SMAS Methodist Banda Aceh')
+@section('title', 'Pengumuman dan Berita | SMAS Methodist Banda Aceh')
 
 @section('content')
 @php
@@ -23,7 +23,7 @@
                 Informasi Terkini
             </span>
             <h1 class="mt-2 font-serif text-3xl font-bold text-navy sm:text-4xl">
-                Pengumuman &amp; Berita Sekolah
+                Pengumuman dan Berita Sekolah
             </h1>
             <p class="mt-1 text-sm text-slate-600">
                 Kabar terkini seputar kegiatan akademik dan pengumuman resmi SMAS Methodist Banda Aceh.
@@ -46,7 +46,7 @@
         @endforeach
     </nav>
 
-    {{-- Daftar: kartu yang sama dengan halaman depan & "Info lainnya" --}}
+    {{-- Daftar: kartu yang sama dengan halaman depan dan "Info lainnya" --}}
     <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         @forelse ($announcements as $announcement)
             @include('partials.announcement-card', ['announcement' => $announcement])

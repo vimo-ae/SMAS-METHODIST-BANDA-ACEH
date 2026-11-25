@@ -107,6 +107,38 @@
 
         <div class="mx-auto max-w-6xl space-y-6">
 
+            {{-- NOTIFIKASI SUKSES / ERROR --}}
+            @if(session('status') === 'profile-updated')
+                <div class="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+                    <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <span class="font-semibold">Informasi akun berhasil diperbarui.</span>
+                </div>
+            @elseif(session('status') === 'password-updated')
+                <div class="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+                    <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <span class="font-semibold">Kata sandi akun Anda berhasil diperbarui.</span>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="flex items-center gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">
+                    <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-rose-100 text-rose-700">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                    </div>
+                    <span class="font-semibold">{{ session('error') }}</span>
+                </div>
+            @endif
+
             {{-- ========================================================
                  CREATOR CHANNEL HEADER (YOUTUBE BANNER + INSTAGRAM PROFILE)
             ======================================================== --}}
@@ -114,9 +146,15 @@
 
                 {{-- WIDE CINEMATIC BANNER (YOUTUBE STYLE) --}}
                 <div class="profile-banner h-48 sm:h-56 md:h-64 flex flex-col justify-between p-6 sm:p-8 text-white relative overflow-hidden group">
-                    <img src="{{ asset('images/methodist-teachers-activity.jpg') }}"
-                         alt="Aktivitas Guru SMAS Methodist Banda Aceh"
-                         class="profile-banner-img">
+                    @if($isStudent && file_exists(public_path('images/methodist-students.jpg')))
+                        <img src="{{ asset('images/methodist-students.jpg') }}"
+                             alt="Siswa SMAS Methodist Banda Aceh"
+                             class="profile-banner-img">
+                    @else
+                        <img src="{{ asset('images/methodist-teachers-activity.jpg') }}"
+                             alt="Aktivitas Guru SMAS Methodist Banda Aceh"
+                             class="profile-banner-img">
+                    @endif
 
                     <div class="profile-banner-overlay"></div>
                     <div class="profile-banner-grid"></div>
@@ -154,7 +192,7 @@
 
                     <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-5 border-b border-slate-100 pb-7">
                         
-                        {{-- AVATAR & NAME BLOCK --}}
+                        {{-- AVATAR dan NAME BLOCK --}}
                         <div class="flex flex-col sm:flex-row items-start sm:items-end gap-5">
                             
                             {{-- INSTAGRAM STORY RING AVATAR --}}
@@ -170,16 +208,13 @@
                                         @endif
                                     </div>
                                 </div>
-                                {{-- BUTTON UBAH FOTO LANGSUNG KE TAB EDIT --}}
-                                <button type="button"
-                                        @click="activeTab = 'edit'"
-                                        title="Ubah Foto Profil"
-                                        class="absolute bottom-0 right-0 flex h-9 w-9 items-center justify-center rounded-full bg-[#123B60] text-white shadow-lg ring-4 ring-white transition hover:bg-[#267BB5] hover:scale-110 active:scale-95">
-                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                {{-- BADGE AKUN RESMI TERVERIFIKASI --}}
+                                <div title="Akun Resmi Terverifikasi SMAS Methodist Banda Aceh"
+                                     class="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white shadow-md ring-4 ring-white">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                                     </svg>
-                                </button>
+                                </div>
                             </div>
 
                             {{-- NAME, HANDLE, VERIFIED BADGE --}}
@@ -202,7 +237,7 @@
                                     </span>
                                 </div>
 
-                                {{-- USERNAME HANDLE & EMAIL --}}
+                                {{-- USERNAME HANDLE dan EMAIL --}}
                                 <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
                                     <span class="font-bold text-slate-700">@<span>{{ $handle }}</span></span>
                                     <span>&bull;</span>
@@ -244,14 +279,14 @@
                         {{-- QUICK ACTION BUTTONS (INSTAGRAM/YOUTUBE STYLE) --}}
                         <div class="flex flex-wrap items-center gap-2 pt-2 md:pt-0">
                             
-                            {{-- BUTTON EDIT PROFIL --}}
+                            {{-- BUTTON INFORMASI AKUN --}}
                             <button type="button"
-                                    @click="activeTab = 'edit'"
+                                    @click="activeTab = 'info'"
                                     class="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-50 hover:border-slate-400 active:scale-95">
                                 <svg class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <span>Edit Akun</span>
+                                <span>Informasi Akun</span>
                             </button>
 
                             {{-- BUTTON KE RUANG BELAJAR --}}
@@ -380,7 +415,7 @@
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                     </svg>
-                    <span>Kelas & Aktivitas</span>
+                    <span>Kelas dan Aktivitas</span>
                     <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-600">
                         {{ $classesList->count() }}
                     </span>
@@ -399,17 +434,17 @@
                     <span>Biodata Resmi</span>
                 </button>
 
-                {{-- TAB 3: EDIT PROFIL --}}
+                {{-- TAB 3: INFORMASI AKUN (READ ONLY) --}}
                 <button type="button"
-                        @click="activeTab = 'edit'"
+                        @click="activeTab = 'info'"
                         class="flex items-center gap-2 py-3 px-3 sm:px-4 text-xs sm:text-sm font-bold border-b-2 transition whitespace-nowrap"
-                        :class="activeTab === 'edit' 
+                        :class="activeTab === 'info' 
                             ? 'border-[#267BB5] text-[#123B60]' 
                             : 'border-transparent text-slate-400 hover:text-slate-600 hover:border-slate-300'">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
-                    <span>Edit Informasi</span>
+                    <span>Informasi Akun</span>
                 </button>
 
                 {{-- TAB 4: KEAMANAN --}}
@@ -422,7 +457,7 @@
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
-                    <span>Keamanan & Sandi</span>
+                    <span>Keamanan dan Sandi</span>
                 </button>
 
             </div>
@@ -454,7 +489,75 @@
                 </div>
 
                 @if($classesList->isNotEmpty())
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    @php
+                        $getSubjectCover = function($title, $code = null) {
+                            $name = strtolower($title ?? '');
+                            $c = strtolower($code ?? '');
+
+                            $map = [
+                                'matematika' => 'matematika.jpg', 'mtk' => 'matematika.jpg',
+                                'biologi' => 'biologi.jpg', 'bio' => 'biologi.jpg',
+                                'kimia' => 'kimia.jpg', 'kim' => 'kimia.jpg',
+                                'fisika' => 'fisika.jpg', 'fis' => 'fisika.jpg',
+                                'indonesia' => 'indonesia.jpg', 'bin' => 'indonesia.jpg', 'bahasa indonesia' => 'indonesia.jpg',
+                                'inggris' => 'inggris.svg', 'big' => 'inggris.svg', 'bahasa inggris' => 'inggris.svg',
+                                'informatika' => 'informatika.jpg', 'tik' => 'informatika.jpg', 'inf' => 'informatika.jpg', 'komputer' => 'informatika.jpg',
+                                'sejarah' => 'sejarah.svg', 'sej' => 'sejarah.svg',
+                                'geografi' => 'geografi.svg', 'geo' => 'geografi.svg',
+                                'ekonomi' => 'ekonomi.svg', 'eko' => 'ekonomi.svg',
+                                'sosiologi' => 'sosiologi.svg', 'sos' => 'sosiologi.svg',
+                                'agama' => 'agama.svg', 'agm' => 'agama.svg', 'pendidikan agama' => 'agama.svg',
+                                'pjok' => 'pjok.svg', 'penjas' => 'pjok.svg',
+                                'seni' => 'seni-budaya.svg', 'sbd' => 'seni-budaya.svg', 'seni budaya' => 'seni-budaya.svg',
+                                'pkn' => 'ppkn.svg', 'ppkn' => 'ppkn.svg',
+                            ];
+
+                            foreach ($map as $key => $file) {
+                                if (str_contains($name, $key) || str_contains($c, $key)) {
+                                    $jpg = preg_replace('/\.(svg|png)$/i', '.jpg', $file);
+                                    $svg = preg_replace('/\.(jpg|png)$/i', '.svg', $file);
+                                    if (file_exists(public_path('images/subjects/' . $jpg))) {
+                                        return asset('images/subjects/' . $jpg);
+                                    } elseif (file_exists(public_path('images/subjects/' . $svg))) {
+                                        return asset('images/subjects/' . $svg);
+                                    }
+                                }
+                            }
+
+                            if (file_exists(public_path('images/hero-school.jpg'))) {
+                                return asset('images/hero-school.jpg');
+                            }
+                            return null;
+                        };
+
+                        $getSubjectSymbol = function($title, $code = null) {
+                            $name = strtolower($title ?? '');
+                            $c = strtolower($code ?? '');
+                            $symbols = [
+                                'matematika' => 'MAT', 'mtk' => 'MAT',
+                                'fisika' => 'FIS', 'fis' => 'FIS',
+                                'biologi' => 'BIO', 'bio' => 'BIO',
+                                'kimia' => 'KIM', 'kim' => 'KIM',
+                                'indonesia' => 'IDN', 'bin' => 'IDN',
+                                'inggris' => 'ENG', 'big' => 'ENG',
+                                'informatika' => 'TIK', 'inf' => 'TIK',
+                                'sejarah' => 'SEJ', 'sej' => 'SEJ',
+                                'geografi' => 'GEO', 'geo' => 'GEO',
+                                'ekonomi' => 'EKO', 'eko' => 'EKO',
+                                'sosiologi' => 'SOS', 'sos' => 'SOS',
+                                'agama' => 'AGM', 'agm' => 'AGM',
+                                'pjok' => 'PJK', 'penjas' => 'PJK',
+                                'seni' => 'SBD', 'sbd' => 'SBD',
+                                'pkn' => 'PKN', 'ppkn' => 'PKN',
+                            ];
+                            foreach ($symbols as $k => $sym) {
+                                if (str_contains($name, $k) || str_contains($c, $k)) return $sym;
+                            }
+                            return strtoupper(substr($title, 0, 3));
+                        };
+                    @endphp
+
+                    <div id="profileClassesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                         @foreach($classesList as $item)
                             @php
                                 $subjectTitle = $item->subject->name ?? ($item->subject_code ?? 'Mata Pelajaran');
@@ -465,22 +568,19 @@
                                     ? route('siswa.classes.show', $cstId) 
                                     : route('guru.classes.show', $cstId);
 
-                                $subjectLower = strtolower($subjectTitle);
-                                $subjectCoverImage = null;
-                                if (str_contains($subjectLower, 'kimia') && file_exists(public_path('images/subjects/kimia.jpg'))) {
-                                    $subjectCoverImage = asset('images/subjects/kimia.jpg');
-                                }
+                                $subjectCoverImage = $getSubjectCover($subjectTitle, $item->subject_code ?? null);
+                                $subjectSymbol = $getSubjectSymbol($subjectTitle, $item->subject_code ?? null);
                             @endphp
 
-                            <article class="feed-card rounded-2xl border border-slate-200 bg-white overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition">
+                            <a href="{{ $targetUrl }}" data-profile-class-card class="feed-card rounded-2xl border border-slate-200 bg-white overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md hover:border-[#BBD7E9] hover:-translate-y-1 transition group">
                                 <div>
                                     {{-- CARD THUMBNAIL / TOP BANNER --}}
-                                    <div class="h-28 relative overflow-hidden p-4 text-white flex flex-col justify-between {{ empty($subjectCoverImage) ? 'bg-gradient-to-br from-[#123B60] to-[#267BB5]' : '' }}">
+                                    <div class="h-32 relative overflow-hidden p-4 text-white flex flex-col justify-between bg-[#123B60]">
                                         @if($subjectCoverImage)
                                             <img src="{{ $subjectCoverImage }}"
                                                  alt="{{ $subjectTitle }}"
-                                                 class="absolute inset-0 h-full w-full object-cover">
-                                            <div class="absolute inset-0 bg-gradient-to-t from-[#091a30]/90 via-[#10243E]/55 to-[#123B60]/35"></div>
+                                                 class="absolute inset-0 h-full w-full object-cover transition transform group-hover:scale-105 duration-300">
+                                            <div class="absolute inset-0 bg-gradient-to-t from-[#091a30]/85 via-[#10243E]/45 to-transparent"></div>
                                         @else
                                             <div class="absolute -right-4 -top-6 text-7xl font-serif-title font-extrabold text-white/10 select-none">
                                                 {{ strtoupper(substr($subjectTitle, 0, 1)) }}
@@ -488,17 +588,15 @@
                                         @endif
 
                                         <div class="flex items-center justify-between relative z-10">
-                                            <span class="rounded-full bg-white/20 px-2.5 py-0.5 text-[10px] font-bold tracking-wider uppercase backdrop-blur-sm shadow-sm">
+                                            <span class="rounded-full bg-white/20 px-2.5 py-0.5 text-[10px] font-bold tracking-wider uppercase backdrop-blur-sm shadow-sm border border-white/20">
                                                 {{ $className }}
                                             </span>
-                                            <span class="text-white/90 drop-shadow-sm">
-                                                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
-                                                </svg>
+                                            <span class="rounded-lg bg-white/20 px-2 py-0.5 text-[10px] font-extrabold tracking-wider backdrop-blur-sm border border-white/25">
+                                                {{ $subjectSymbol }}
                                             </span>
                                         </div>
 
-                                        <h4 class="font-serif-title text-base font-bold truncate relative z-10 drop-shadow-md">
+                                        <h4 class="font-serif-title text-base font-bold truncate relative z-10 drop-shadow-md text-white group-hover:text-cyan-200 transition">
                                             {{ $subjectTitle }}
                                         </h4>
                                     </div>
@@ -523,15 +621,17 @@
 
                                 {{-- CARD FOOTER BUTTON --}}
                                 <div class="p-4 pt-0">
-                                    <a href="{{ $targetUrl }}"
-                                       class="w-full flex items-center justify-center gap-1.5 rounded-xl bg-slate-100 hover:bg-[#123B60] hover:text-white py-2 text-xs font-bold text-slate-700 transition">
+                                    <div class="w-full flex items-center justify-center gap-1.5 rounded-xl bg-slate-100 group-hover:bg-[#123B60] group-hover:text-white py-2 text-xs font-bold text-slate-700 transition">
                                         <span>Buka Ruang Kelas</span>
                                         <span>&rarr;</span>
-                                    </a>
+                                    </div>
                                 </div>
-                            </article>
+                            </a>
                         @endforeach
                     </div>
+
+                    {{-- NAVIGASI SLIDE / PAGINASI KELAS PROFIL (MAKSIMAL 6 PER SLIDE) --}}
+                    <div id="profileClassesPagination" class="hidden"></div>
                 @else
                     <div class="rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center text-slate-400">
                         <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 mb-3">
@@ -607,10 +707,10 @@
                                 </div>
                             </div>
 
-                            {{-- KONTAK & ORANG TUA --}}
+                            {{-- KONTAK dan ORANG TUA --}}
                             <div class="space-y-4">
                                 <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-400">
-                                    Kontak & Domisili
+                                    Kontak dan Domisili
                                 </h4>
 
                                 <div class="space-y-3">
@@ -670,7 +770,7 @@
 
                             <div class="space-y-4">
                                 <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-400">
-                                    Kepegawaian & Kontak
+                                    Kepegawaian dan Kontak
                                 </h4>
 
                                 <div class="space-y-3">
@@ -698,34 +798,134 @@
             </div>
 
             {{-- ========================================================
-                 TAB CONTENT 3: FORM EDIT INFORMASI PROFIL
+                 TAB CONTENT 3: INFORMASI AKUN (HANYA DITAMPILKAN / READ-ONLY)
             ======================================================== --}}
-            <div x-show="activeTab === 'edit'" x-cloak x-transition class="space-y-6">
+            <div x-show="activeTab === 'info'" x-cloak x-transition class="space-y-6">
                 
-                <div class="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
-                    <div class="flex items-center gap-3 border-b border-slate-100 pb-4 mb-6">
-                        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                {{-- PEMBERITAHUAN WEWENANG ADMINISTRATOR --}}
+                <div class="rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50/90 via-sky-50/70 to-blue-50/90 p-5 sm:p-6 shadow-sm">
+                    <div class="flex items-start gap-4">
+                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#123B60] text-white shadow-sm">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                             </svg>
                         </div>
-                        <div>
-                            <h3 class="font-serif-title text-xl font-bold text-slate-900">
-                                Perbarui Informasi Akun
-                            </h3>
-                            <p class="text-xs text-slate-500">
-                                Sesuaikan nama tampilan dan alamat email terdaftar akun Anda.
+                        <div class="space-y-1">
+                            <h4 class="text-sm font-bold text-[#101C35]">
+                                Hak Akses Perubahan Data Dikelola Administrator
+                            </h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Data informasi akun resmi sekolah (nama lengkap, alamat email terdaftar, nomor identitas induk, dan penugasan rombel/mapel) dikelola dan diperbarui secara terpusat oleh <strong>Administrator SMAS Methodist Banda Aceh</strong>. Apabila terdapat ketidaksesuaian data atau keperluan pembaruan informasi, silakan berkoordinasi dengan pihak Tata Usaha atau Tim IT Administrator.
                             </p>
                         </div>
                     </div>
+                </div>
 
-                    @include('profile.partials.update-profile-information-form')
+                {{-- KARTU DETAIL INFORMASI AKUN RESMI --}}
+                <div class="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-5 mb-6">
+                        <div class="flex items-center gap-3">
+                            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-serif-title text-xl font-bold text-slate-900">
+                                    Informasi Akun Anda
+                                </h3>
+                                <p class="text-xs text-slate-500">
+                                    Rincian identitas akun yang terdaftar pada sistem akademik sekolah.
+                                </p>
+                            </div>
+                        </div>
+
+                        <span class="inline-flex items-center gap-1.5 self-start sm:self-auto rounded-full bg-emerald-50 px-3.5 py-1.5 text-xs font-bold text-emerald-700 border border-emerald-200">
+                            <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                            Status: Akun Aktif
+                        </span>
+                    </div>
+
+                    {{-- GRID PROFIL LENGKAP --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {{-- Nama Lengkap --}}
+                        <div class="rounded-2xl border border-slate-100 bg-slate-50/70 p-4">
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Nama Lengkap</span>
+                            <p class="mt-1 text-base font-extrabold text-slate-800">{{ $user->name }}</p>
+                            <span class="text-[10px] text-slate-400 mt-0.5 block">Sesuai data resmi dapodik/sekolah</span>
+                        </div>
+
+                        {{-- Alamat Email --}}
+                        <div class="rounded-2xl border border-slate-100 bg-slate-50/70 p-4">
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Alamat Email</span>
+                            <p class="mt-1 text-base font-extrabold text-slate-800 font-mono">{{ $user->email }}</p>
+                            <span class="text-[10px] text-emerald-600 mt-0.5 block font-medium">✓ Terverifikasi resmi</span>
+                        </div>
+
+                        {{-- Peran / Role --}}
+                        <div class="rounded-2xl border border-slate-100 bg-slate-50/70 p-4">
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Peran Akun</span>
+                            <p class="mt-1 text-base font-extrabold text-[#123B60]">{{ $roleName }}</p>
+                            <span class="text-[10px] text-slate-400 mt-0.5 block">Hak akses portal pembelajaran</span>
+                        </div>
+
+                        {{-- Nomor Induk --}}
+                        <div class="rounded-2xl border border-slate-100 bg-slate-50/70 p-4">
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                                {{ $isStudent ? 'Nomor Induk Siswa (NIS)' : 'Nomor Induk Pegawai (NIP)' }}
+                            </span>
+                            <p class="mt-1 text-base font-extrabold text-slate-800 font-mono">
+                                {{ $isStudent ? ($profile->nis ?? '-') : ($profile->nip ?? '-') }}
+                            </p>
+                            @if($isStudent && $profile?->nisn)
+                                <span class="text-[10px] text-slate-500 mt-0.5 block">NISN: <span class="font-mono font-semibold">{{ $profile->nisn }}</span></span>
+                            @else
+                                <span class="text-[10px] text-slate-400 mt-0.5 block">Nomor identitas pokok</span>
+                            @endif
+                        </div>
+
+                        {{-- Kelas / Spesialisasi --}}
+                        <div class="rounded-2xl border border-slate-100 bg-slate-50/70 p-4">
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                                {{ $isStudent ? 'Rombongan Belajar (Kelas)' : 'Bidang / Mata Pelajaran' }}
+                            </span>
+                            <p class="mt-1 text-base font-extrabold text-slate-800">
+                                {{ $isStudent ? ($profile->schoolClass->name ?? 'Belum Ditugaskan') : ($profile->specialization ?? 'Guru Pengampu') }}
+                            </p>
+                            <span class="text-[10px] text-slate-400 mt-0.5 block">Tahun Ajaran {{ $profile->schoolClass->academic_year ?? '2025/2026' }}</span>
+                        </div>
+
+                        {{-- Nomor Telepon --}}
+                        <div class="rounded-2xl border border-slate-100 bg-slate-50/70 p-4">
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Nomor Telepon / WhatsApp</span>
+                            <p class="mt-1 text-base font-extrabold text-slate-800 font-mono">
+                                {{ $user->phone ?? 'Belum ditambahkan' }}
+                            </p>
+                            <span class="text-[10px] text-slate-400 mt-0.5 block">Kontak komunikasi terdaftar</span>
+                        </div>
+                    </div>
+
+                    {{-- METADATA PENDAFTARAN --}}
+                    <div class="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-5 text-xs text-slate-400">
+                        <div class="flex items-center gap-2">
+                            <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <span>Terdaftar pada: <strong class="text-slate-600">{{ $user->created_at?->translatedFormat('d F Y') ?? '-' }}</strong></span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span>Pembaruan terakhir: <strong class="text-slate-600">{{ $user->updated_at?->translatedFormat('d F Y, H:i') ?? '-' }} WIB</strong></span>
+                        </div>
+                    </div>
                 </div>
 
             </div>
 
             {{-- ========================================================
-                 TAB CONTENT 4: KEAMANAN & SANDI
+                 TAB CONTENT 4: KEAMANAN dan SANDI
             ======================================================== --}}
             <div x-show="activeTab === 'security'" x-cloak x-transition class="space-y-6">
                 
@@ -739,7 +939,7 @@
                         </div>
                         <div>
                             <h3 class="font-serif-title text-xl font-bold text-slate-900">
-                                Keamanan & Sandi
+                                Keamanan dan Sandi
                             </h3>
                             <p class="text-xs text-slate-500">
                                 Gunakan kombinasi kata sandi yang kuat untuk menjaga privasi akun Anda.
@@ -750,31 +950,155 @@
                     @include('profile.partials.update-password-form')
                 </div>
 
-                {{-- DANGER ZONE: HAPUS AKUN --}}
-                <div class="rounded-3xl border border-rose-200 bg-white p-6 sm:p-8 shadow-sm">
-                    <div class="flex items-center gap-3 border-b border-rose-100 pb-4 mb-6">
-                        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-50 text-rose-600">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                        </div>
-                        <div>
-                            <h3 class="font-serif-title text-xl font-bold text-rose-900">
-                                Zona Penghapusan Akun
-                            </h3>
-                            <p class="text-xs text-rose-600">
-                                Tindakan permanen yang menghapus seluruh data akses akun dari portal sekolah.
-                            </p>
-                        </div>
-                    </div>
-
-                    @include('profile.partials.delete-user-form')
-                </div>
-
             </div>
 
         </div>
 
     </div>
+
+    {{-- PROFILE CLASSES SLIDE / PAGINATION SCRIPT (6 PER SLIDE) --}}
+    @if($classesList->isNotEmpty())
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const cards = Array.from(document.querySelectorAll('[data-profile-class-card]'));
+                const pagination = document.getElementById('profileClassesPagination');
+                const grid = document.getElementById('profileClassesGrid');
+                const perPage = 6;
+                let currentPage = 1;
+
+                function render() {
+                    const total = cards.length;
+                    const totalPages = Math.ceil(total / perPage) || 1;
+
+                    if (currentPage > totalPages) currentPage = totalPages;
+                    if (currentPage < 1) currentPage = 1;
+
+                    const start = (currentPage - 1) * perPage;
+                    const end = start + perPage;
+
+                    // Sembunyikan semua kartu
+                    cards.forEach(c => c.classList.add('hidden'));
+
+                    // Tampilkan hanya kartu pada slide saat ini
+                    cards.forEach((c, idx) => {
+                        if (idx >= start && idx < end) {
+                            c.classList.remove('hidden');
+                        }
+                    });
+
+                    // Render pagination
+                    renderPagination(total, totalPages);
+                }
+
+                function renderPagination(total, totalPages) {
+                    if (!pagination) return;
+
+                    if (totalPages <= 1) {
+                        pagination.innerHTML = '';
+                        pagination.classList.add('hidden');
+                        return;
+                    }
+
+                    pagination.classList.remove('hidden');
+
+                    const startItem = Math.min((currentPage - 1) * perPage + 1, total);
+                    const endItem = Math.min(currentPage * perPage, total);
+
+                    let pillsHtml = '';
+                    for (let p = 1; p <= totalPages; p++) {
+                        const isActive = p === currentPage;
+                        pillsHtml += `
+                            <button type="button"
+                                    data-page="${p}"
+                                    class="profile-class-page-btn flex h-9 w-9 items-center justify-center rounded-xl text-xs font-bold transition shadow-sm ${
+                                        isActive
+                                            ? 'bg-[#123B60] text-white shadow-md'
+                                            : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 hover:text-slate-900'
+                                    }">
+                                ${p}
+                            </button>
+                        `;
+                    }
+
+                    pagination.innerHTML = `
+                        <div class="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white/80 p-4 backdrop-blur-sm shadow-sm">
+                            <div class="text-xs font-semibold text-slate-500">
+                                Menampilkan <strong class="text-slate-800">${startItem} - ${endItem}</strong> dari <strong class="text-slate-800">${total}</strong> kelas
+                                <span class="ml-2 inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600">
+                                    Slide ${currentPage} dari ${totalPages}
+                                </span>
+                            </div>
+
+                            <div class="flex items-center gap-1.5">
+                                <button type="button"
+                                        id="profileClassPrevBtn"
+                                        ${currentPage <= 1 ? 'disabled' : ''}
+                                        class="inline-flex items-center gap-1 rounded-xl px-3.5 py-2 text-xs font-bold transition shadow-sm ${
+                                            currentPage <= 1
+                                                ? 'bg-slate-100 text-slate-300 cursor-not-allowed border border-slate-200'
+                                                : 'bg-white text-slate-700 hover:bg-[#123B60] hover:text-white border border-slate-200'
+                                        }">
+                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                                    </svg>
+                                    <span>Sebelumnya</span>
+                                </button>
+
+                                <div class="flex items-center gap-1 mx-1">
+                                    ${pillsHtml}
+                                </div>
+
+                                <button type="button"
+                                        id="profileClassNextBtn"
+                                        ${currentPage >= totalPages ? 'disabled' : ''}
+                                        class="inline-flex items-center gap-1 rounded-xl px-3.5 py-2 text-xs font-bold transition shadow-sm ${
+                                            currentPage >= totalPages
+                                                ? 'bg-slate-100 text-slate-300 cursor-not-allowed border border-slate-200'
+                                                : 'bg-white text-slate-700 hover:bg-[#123B60] hover:text-white border border-slate-200'
+                                        }">
+                                    <span>Berikutnya</span>
+                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+
+                    // Bind Prev / Next
+                    document.getElementById('profileClassPrevBtn')?.addEventListener('click', function () {
+                        if (currentPage > 1) {
+                            currentPage--;
+                            render();
+                            grid?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    });
+
+                    document.getElementById('profileClassNextBtn')?.addEventListener('click', function () {
+                        if (currentPage < totalPages) {
+                            currentPage++;
+                            render();
+                            grid?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    });
+
+                    // Bind page buttons
+                    pagination.querySelectorAll('.profile-class-page-btn').forEach(btn => {
+                        btn.addEventListener('click', function () {
+                            const p = parseInt(this.getAttribute('data-page'), 10);
+                            if (p && p !== currentPage) {
+                                currentPage = p;
+                                render();
+                                grid?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                        });
+                    });
+                }
+
+                // Inisialisasi awal
+                render();
+            });
+        </script>
+    @endif
 
 </x-app-layout>

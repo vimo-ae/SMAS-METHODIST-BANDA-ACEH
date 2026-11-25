@@ -68,7 +68,7 @@
                         <tr>
                             <th class="ps-4 text-center" style="width: 60px;">No</th>
                             <th>Mata Pelajaran</th>
-                            <th>Kelas & Tahun Ajaran</th>
+                            <th>Kelas dan Tahun Ajaran</th>
                             <th>Guru Pengampu</th>
                             <th class="text-center">Status</th>
                             <th>Tgl Masuk / Keluar</th>
@@ -151,6 +151,89 @@
                 </table>
             </div>
         </div>
+
+        {{-- RINGKASAN NILAI SISWA (Database View: v_student_grade_summary) --}}
+        <div class="portal-card mt-4 overflow-hidden">
+            <div class="card-header-portal d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-dark">
+                    <i class="bi bi-award text-accent me-2"></i> Ringkasan Nilai Akademik Siswa
+                </h5>
+                <span class="badge bg-primary-subtle text-primary px-3 py-1 rounded-pill">
+                    {{ count($gradeSummaries ?? []) }} Mapel Ternilai
+                </span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle custom-table mb-0">
+                    <thead class="text-muted-portal small border-bottom border-secondary bg-light">
+                        <tr>
+                            <th class="ps-4" style="width: 50px;">No</th>
+                            <th>Mata Pelajaran</th>
+                            <th>Penilaian / Ujian</th>
+                            <th>Kelas</th>
+                            <th class="text-center">Tipe</th>
+                            <th class="text-center">Semester / T.A</th>
+                            <th class="text-center">Nilai</th>
+                            <th class="text-center">Predikat</th>
+                            <th class="pe-4">Tanggal Dinilai</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($gradeSummaries ?? [] as $gIdx => $grade)
+                            @php
+                                $predBadge = match($grade->predicate ?? null) {
+                                    'A' => 'bg-success text-white',
+                                    'B' => 'bg-primary text-white',
+                                    'C' => 'bg-warning text-dark',
+                                    'D' => 'bg-danger text-white',
+                                    default => 'bg-secondary text-white',
+                                };
+                                $typeBadge = match(strtolower($grade->grade_type ?? '')) {
+                                    'tugas' => 'bg-info-subtle text-info-emphasis',
+                                    'kuis'  => 'bg-warning-subtle text-warning-emphasis',
+                                    'uts'   => 'bg-primary-subtle text-primary',
+                                    'uas'   => 'bg-danger-subtle text-danger',
+                                    default => 'bg-secondary-subtle text-secondary',
+                                };
+                            @endphp
+                            <tr>
+                                <td class="ps-4 text-muted-portal">{{ $gIdx + 1 }}</td>
+                                <td>
+                                    <div class="fw-bold text-dark">{{ $grade->subject_name }}</div>
+                                </td>
+                                <td>
+                                    <div class="fw-medium text-dark">{{ $grade->title ?? '-' }}</div>
+                                </td>
+                                <td>{{ $grade->class_name }}</td>
+                                <td class="text-center">
+                                    <span class="badge {{ $typeBadge }} px-2 py-1 text-uppercase">
+                                        {{ $grade->grade_type }}
+                                    </span>
+                                </td>
+                                <td class="text-center text-muted-portal small">
+                                    {{ ucfirst($grade->semester) }} / {{ $grade->academic_year }}
+                                </td>
+                                <td class="text-center fw-bold text-dark">{{ $grade->score }}</td>
+                                <td class="text-center">
+                                    <span class="badge {{ $predBadge }} px-2 py-1">
+                                        {{ $grade->predicate ?? '-' }}
+                                    </span>
+                                </td>
+                                <td class="small text-muted-portal pe-4">
+                                    {{ $grade->graded_at ? \Carbon\Carbon::parse($grade->graded_at)->format('d M Y H:i') : '-' }}
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="9" class="text-center py-4 text-muted-portal fst-italic">
+                                    Belum ada rekap nilai untuk siswa ini.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -170,7 +253,7 @@
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Kelas Mata Pelajaran <span class="text-danger">*</span></label>
                     <select name="cst_id" class="form-select" required>
-                        <option value="">-- Pilih Kelas & Mapel --</option>
+                        <option value="">-- Pilih Kelas dan Mapel --</option>
                         @foreach($csts as $cst)
                             <option value="{{ $cst->cst_id }}">
                                 {{ $cst->schoolClass->name ?? 'Kelas #' . $cst->class_id }} —

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Announcement;
 use App\Models\Assignment;
 use App\Models\Exam;
+use App\Services\RosterService;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -74,6 +75,11 @@ class DashboardController extends Controller
             ->limit(3)
             ->get();
 
+        // Jadwal pelajaran hari ini berdasarkan rombel siswa
+        $className = $student?->schoolClass?->name ?? 'X-A';
+        $todaySchedule = RosterService::getTodayScheduleForClass($className);
+        $todayGroupedSchedule = RosterService::groupConsecutiveSlots($todaySchedule['items'] ?? []);
+
         return view('siswa.dashboard', compact(
             'user',
             'student',
@@ -82,7 +88,9 @@ class DashboardController extends Controller
             'submittedCount',
             'pendingAssignments',
             'upcomingExams',
-            'announcements'
+            'announcements',
+            'todaySchedule',
+            'todayGroupedSchedule'
         ));
     }
 }

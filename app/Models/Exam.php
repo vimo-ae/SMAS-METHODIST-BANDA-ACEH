@@ -54,6 +54,11 @@ protected function casts(): array
         return $this->hasMany(ExamSession::class, 'exam_id', 'exam_id');
     }
 
+    public function examTokens()
+    {
+        return $this->hasMany(ExamToken::class, 'exam_id', 'exam_id');
+    }
+
     public function isOpen(): bool
     {
         return $this->is_published && now()->between($this->start_time, $this->end_time);

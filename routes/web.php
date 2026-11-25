@@ -6,10 +6,8 @@ use App\Http\Controllers\Admin\AnnouncementImageController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\MonitoringController;
-use App\Http\Controllers\Admin\GradeLogController;
 use App\Http\Controllers\Admin\SchoolClassController;
 use App\Http\Controllers\Admin\ActivityLogController;
-use App\Http\Middleware\EnsureAdmin;
 use App\Http\Controllers\Admin\AccountController;
 use App\Http\Controllers\Admin\SubjectController;
 use App\Http\Controllers\Admin\ClassEnrollmentController;
@@ -26,6 +24,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Siswa\ClassroomController as SiswaClassroom;
 use App\Http\Controllers\Siswa\DashboardController as SiswaDashboard;
 use App\Http\Controllers\Siswa\ExamController as SiswaExam;
+use App\Http\Controllers\Siswa\RosterController as SiswaRoster;
 use Illuminate\Support\Facades\Route;
 
 // =========================================================
@@ -82,6 +81,12 @@ Route::middleware(['auth', 'role:siswa'])->group(function () {
 
         Route::post('/assignments/{assignment}/submit', [SiswaClassroom::class, 'submit'])
             ->name('assignments.submit');
+
+        Route::get('/assignments/{assignment}/download', [SiswaClassroom::class, 'downloadSubmission'])
+            ->name('assignments.download');
+
+        Route::get('/assignments/{assignment}/view', [SiswaClassroom::class, 'viewSubmission'])
+            ->name('assignments.view');
     });
 
     // E-Exam Siswa
@@ -114,6 +119,10 @@ Route::middleware(['auth', 'role:siswa'])->group(function () {
         Route::post('/{exam}/finish', [SiswaExam::class, 'finish'])
             ->name('finish');
     });
+
+    // Roster Pelajaran Siswa
+    Route::get('/siswa/roster', [SiswaRoster::class, 'index'])
+        ->name('siswa.roster');
 });
 
 Route::middleware(['auth', 'role:guru'])->group(function () {
@@ -189,6 +198,9 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
 
     Route::get('/assignments/{assignment}/students/{nis}/download', [GuruClassroom::class, 'downloadSubmission'])
         ->name('assignments.download');
+
+    Route::get('/assignments/{assignment}/students/{nis}/view', [GuruClassroom::class, 'viewSubmission'])
+        ->name('assignments.view');
     });
 
 
@@ -197,6 +209,10 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
     // =====================================================
 
     Route::prefix('guru/e-exam')->name('guru.exams.')->group(function () {
+
+        // Upload gambar pertanyaan dari CKEditor
+        Route::post('/upload-image', [GuruExam::class, 'uploadImage'])
+            ->name('upload-image');
 
         // Daftar ujian
         Route::get('/', [GuruExam::class, 'index'])
@@ -212,6 +228,10 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
         // Detail ujian
         Route::get('/{exam}', [GuruExam::class, 'show'])
             ->name('show');
+
+        // Token ujian aktif
+        Route::get('/{exam}/token', [GuruExam::class, 'activeToken'])
+            ->name('token');
 
         // Edit ujian
         Route::get('/{exam}/edit', [GuruExam::class, 'edit'])
@@ -255,6 +275,8 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
         // Koreksi esai
         Route::patch('/session/{session}/grade-essay', [GuruExam::class, 'gradeEssay'])
             ->name('grade-essay');
+
+        
     });
 });
 
@@ -274,9 +296,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
    Route::prefix('admin/monitoring')->name('admin.monitoring.')->group(function () {
     Route::get('/', [MonitoringController::class, 'index'])->name('index');
-    Route::get('/class/{classId}', [MonitoringController::class, 'classExams'])->name('class.exams'); // Tambahan route kelas
-    Route::get('/monitoring/class/{classId}', [MonitoringController::class, 'classExams'])->name('admin.monitoring.class.exams');
+    Route::get('/class/{classId}', [MonitoringController::class, 'classExams'])->name('class.exams');
     Route::get('/exam/{id}', [MonitoringController::class, 'show'])->name('show');
+    Route::get('/exam/{id}/token', [MonitoringController::class, 'activeToken'])->name('token');
 });
 
 
@@ -388,19 +410,14 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             ->name('destroy');
     });
 
-    //grade logs
-    Route::prefix('admin/activity-logs')
-    ->name('admin.activity-logs.')
-    ->group(function () {
-        Route::get('/', [GradeLogController::class, 'index'])->name('index');
-    });
-
     //classes
     Route::prefix('admin')
     ->name('admin.')
     ->group(function () {
         Route::get('/classes', [\App\Http\Controllers\Admin\SchoolClassController::class, 'index'])
             ->name('classes.index');
+        Route::post('/classes/promote', [\App\Http\Controllers\Admin\SchoolClassController::class, 'promote'])
+            ->name('classes.promote');
     });
 
 
@@ -427,11 +444,8 @@ Route::prefix('admin/announcements')
     Route::post('/admin/students/{student}/enrollments', [ClassEnrollmentController::class, 'storeFromStudent'])
         ->name('admin.students.enrollments.store');
 
-        //Logs
-      Route::middleware(['auth', EnsureAdmin::class])
-    ->prefix('admin')
-    ->name('admin.')
-    ->group(function () {
+    // Logs
+    Route::prefix('admin')->name('admin.')->group(function () {
         // 1) kotak-kotak semua tabel
         Route::get('activity-logs', [ActivityLogController::class, 'index'])
             ->name('activity-logs.index');
@@ -515,6 +529,29 @@ Route::prefix('admin/announcements')
         Route::put('/password', [AdminProfileController::class, 'updatePassword'])
             ->name('password');
     });
+
+    // -----------------------------
+    // DATABASE RECOVERY & BACKUP
+    // -----------------------------
+    Route::prefix('admin/recovery')->name('admin.recovery.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\RecoveryController::class, 'index'])
+            ->name('index');
+
+        Route::post('/backup', [\App\Http\Controllers\Admin\RecoveryController::class, 'backup'])
+            ->name('backup');
+
+        Route::post('/restore', [\App\Http\Controllers\Admin\RecoveryController::class, 'restore'])
+            ->name('restore');
+
+        Route::get('/download/{filename}', [\App\Http\Controllers\Admin\RecoveryController::class, 'download'])
+            ->name('download');
+
+        Route::delete('/{filename}', [\App\Http\Controllers\Admin\RecoveryController::class, 'destroy'])
+            ->name('destroy');
+    });
+
+    Route::post('/admin/activity-logs/{table}/{id}/recover', [\App\Http\Controllers\Admin\RecoveryController::class, 'recoverRecord'])
+        ->name('admin.activity-logs.recover');
 });
 
 Route::middleware('auth')->group(function () {

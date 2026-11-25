@@ -91,7 +91,13 @@ class ClassEnrollmentController extends Controller
             ->pluck('enrollment_id')
             ->flip();
 
-        return view('admin.enrollments.show', compact('student', 'csts', 'terkunci'));
+        // Ringkasan nilai per kelas mapel dari Database View: v_student_grade_summary
+        $gradeSummaries = DB::connection('mysql_admin')
+            ->table('v_student_grade_summary')
+            ->where('student_id', $nis)
+            ->get();
+
+        return view('admin.enrollments.show', compact('student', 'csts', 'terkunci', 'gradeSummaries'));
     }
 
     public function create()

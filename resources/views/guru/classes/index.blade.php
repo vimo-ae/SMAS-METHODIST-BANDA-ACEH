@@ -28,14 +28,16 @@
                 'category' => 'MATEMATIKA',
                 'description' => 'Eksplorasi angka, pola, dan logika berpikir',
                 'background' => 'linear-gradient(135deg,#123B60,#267BB5)',
+                'image' => asset('images/subjects/matematika.jpg'),
                 'light' => '#E8F1F8',
                 'accent' => '#267BB5',
             ],
             'bahasa indonesia' => [
                 'symbol' => 'IDN',
-                'category' => 'BAHASA & SASTRA INDONESIA',
+                'category' => 'BAHASA dan SASTRA INDONESIA',
                 'description' => 'Mengembangkan literasi dan kekuatan berbahasa',
                 'background' => 'linear-gradient(135deg,#123B60,#267BB5)',
+                'image' => asset('images/subjects/indonesia.jpg'),
                 'light' => '#E8F1F8',
                 'accent' => '#267BB5',
             ],
@@ -52,6 +54,7 @@
                 'category' => 'BIOLOGI',
                 'description' => 'Menjelajahi dunia kehidupan dan ekosistem',
                 'background' => 'linear-gradient(135deg,#123B60,#267BB5)',
+                'image' => asset('images/subjects/biologi.jpg'),
                 'light' => '#E8F1F8',
                 'accent' => '#267BB5',
             ],
@@ -60,6 +63,7 @@
                 'category' => 'FISIKA',
                 'description' => 'Memahami hukum alam dan prinsip semesta',
                 'background' => 'linear-gradient(135deg,#123B60,#267BB5)',
+                'image' => asset('images/subjects/fisika.jpg'),
                 'light' => '#E8F1F8',
                 'accent' => '#267BB5',
             ],
@@ -85,6 +89,7 @@
                 'category' => 'INFORMATIKA',
                 'description' => 'Membangun logika digital dan komputasi',
                 'background' => 'linear-gradient(135deg,#123B60,#267BB5)',
+                'image' => asset('images/subjects/informatika.jpg'),
                 'light' => '#E8F1F8',
                 'accent' => '#267BB5',
             ],
@@ -885,9 +890,24 @@
                         </p>
                     </div>
 
-                    <span class="eclass-count">
-                        {{ $totalClasses }} Kelas
-                    </span>
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
+                        @if ($classes->isNotEmpty())
+                            <div class="relative w-full sm:w-64">
+                                <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                                <input
+                                    id="guruClassSearch"
+                                    type="search"
+                                    placeholder="Cari kelas atau mapel..."
+                                    class="w-full rounded-xl border border-slate-200 bg-white py-2 pl-10 pr-4 text-xs font-medium text-slate-700 shadow-sm transition focus:border-[#267BB5] focus:ring-[#267BB5]">
+                            </div>
+                        @endif
+
+                        <span class="eclass-count shrink-0">
+                            {{ $totalClasses }} Kelas
+                        </span>
+                    </div>
 
                 </div>
 
@@ -930,15 +950,37 @@
                                 foreach ($subjectThemes as $key => $value) {
                                     if (str_contains($subjectLower, $key)) {
                                         $theme = $value;
-                                        if (empty($theme['image']) && file_exists(public_path('images/subjects/' . $key . '.jpg'))) {
-                                            $theme['image'] = asset('images/subjects/' . $key . '.jpg');
-                                        }
                                         break;
+                                    }
+                                }
+
+                                if (empty($theme['image'])) {
+                                    $map = [
+                                        'matematika' => 'matematika.jpg', 'biologi' => 'biologi.jpg', 'kimia' => 'kimia.jpg',
+                                        'fisika' => 'fisika.jpg', 'indonesia' => 'indonesia.jpg', 'bahasa indonesia' => 'indonesia.jpg',
+                                        'informatika' => 'informatika.jpg', 'inggris' => 'inggris.svg', 'sejarah' => 'sejarah.svg',
+                                        'geografi' => 'geografi.svg', 'ekonomi' => 'ekonomi.svg', 'sosiologi' => 'sosiologi.svg',
+                                        'agama' => 'agama.svg', 'pjok' => 'pjok.svg', 'seni' => 'seni-budaya.svg', 'ppkn' => 'ppkn.svg',
+                                    ];
+                                    foreach ($map as $k => $f) {
+                                        if (str_contains($subjectLower, $k)) {
+                                            $jpg = preg_replace('/\.(svg|png)$/i', '.jpg', $f);
+                                            $svg = preg_replace('/\.(jpg|png)$/i', '.svg', $f);
+                                            if (file_exists(public_path('images/subjects/' . $jpg))) {
+                                                $theme['image'] = asset('images/subjects/' . $jpg);
+                                                break;
+                                            } elseif (file_exists(public_path('images/subjects/' . $svg))) {
+                                                $theme['image'] = asset('images/subjects/' . $svg);
+                                                break;
+                                            }
+                                        }
                                     }
                                 }
                             @endphp
 
                             <a href="{{ route('guru.classes.show', $class->cst_id) }}"
+                               data-guru-class-card
+                               data-search="{{ strtolower($subjectName . ' ' . ($class->schoolClass->name ?? '') . ' ' . ($class->subject_code ?? '')) }}"
                                class="eclass-card"
                                title="Klik untuk membuka kelas {{ $class->schoolClass->name ?? '' }} {{ $subjectName }}">
 
@@ -1043,11 +1085,155 @@
 
                     </div>
 
+                    {{-- SEARCH EMPTY RESULT --}}
+                    <div id="noGuruClassResult" class="hidden rounded-2xl border border-slate-200 bg-white px-6 py-10 text-center shadow-sm">
+                        <p class="font-bold text-slate-700">Kelas atau mata pelajaran tidak ditemukan</p>
+                        <p class="text-xs text-slate-400 mt-1">Coba gunakan kata kunci pencarian yang lain.</p>
+                    </div>
+
+                    {{-- NAVIGASI SLIDE / PAGINASI KARTU KELAS GURU (MAKSIMAL 6 PER SLIDE) --}}
+                    <div id="guruClassPagination" class="hidden"></div>
+
                 @endif
 
             </section>
 
         </div>
     </main>
+
+    {{-- GURU CLASS SLIDE dan SEARCH SCRIPT --}}
+    @if($classes->isNotEmpty())
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const search = document.getElementById('guruClassSearch');
+                const cards = Array.from(document.querySelectorAll('[data-guru-class-card]'));
+                const empty = document.getElementById('noGuruClassResult');
+                const pagination = document.getElementById('guruClassPagination');
+                const perPage = 6;
+                let currentPage = 1;
+                let filteredCards = [...cards];
+
+                function render() {
+                    const total = filteredCards.length;
+                    const totalPages = Math.ceil(total / perPage) || 1;
+
+                    if (currentPage > totalPages) currentPage = totalPages;
+                    if (currentPage < 1) currentPage = 1;
+
+                    const start = (currentPage - 1) * perPage;
+                    const end = start + perPage;
+
+                    // Sembunyikan semua kartu terlebih dahulu
+                    cards.forEach(c => c.style.display = 'none');
+
+                    // Tampilkan hanya kartu pada slide saat ini
+                    filteredCards.forEach((c, idx) => {
+                        if (idx >= start && idx < end) {
+                            c.style.display = '';
+                        }
+                    });
+
+                    // Pesan jika pencarian kosong
+                    if (empty) {
+                        empty.classList.toggle('hidden', total > 0);
+                    }
+
+                    // Tampilkan pagination jika lebih dari 6 kartu
+                    renderPagination(total, totalPages);
+                }
+
+                function renderPagination(total, totalPages) {
+                    if (!pagination) return;
+
+                    if (totalPages <= 1) {
+                        pagination.innerHTML = '';
+                        pagination.classList.add('hidden');
+                        return;
+                    }
+
+                    pagination.classList.remove('hidden');
+
+                    const startItem = Math.min((currentPage - 1) * perPage + 1, total);
+                    const endItem = Math.min(currentPage * perPage, total);
+
+                    let pillsHtml = '';
+                    for (let p = 1; p <= totalPages; p++) {
+                        const isActive = p === currentPage;
+                        pillsHtml += `
+                            <button type="button"
+                                    data-page="${p}"
+                                    title="Buka Slide ${p}"
+                                    class="h-9 w-9 rounded-xl text-xs font-black transition flex items-center justify-center ${isActive ? 'bg-[#123B60] text-white shadow-md shadow-blue-900/20 ring-2 ring-[#123B60]/30' : 'bg-white border border-slate-200 text-slate-600 hover:bg-blue-50 hover:border-blue-300 hover:text-[#123B60] shadow-sm'}">
+                                ${p}
+                            </button>
+                        `;
+                    }
+
+                    pagination.innerHTML = `
+                        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 pt-6 border-t border-slate-200/90">
+                            <div class="flex items-center gap-2 text-xs text-slate-500 font-medium">
+                                <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+                                <span>Menampilkan <strong class="text-slate-800 font-bold">${startItem}–${endItem}</strong> dari <strong class="text-slate-800 font-bold">${total}</strong> kelas diampu</span>
+                                <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-bold text-slate-600">Slide ${currentPage} / ${totalPages}</span>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <button type="button"
+                                        data-page="${currentPage - 1}"
+                                        ${currentPage === 1 ? 'disabled' : ''}
+                                        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border text-xs font-bold transition ${currentPage === 1 ? 'border-slate-200 text-slate-300 cursor-not-allowed bg-slate-50' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-300 shadow-sm active:scale-95'}">
+                                    <span>&larr;</span>
+                                    <span>Sebelumnya</span>
+                                </button>
+
+                                <div class="flex items-center gap-1.5">
+                                    ${pillsHtml}
+                                </div>
+
+                                <button type="button"
+                                        data-page="${currentPage + 1}"
+                                        ${currentPage === totalPages ? 'disabled' : ''}
+                                        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border text-xs font-bold transition ${currentPage === totalPages ? 'border-slate-200 text-slate-300 cursor-not-allowed bg-slate-50' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-300 shadow-sm active:scale-95'}">
+                                    <span>Berikutnya</span>
+                                    <span>&rarr;</span>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+
+                    pagination.querySelectorAll('button[data-page]').forEach(btn => {
+                        btn.addEventListener('click', function () {
+                            if (this.disabled) return;
+                            currentPage = parseInt(this.getAttribute('data-page'));
+                            render();
+
+                            const grid = document.querySelector('.eclass-grid');
+                            if (grid) {
+                                grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                        });
+                    });
+                }
+
+                if (search) {
+                    search.addEventListener('input', function () {
+                        const keyword = this.value.trim().toLowerCase();
+                        if (!keyword) {
+                            filteredCards = [...cards];
+                        } else {
+                            filteredCards = cards.filter(card => {
+                                const searchableText = card.dataset.search || '';
+                                return searchableText.includes(keyword);
+                            });
+                        }
+                        currentPage = 1;
+                        render();
+                    });
+                }
+
+                render();
+            });
+        </script>
+    @endif
 
 </x-app-layout>

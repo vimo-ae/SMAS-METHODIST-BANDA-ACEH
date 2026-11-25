@@ -138,7 +138,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
                         </span>
-                        <span><small>{{ __('Ujian & Kuis') }}</small><strong>{{ __('E-Exam') }}</strong></span>
+                        <span><small>{{ __('Ujian dan Kuis') }}</small><strong>{{ __('E-Exam') }}</strong></span>
                     </a>
 
                     <a href="{{ route('siswa.classes.index') }}" class="d-float d-float-2">
@@ -147,7 +147,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.25v13m0-13C10.83 5.48 9.25 5 7.5 5S4.17 5.48 3 6.25v13C4.17 18.48 5.75 18 7.5 18s3.33.48 4.5 1.25m0-13C13.17 5.48 14.75 5 16.5 5c1.75 0 3.33.48 4.5 1.25v13C19.83 18.48 18.25 18 16.5 18c-1.75 0-3.33.48-4.5 1.25"/>
                             </svg>
                         </span>
-                        <span><small>{{ __('Kelas & Materi') }}</small><strong>{{ __('E-Class') }}</strong></span>
+                        <span><small>{{ __('Kelas dan Materi') }}</small><strong>{{ __('E-Class') }}</strong></span>
                     </a>
                 </div>
             </section>

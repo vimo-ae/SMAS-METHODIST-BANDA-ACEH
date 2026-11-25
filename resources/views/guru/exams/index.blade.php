@@ -6,13 +6,13 @@
                     Methodist Learning Space
                 </p>
                 <h2 class="text-xl font-bold text-slate-800 leading-tight">
-                    E-Exam &amp; Evaluasi Siswa
+                    E-Exam dan Evaluasi Siswa
                 </h2>
             </div>
             <div>
                 <span class="inline-flex items-center gap-1.5 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-800 shadow-sm">
                     <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
-                    Asesmen &amp; Ujian Digital Guru
+                    Asesmen dan Ujian Digital Guru
                 </span>
             </div>
         </div>
@@ -30,12 +30,14 @@
                 'category' => 'MATEMATIKA',
                 'description' => 'Eksplorasi angka, pola, dan logika berpikir',
                 'background' => 'linear-gradient(135deg,#123B60,#267BB5)',
+                'image' => asset('images/subjects/matematika.jpg'),
             ],
             'bahasa indonesia' => [
                 'symbol' => 'IDN',
-                'category' => 'BAHASA & SASTRA INDONESIA',
+                'category' => 'BAHASA dan SASTRA INDONESIA',
                 'description' => 'Mengembangkan literasi dan kekuatan berbahasa',
                 'background' => 'linear-gradient(135deg,#123B60,#267BB5)',
+                'image' => asset('images/subjects/indonesia.jpg'),
             ],
             'bahasa inggris' => [
                 'symbol' => 'ENG',
@@ -48,12 +50,14 @@
                 'category' => 'BIOLOGI',
                 'description' => 'Menjelajahi dunia kehidupan dan ekosistem',
                 'background' => 'linear-gradient(135deg,#123B60,#267BB5)',
+                'image' => asset('images/subjects/biologi.jpg'),
             ],
             'fisika' => [
                 'symbol' => 'FIS',
                 'category' => 'FISIKA',
                 'description' => 'Memahami hukum alam dan prinsip semesta',
                 'background' => 'linear-gradient(135deg,#123B60,#267BB5)',
+                'image' => asset('images/subjects/fisika.jpg'),
             ],
             'kimia' => [
                 'symbol' => 'KIM',
@@ -73,6 +77,7 @@
                 'category' => 'INFORMATIKA',
                 'description' => 'Membangun logika digital dan komputasi',
                 'background' => 'linear-gradient(135deg,#123B60,#267BB5)',
+                'image' => asset('images/subjects/informatika.jpg'),
             ],
             'agama' => [
                 'symbol' => 'AGM',
@@ -508,14 +513,14 @@
 
         <div class="eexam-wrap space-y-8">
 
-            {{-- BREADCRUMB & NAVIGASI CEPAT (DI BAWAH HEADER) --}}
+            {{-- BREADCRUMB dan NAVIGASI CEPAT (DI BAWAH HEADER) --}}
             <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
                 <div class="flex items-center gap-2 text-xs font-medium text-slate-400">
                     <a href="{{ route('guru.dashboard') }}" class="transition hover:text-blue-600">
                         Dashboard
                     </a>
                     <span>/</span>
-                    <span class="font-bold text-blue-700">E-Exam &amp; Evaluasi Siswa</span>
+                    <span class="font-bold text-blue-700">E-Exam dan Evaluasi Siswa</span>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2.5">
@@ -585,7 +590,7 @@
 
                     <p class="description">
                         Kelola asesmen digital, ulangan harian, UTS, dan UAS secara interaktif. 
-                        Rancang bank soal objektif &amp; esai terstruktur, evaluasi capaian siswa, serta dapatkan analisis hasil ujian secara instan dan akurat.
+                        Rancang bank soal objektif dan esai terstruktur, evaluasi capaian siswa, serta dapatkan analisis hasil ujian secara instan dan akurat.
                     </p>
 
                     <div class="mt-6 flex flex-wrap items-center gap-3">
@@ -620,7 +625,7 @@
                             <div class="art-symbol drop-shadow-md">E-Exam.</div>
 
                             <h2 class="eexam-serif mt-3 text-2xl font-bold drop-shadow-md">
-                                Ujian &amp; Evaluasi Bermakna.
+                                Ujian dan Evaluasi Bermakna.
                             </h2>
 
                             <p class="mt-2 text-xs text-slate-100 font-medium drop-shadow">
@@ -682,7 +687,7 @@
                 </article>
             </section>
 
-            {{-- FILTER & SEARCH TOOLBAR --}}
+            {{-- FILTER dan SEARCH TOOLBAR --}}
             <section class="rounded-3xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm">
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     
@@ -785,7 +790,7 @@
                 <div class="flex items-end justify-between gap-4">
                     <div>
                         <p class="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#267BB5]">
-                            Bank Asesmen &amp; Evaluasi Aktif
+                            Bank Asesmen dan Evaluasi Aktif
                         </p>
                         <h2 class="eexam-serif text-2xl sm:text-3xl font-bold text-slate-900 mt-1">
                             Daftar Ujian yang Anda Kelola
@@ -833,10 +838,29 @@
                                 foreach ($subjectThemes as $key => $value) {
                                     if (str_contains($subjectLower, $key)) {
                                         $theme = $value;
-                                        if (empty($theme['image']) && file_exists(public_path('images/subjects/' . $key . '.jpg'))) {
-                                            $theme['image'] = asset('images/subjects/' . $key . '.jpg');
-                                        }
                                         break;
+                                    }
+                                }
+
+                                if (empty($theme['image'])) {
+                                    $slugMap = [
+                                        'matematika' => 'matematika.jpg', 'biologi' => 'biologi.jpg', 'kimia' => 'kimia.jpg', 'informatika' => 'informatika.jpg',
+                                        'fisika' => 'fisika.jpg', 'bahasa indonesia' => 'indonesia.jpg', 'indonesia' => 'indonesia.jpg', 'bahasa inggris' => 'inggris.svg',
+                                        'sejarah' => 'sejarah.svg', 'geografi' => 'geografi.svg', 'ekonomi' => 'ekonomi.svg', 'sosiologi' => 'sosiologi.svg',
+                                        'agama' => 'agama.svg', 'pjok' => 'pjok.svg', 'seni' => 'seni-budaya.svg', 'ppkn' => 'ppkn.svg',
+                                    ];
+                                    foreach ($slugMap as $k => $f) {
+                                        if (str_contains($subjectLower, $k)) {
+                                            $jpgFile = preg_replace('/\.(svg|png)$/i', '.jpg', $f);
+                                            $svgFile = preg_replace('/\.(jpg|png)$/i', '.svg', $f);
+                                            if (file_exists(public_path('images/subjects/' . $jpgFile))) {
+                                                $theme['image'] = asset('images/subjects/' . $jpgFile);
+                                                break;
+                                            } elseif (file_exists(public_path('images/subjects/' . $svgFile))) {
+                                                $theme['image'] = asset('images/subjects/' . $svgFile);
+                                                break;
+                                            }
+                                        }
                                     }
                                 }
 
@@ -864,7 +888,7 @@
                                 <a href="{{ route('guru.exams.show', $exam) }}"
                                    class="eexam-card-cover block group/cover {{ !empty($theme['image']) ? 'has-image' : '' }}"
                                    style="{{ empty($theme['image']) ? 'background: ' . $theme['background'] : '' }}"
-                                   title="Buka & Kelola Ujian: {{ $exam->title }}">
+                                   title="Buka dan Kelola Ujian: {{ $exam->title }}">
 
                                     @if(!empty($theme['image']))
                                         <img src="{{ $theme['image'] }}"
@@ -873,7 +897,7 @@
                                         <div class="eexam-cover-overlay"></div>
                                     @endif
 
-                                    {{-- HEADER BAR COVER: TIPE & STATUS --}}
+                                    {{-- HEADER BAR COVER: TIPE dan STATUS --}}
                                     <div class="relative z-10 flex items-center justify-between gap-2">
                                         <div class="flex items-center gap-1.5">
                                             <span class="inline-flex items-center rounded-lg px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-white shadow-sm {{ $typeInfo['bg'] }}">
@@ -898,7 +922,7 @@
                                         @endif
                                     </div>
 
-                                    {{-- FOOTER BAR COVER: MAPEL & SYMBOL --}}
+                                    {{-- FOOTER BAR COVER: MAPEL dan SYMBOL --}}
                                     <div class="relative z-10 flex items-end justify-between gap-3 mt-4">
                                         <div>
                                             <p class="text-[9px] font-extrabold uppercase tracking-[.15em] text-white/80">
@@ -919,7 +943,7 @@
                                 {{-- CARD BODY --}}
                                 <div class="eexam-card-body space-y-4">
                                     
-                                    {{-- JUDUL UJIAN & JADWAL --}}
+                                    {{-- JUDUL UJIAN dan JADWAL --}}
                                     <div>
                                         <h4 class="text-base font-bold text-slate-800 leading-snug line-clamp-2 group-hover:text-[#267BB5] transition">
                                             <a href="{{ route('guru.exams.show', $exam) }}">

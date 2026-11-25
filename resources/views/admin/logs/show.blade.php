@@ -14,7 +14,7 @@
 @endphp
 
 <div class="theme-portal rounded-4 shadow-sm">
-    {{-- HEADER & BREADCRUMB --}}
+    {{-- HEADER dan BREADCRUMB --}}
     <div class="p-4 border-bottom">
         <nav aria-label="breadcrumb" class="mb-2">
             <ol class="breadcrumb small mb-0">
@@ -43,13 +43,72 @@
                 </p>
             </div>
 
-            <a href="{{ route('admin.activity-logs.table', $table) }}" class="btn btn-outline-secondary btn-sm px-3 py-2 rounded-3">
-                <i class="bi bi-arrow-left me-1"></i> Kembali ke {{ $label }}
-            </a>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                @if(in_array($actionUpper, ['DELETE', 'UPDATE_BEFORE', 'UPDATE_AFTER', 'UPDATE']))
+                    <button type="button" class="btn btn-warning btn-sm px-3 py-2 rounded-3 text-dark fw-semibold shadow-sm d-flex align-items-center gap-1"
+                            data-bs-toggle="modal" data-bs-target="#recoverRecordModal">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                        <span>Pulihkan Data Ini (Rollback)</span>
+                    </button>
+
+                    {{-- MODAL KONFIRMASI PEMULIHAN REKAMAN --}}
+                    <div class="modal fade" id="recoverRecordModal" tabindex="-1" aria-labelledby="recoverRecordLabel" aria-hidden="true">
+                        <div class="modal-dialog text-start">
+                            <div class="modal-content border-0 shadow">
+                                <div class="modal-header bg-warning bg-opacity-25 border-bottom border-warning">
+                                    <h5 class="modal-title fw-bold text-dark" id="recoverRecordLabel">
+                                        <i class="bi bi-arrow-counterclockwise text-warning me-2"></i> Konfirmasi Pemulihan Rekaman
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body p-4">
+                                    <p class="mb-2">Anda akan memulihkan data pada tabel <strong>{{ $table }}</strong> menggunakan snapshot data dari:</p>
+                                    <div class="p-3 bg-light rounded-3 font-monospace small mb-3 border">
+                                        Log #{{ $row->log_id }} &middot; Aksi: <strong>{{ $row->log_action }}</strong> &middot; Waktu: {{ $row->log_at }}
+                                    </div>
+                                    <div class="alert alert-info mb-0 small">
+                                        <i class="bi bi-info-circle-fill me-1"></i>
+                                        Sistem akan memasukkan kembali data yang terhapus atau mengembalikan nilai kolom sebelum perubahan ke tabel utama.
+                                    </div>
+                                </div>
+                                <div class="modal-footer bg-light border-top">
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                                    <form action="{{ route('admin.activity-logs.recover', [$table, $row->log_id]) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="btn btn-warning text-dark fw-bold">
+                                            <i class="bi bi-check-circle-fill me-1"></i> Ya, Pulihkan Rekaman Ini
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+                <a href="{{ route('admin.activity-logs.table', $table) }}" class="btn btn-outline-secondary btn-sm px-3 py-2 rounded-3">
+                    <i class="bi bi-arrow-left me-1"></i> Kembali ke {{ $label }}
+                </a>
+            </div>
         </div>
     </div>
 
     <div class="p-4">
+        {{-- FLASH MESSAGES RECOVERY --}}
+        @if(session('recovery_success'))
+            <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4 d-flex align-items-center gap-2" role="alert">
+                <i class="bi bi-check-circle-fill fs-5"></i>
+                <div>{{ session('recovery_success') }}</div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4 d-flex align-items-center gap-2" role="alert">
+                <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                <div>{{ session('error') }}</div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
         {{-- KARTU INFORMASI METADATA LOG --}}
         <div class="portal-card p-4 mb-4">
             <div class="row g-4">

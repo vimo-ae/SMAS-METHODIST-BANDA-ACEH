@@ -11,12 +11,12 @@ class RosterService
     public const DECREE_DATE = 'Banda Aceh, 12 Juli 2026';
 
     public const CLASSES = [
-        'X IPAS A' => ['label' => 'X IPAS A', 'grade' => 'X', 'major' => 'IPAS', 'color' => '#123B60'],
-        'X IPAS B' => ['label' => 'X IPAS B', 'grade' => 'X', 'major' => 'IPAS', 'color' => '#123B60'],
-        'XI A'     => ['label' => 'XI A',     'grade' => 'XI', 'major' => 'Umum', 'color' => '#1B4D7E'],
-        'XI B'     => ['label' => 'XI B',     'grade' => 'XI', 'major' => 'Umum', 'color' => '#1B4D7E'],
-        'XII A'    => ['label' => 'XII A',    'grade' => 'XII', 'major' => 'Umum', 'color' => '#267BB5'],
-        'XII B'    => ['label' => 'XII B',    'grade' => 'XII', 'major' => 'Umum', 'color' => '#267BB5'],
+        'X IPAS A' => ['label' => 'X-A',     'grade' => 'X',   'major' => 'IPAS', 'color' => '#123B60'],
+        'X IPAS B' => ['label' => 'X-B',     'grade' => 'X',   'major' => 'IPAS', 'color' => '#123B60'],
+        'XI A'     => ['label' => 'XI-A',    'grade' => 'XI',  'major' => 'Umum', 'color' => '#1B4D7E'],
+        'XI B'     => ['label' => 'XI-B',    'grade' => 'XI',  'major' => 'Umum', 'color' => '#1B4D7E'],
+        'XII A'    => ['label' => 'XII-A',   'grade' => 'XII', 'major' => 'Umum', 'color' => '#267BB5'],
+        'XII B'    => ['label' => 'XII-B',   'grade' => 'XII', 'major' => 'Umum', 'color' => '#267BB5'],
     ];
 
     public const TEACHERS = [
@@ -1194,5 +1194,171 @@ class RosterService
             'day_name' => ucfirst($currentDayCode),
             'items' => $fullTeacherSchedule[$currentDayCode]['items'] ?? [],
         ];
+    }
+
+    /**
+     * Dapatkan jadwal lengkap untuk satu rombel kelas tertentu (misal: X-A / X IPAS A).
+     */
+    public static function getScheduleForClass(string $targetClass): array
+    {
+        $all = self::getRosterData();
+        $classSchedule = [];
+
+        // Normalisasi nama kelas
+        $normalized = strtoupper(trim($targetClass));
+        if ($normalized === 'X-A' || $normalized === 'X IPA 1' || $normalized === 'XA') {
+            $normalized = 'X IPAS A';
+        } elseif ($normalized === 'X-B' || $normalized === 'X IPA 2' || $normalized === 'XB') {
+            $normalized = 'X IPAS B';
+        } elseif ($normalized === 'XI-A' || $normalized === 'XI IPA 1' || $normalized === 'XIA') {
+            $normalized = 'XI A';
+        } elseif ($normalized === 'XI-B' || $normalized === 'XI IPA 2' || $normalized === 'XIB') {
+            $normalized = 'XI B';
+        } elseif ($normalized === 'XII-A' || $normalized === 'XII IPA 1' || $normalized === 'XIIA') {
+            $normalized = 'XII A';
+        } elseif ($normalized === 'XII-B' || $normalized === 'XII IPA 2' || $normalized === 'XIIB') {
+            $normalized = 'XII B';
+        }
+
+        foreach ($all as $dayKey => $dayData) {
+            $slotsForDay = [];
+            foreach ($dayData['rows'] as $row) {
+                $isBreak = !empty($row['is_break']);
+                $isSpecial = !empty($row['is_special']);
+
+                if ($isBreak || $isSpecial) {
+                    $slotsForDay[] = [
+                        'les' => $row['les'],
+                        'time' => $row['time'],
+                        'activity' => $row['activity'] ?? $row['special_title'] ?? $row['break_title'] ?? ($isBreak ? 'Istirahat' : 'Kegiatan Khusus'),
+                        'is_break' => $isBreak,
+                        'is_special' => $isSpecial,
+                        'subject' => null,
+                        'teacher' => null,
+                        'teacher_name' => null,
+                        'subject_desc' => null,
+                    ];
+                    continue;
+                }
+
+                $slot = $row['slots'][$normalized] ?? null;
+                $teacherInfo = $slot && isset(self::TEACHERS[$slot['teacher']]) ? self::TEACHERS[$slot['teacher']] : null;
+
+                $slotsForDay[] = [
+                    'les' => $row['les'],
+                    'time' => $row['time'],
+                    'activity' => null,
+                    'is_break' => false,
+                    'is_special' => false,
+                    'subject' => $slot ? $slot['subject'] : '-',
+                    'teacher' => $slot ? $slot['teacher'] : null,
+                    'teacher_name' => $teacherInfo ? $teacherInfo['name'] : null,
+                    'subject_desc' => $teacherInfo ? $teacherInfo['desc'] : null,
+                ];
+            }
+
+            $classSchedule[$dayKey] = [
+                'day_name' => $dayData['day_name'],
+                'items' => $slotsForDay,
+            ];
+        }
+
+        return $classSchedule;
+    }
+
+    /**
+     * Dapatkan jadwal hari ini untuk satu rombel kelas tertentu.
+     */
+    public static function getTodayScheduleForClass(string $targetClass): array
+    {
+        $dayMap = [
+            1 => 'senin',
+            2 => 'selasa',
+            3 => 'rabu',
+            4 => 'kamis',
+            5 => 'jumat',
+            6 => 'sabtu',
+            7 => 'senin',
+        ];
+        $currentDayCode = $dayMap[(int) date('N')] ?? 'senin';
+        $fullSchedule = self::getScheduleForClass($targetClass);
+
+        return [
+            'day_code' => $currentDayCode,
+            'day_name' => ucfirst($currentDayCode),
+            'items' => $fullSchedule[$currentDayCode]['items'] ?? [],
+        ];
+    }
+
+    /**
+     * Mengelompokkan slot pelajaran berturutan yang memiliki mapel dan guru yang sama
+     * menjadi satu blok sesi terpadu (misal: Les 2-4 PKWU alih-alih 3 kartu berulang).
+     */
+    public static function groupConsecutiveSlots(array $items): array
+    {
+        $grouped = [];
+        $current = null;
+
+        foreach ($items as $item) {
+            $isBreak = !empty($item['is_break']);
+            $isSpecial = !empty($item['is_special']);
+
+            if ($isBreak || $isSpecial) {
+                if ($current !== null) {
+                    $grouped[] = $current;
+                    $current = null;
+                }
+                $grouped[] = [
+                    'les_label' => $item['les'] ?? '—',
+                    'time' => $item['time'],
+                    'is_break' => $isBreak,
+                    'is_special' => $isSpecial,
+                    'activity' => $item['activity'] ?? ($isBreak ? 'Istirahat' : 'Kegiatan Khusus'),
+                    'subject' => null,
+                    'subject_desc' => null,
+                    'teacher' => null,
+                    'teacher_name' => null,
+                ];
+                continue;
+            }
+
+            $subject = $item['subject'] ?? '';
+            $teacher = $item['teacher'] ?? '';
+
+            if ($current !== null && $current['subject'] === $subject && $current['teacher'] === $teacher) {
+                $current['end_les'] = $item['les'];
+                $timeParts = explode('-', $item['time']);
+                $current['end_time'] = trim(end($timeParts));
+                $current['les_label'] = "Les {$current['start_les']} - {$current['end_les']}";
+                $current['time'] = "{$current['start_time']} - {$current['end_time']}";
+                $current['count']++;
+            } else {
+                if ($current !== null) {
+                    $grouped[] = $current;
+                }
+                $timeParts = explode('-', $item['time']);
+                $current = [
+                    'is_break' => false,
+                    'is_special' => false,
+                    'start_les' => $item['les'],
+                    'end_les' => $item['les'],
+                    'start_time' => trim($timeParts[0] ?? $item['time']),
+                    'end_time' => trim(end($timeParts)),
+                    'les_label' => "Les {$item['les']}",
+                    'time' => $item['time'],
+                    'count' => 1,
+                    'subject' => $subject,
+                    'subject_desc' => $item['subject_desc'] ?? $subject,
+                    'teacher' => $teacher,
+                    'teacher_name' => $item['teacher_name'] ?? $teacher,
+                ];
+            }
+        }
+
+        if ($current !== null) {
+            $grouped[] = $current;
+        }
+
+        return $grouped;
     }
 }

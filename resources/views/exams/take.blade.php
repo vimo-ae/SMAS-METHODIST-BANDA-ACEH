@@ -199,7 +199,7 @@
         box.append(el('div', { class: 'actions' },
             el('button', { class: 'btn gray', type: 'button', onclick: () => go(cur - 1) }, '‹ Sebelumnya'),
             cur === Q.length - 1
-                ? el('button', { class: 'btn red', type: 'button', onclick: () => finish(false) }, 'Selesai & Kumpulkan')
+                ? el('button', { class: 'btn red', type: 'button', onclick: () => finish(false) }, 'Selesai dan Kumpulkan')
                 : el('button', { class: 'btn', type: 'button', onclick: () => go(cur + 1) }, 'Berikutnya ›')));
         renderNav();
     }
@@ -209,7 +209,7 @@
         order.forEach((qi, pos) => nav.append(el('button', { type: 'button', class: (isAnswered(Q[qi]) ? 'done ' : '') + (pos === cur ? 'cur' : ''), onclick: () => go(pos) }, pos + 1)));
     }
 
-    // ---------- timer & selesai ----------
+    // ---------- timer dan selesai ----------
     function finish(auto) {
         if (finishing) return;
         if (!auto && !confirm('Kumpulkan ujian sekarang? Jawaban tidak dapat diubah setelah dikumpulkan.')) return;

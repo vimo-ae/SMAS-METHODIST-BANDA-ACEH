@@ -513,6 +513,39 @@ class ClassroomController extends Controller
     }
 
     /**
+     * Membuka / pratinjau berkas jawaban siswa.
+     */
+    public function viewSubmission(
+        Request $request,
+        Assignment $assignment,
+        int $nis
+    ) {
+        $this->authorizeAssignmentTeacher(
+            $request,
+            $assignment
+        );
+
+        $submission = AssignmentSubmission::where(
+                'assignment_id',
+                $assignment->assignment_id
+            )
+            ->where('students_id', $nis)
+            ->firstOrFail();
+
+        abort_unless(
+            $submission->file_path &&
+            Storage::disk('local')->exists(
+                $submission->file_path
+            ),
+            404
+        );
+
+        return response()->file(
+            Storage::disk('local')->path($submission->file_path)
+        );
+    }
+
+    /**
      * Memberikan nilai dan feedback tugas.
      */
     public function gradeSubmission(

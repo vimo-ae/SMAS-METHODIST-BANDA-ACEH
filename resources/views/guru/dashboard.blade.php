@@ -42,12 +42,14 @@
                 'label' => 'MATEMATIKA',
                 'description' => 'Eksplorasi angka, pola, dan logika berpikir',
                 'background' => 'linear-gradient(135deg,#123B60,#267BB5)',
+                'image' => asset('images/subjects/matematika.jpg'),
             ],
             'bahasa indonesia' => [
                 'icon' => 'IDN',
-                'label' => 'BAHASA & SASTRA INDONESIA',
+                'label' => 'BAHASA dan SASTRA INDONESIA',
                 'description' => 'Mengembangkan literasi dan kekuatan berbahasa',
                 'background' => 'linear-gradient(135deg,#123B60,#267BB5)',
+                'image' => asset('images/subjects/indonesia.jpg'),
             ],
             'bahasa inggris' => [
                 'icon' => 'ENG',
@@ -60,12 +62,14 @@
                 'label' => 'BIOLOGI',
                 'description' => 'Menjelajahi dunia kehidupan dan ekosistem',
                 'background' => 'linear-gradient(135deg,#123B60,#267BB5)',
+                'image' => asset('images/subjects/biologi.jpg'),
             ],
             'fisika' => [
                 'icon' => 'FIS',
                 'label' => 'FISIKA',
                 'description' => 'Memahami hukum alam dan prinsip semesta',
                 'background' => 'linear-gradient(135deg,#123B60,#267BB5)',
+                'image' => asset('images/subjects/fisika.jpg'),
             ],
             'kimia' => [
                 'icon' => 'KIM',
@@ -85,6 +89,7 @@
                 'label' => 'INFORMATIKA',
                 'description' => 'Membangun logika digital dan komputasi',
                 'background' => 'linear-gradient(135deg,#123B60,#267BB5)',
+                'image' => asset('images/subjects/informatika.jpg'),
             ],
             'agama' => [
                 'icon' => 'AGM',
@@ -222,7 +227,7 @@
             line-height: 1.9;
         }
 
-        /* BUTTONS WITH DYNAMIC CLICK & ACTIVE STATES */
+        /* BUTTONS WITH DYNAMIC CLICK dan ACTIVE STATES */
         .academy-button {
             display: inline-flex;
             align-items: center;
@@ -270,7 +275,7 @@
             border-color: #C2D8E8 !important;
         }
 
-        /* E-CLASS MENU SELECTOR (RESPONSIVE & COHESIVE) */
+        /* E-CLASS MENU SELECTOR (RESPONSIVE dan COHESIVE) */
         .eclass-menu-nav {
             margin-top: 24px;
         }
@@ -887,7 +892,7 @@
                     </p>
 
                     {{-- ==========================================
-                         PILIHAN MENU E-CLASS (RESPONSIF & HARMONIS)
+                         PILIHAN MENU E-CLASS (RESPONSIF dan HARMONIS)
                     =========================================== --}}
                     <div class="eclass-menu-nav">
                         <div class="eclass-menu-label">
@@ -940,7 +945,7 @@
                             {{-- MENU 3: ROSTER PELAJARAN --}}
                             <a href="{{ route('guru.roster') }}"
                                class="eclass-menu-pill group"
-                               title="Buka Roster & Jadwal Mengajar">
+                               title="Buka Roster dan Jadwal Mengajar">
                                 <span class="eclass-pill-icon bg-sky-50 text-[#0284C7] border border-sky-100 group-hover:bg-[#0284C7] group-hover:text-white group-hover:border-[#0284C7]">
                                     <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <rect width="18" height="18" x="3" y="4" rx="2.5"/>
@@ -1024,7 +1029,7 @@
             </section>
 
             {{-- ==========================================
-                 PISAHKAN E-CLASS & E-EXAM (HUB PORTAL)
+                 PISAHKAN E-CLASS dan E-EXAM (HUB PORTAL)
             =========================================== --}}
             <section class="academy-hub-grid">
                 {{-- CARD E-CLASS: Seluruh kartu langsung navigasi ke E-Class --}}
@@ -1047,7 +1052,7 @@
                     </div>
 
                     <h3 class="academy-serif mt-5 text-2xl font-bold text-[#123B60] group-hover:text-[#267BB5] transition">
-                        E-Class (Ruang Belajar & Kelas)
+                        E-Class (Ruang Belajar dan Kelas)
                     </h3>
 
                     <p class="mt-2 text-xs leading-6 text-slate-500">
@@ -1091,7 +1096,7 @@
                     </div>
 
                     <h3 class="academy-serif mt-5 text-2xl font-bold text-[#123B60] group-hover:text-[#4338A8] transition">
-                        E-Exam (Ujian & Asesmen Digital)
+                        E-Exam (Ujian dan Asesmen Digital)
                     </h3>
 
                     <p class="mt-2 text-xs leading-6 text-slate-500">
@@ -1131,7 +1136,7 @@
                     </div>
 
                     <h3 class="academy-serif mt-5 text-2xl font-bold text-[#123B60] group-hover:text-[#267BB5] transition">
-                        Roster &amp; Jadwal Mengajar
+                        Roster dan Jadwal Mengajar
                     </h3>
 
                     <p class="mt-2 text-xs leading-6 text-slate-500">
@@ -1342,10 +1347,29 @@
                                 foreach ($subjectThemes as $key => $value) {
                                     if (str_contains($subjectLower, $key)) {
                                         $theme = $value;
-                                        if (empty($theme['image']) && file_exists(public_path('images/subjects/' . $key . '.jpg'))) {
-                                            $theme['image'] = asset('images/subjects/' . $key . '.jpg');
-                                        }
                                         break;
+                                    }
+                                }
+
+                                if (empty($theme['image'])) {
+                                    $slugMap = [
+                                        'matematika' => 'matematika.jpg', 'biologi' => 'biologi.jpg', 'kimia' => 'kimia.jpg', 'informatika' => 'informatika.jpg',
+                                        'fisika' => 'fisika.jpg', 'bahasa indonesia' => 'indonesia.jpg', 'indonesia' => 'indonesia.jpg', 'bahasa inggris' => 'inggris.svg',
+                                        'sejarah' => 'sejarah.svg', 'geografi' => 'geografi.svg', 'ekonomi' => 'ekonomi.svg', 'sosiologi' => 'sosiologi.svg',
+                                        'agama' => 'agama.svg', 'pjok' => 'pjok.svg', 'seni' => 'seni-budaya.svg', 'ppkn' => 'ppkn.svg',
+                                    ];
+                                    foreach ($slugMap as $k => $f) {
+                                        if (str_contains($subjectLower, $k)) {
+                                            $jpgFile = preg_replace('/\.(svg|png)$/i', '.jpg', $f);
+                                            $svgFile = preg_replace('/\.(jpg|png)$/i', '.svg', $f);
+                                            if (file_exists(public_path('images/subjects/' . $jpgFile))) {
+                                                $theme['image'] = asset('images/subjects/' . $jpgFile);
+                                                break;
+                                            } elseif (file_exists(public_path('images/subjects/' . $svgFile))) {
+                                                $theme['image'] = asset('images/subjects/' . $svgFile);
+                                                break;
+                                            }
+                                        }
                                     }
                                 }
                             @endphp
@@ -1466,7 +1490,7 @@
                                     Asesmen Tugas
                                 </p>
                                 <h3 class="academy-section-title text-xl">
-                                    Tinjauan Tugas & Pengumpulan
+                                    Tinjauan Tugas dan Pengumpulan
                                 </h3>
                                 <p class="mt-1 text-xs text-slate-400">
                                     Pantau status pengumpulan dan penilaian tugas siswa.
@@ -1538,7 +1562,7 @@
                         <div>
                             <p class="academy-section-label">Asesmen Digital</p>
                             <h2 class="academy-section-title">
-                                E-Exam: Ujian & Kuis Online
+                                E-Exam: Ujian dan Kuis Online
                             </h2>
                             <p class="academy-section-description">
                                 Kelola bank soal, jadwal pelaksanaan ujian, dan koreksi hasil asesmen siswa.

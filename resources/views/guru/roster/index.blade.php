@@ -6,7 +6,7 @@
                     Methodist Learning Space
                 </p>
                 <h2 class="text-xl font-bold text-slate-800 leading-tight">
-                    Roster Pelajaran &amp; Jadwal Mengajar
+                    Roster Pelajaran dan Jadwal Mengajar
                 </h2>
             </div>
 
@@ -37,7 +37,7 @@
         }"
         class="space-y-6 py-4"
     >
-        {{-- BREADCRUMB & TOMBOL AKSI (DI BAWAH HEADER) --}}
+        {{-- BREADCRUMB dan TOMBOL AKSI (DI BAWAH HEADER) --}}
         <div class="flex flex-wrap items-center justify-between gap-3 mb-2 print:hidden">
             <div class="flex items-center gap-2 text-xs font-medium text-slate-400">
                 <a href="{{ route('guru.dashboard') }}" class="transition hover:text-blue-600">
@@ -82,7 +82,7 @@
                             ROSTER PELAJARAN TAHUN {{ $metadata['academic_year'] }}
                         </h1>
                         <p class="text-xs text-slate-200 sm:text-sm print:text-xs print:text-slate-600">
-                            {{ $metadata['school_name'] }} &bull; Berlaku Efektif Semester Ganjil &amp; Genap
+                            {{ $metadata['school_name'] }} &bull; Berlaku Efektif Semester Ganjil dan Genap
                         </p>
                     </div>
                 </div>
@@ -133,7 +133,7 @@
         </div>
 
         {{-- ========================================================
-             TOOLBAR FILTER & KONTROL INTERAKTIF (TIDAK TERCETAK DI PRINT)
+             TOOLBAR FILTER dan KONTROL INTERAKTIF (TIDAK TERCETAK DI PRINT)
              ======================================================== --}}
         <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm print:hidden">
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -161,7 +161,7 @@
                     @endforeach
                 </div>
 
-                {{-- FILTER KELAS & HIGHLIGHT GURU --}}
+                {{-- FILTER KELAS dan HIGHLIGHT GURU --}}
                 <div class="flex flex-wrap items-center gap-3">
                     {{-- Filter Kelas --}}
                     <div class="flex items-center gap-2">
@@ -208,7 +208,7 @@
                         @click="showLegend = !showLegend"
                         class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700 transition hover:bg-slate-100"
                     >
-                        <span x-text="showLegend ? 'Tutup Legenda' : 'Lihat Kode Guru & Mapel'"></span>
+                        <span x-text="showLegend ? 'Tutup Legenda' : 'Lihat Kode Guru dan Mapel'"></span>
                     </button>
                 </div>
             </div>
@@ -270,7 +270,7 @@
         </div>
 
         {{-- ========================================================
-             MODAL / COLLAPSIBLE LEGENDA KODE GURU & MATA PELAJARAN
+             MODAL / COLLAPSIBLE LEGENDA KODE GURU dan MATA PELAJARAN
              ======================================================== --}}
         <div
             x-show="showLegend"
@@ -282,7 +282,7 @@
                     <svg class="h-4 w-4 text-[#123B60]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
-                    <span>Daftar Kode Guru &amp; Mata Pelajaran Resmi SMAS Methodist</span>
+                    <span>Daftar Kode Guru dan Mata Pelajaran Resmi SMAS Methodist</span>
                 </h3>
                 <button type="button" @click="showLegend = false" class="inline-flex items-center gap-1 text-xs font-bold text-slate-400 hover:text-slate-600 transition">
                     <span>Tutup</span>
@@ -309,9 +309,9 @@
                     </div>
                 </div>
 
-                {{-- Daftar Mata Pelajaran & Palet Warna --}}
+                {{-- Daftar Mata Pelajaran dan Palet Warna --}}
                 <div>
-                    <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-2">Kode &amp; Warna Mata Pelajaran</h4>
+                    <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-2">Kode dan Warna Mata Pelajaran</h4>
                     <div class="grid grid-cols-2 gap-2 text-xs">
                         @foreach ($subjectStyles as $subCode => $subStyle)
                             <div class="flex items-center gap-2 rounded-lg border border-slate-100 bg-slate-50 p-2">
@@ -668,7 +668,7 @@
                         <thead>
                             <tr class="bg-[#123B60] text-white print:bg-slate-200 print:text-black">
                                 <th rowspan="2" class="border border-white/20 px-2 py-3 font-bold text-center">No</th>
-                                <th rowspan="2" class="border border-white/20 px-3 py-3 font-bold text-left">Nama Guru &amp; Tenaga Pendidik</th>
+                                <th rowspan="2" class="border border-white/20 px-3 py-3 font-bold text-left">Nama Guru dan Tenaga Pendidik</th>
                                 <th rowspan="2" class="border border-white/20 px-3 py-3 font-bold text-left">Jabatan / Tugas Tambahan</th>
                                 <th rowspan="2" class="border border-white/20 px-3 py-3 font-bold text-left">Mata Pelajaran</th>
                                 <th colspan="6" class="border border-white/20 px-2 py-2 font-bold text-center">Jam Mengajar / Kelas</th>

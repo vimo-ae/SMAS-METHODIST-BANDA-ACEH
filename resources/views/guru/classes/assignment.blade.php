@@ -62,11 +62,39 @@
             {{-- HERO KARTU TUGAS --}}
             @php
                 $subjectName = $cst->subject->name ?? $cst->subject_code ?? 'Mata Pelajaran';
-                $subjectLower = strtolower($subjectName);
+                $subjectLower = strtolower($subjectName . ' ' . ($cst->subject_code ?? ''));
                 $subjectCoverImage = null;
-                if (str_contains($subjectLower, 'kimia') && file_exists(public_path('images/subjects/kimia.jpg'))) {
-                    $subjectCoverImage = asset('images/subjects/kimia.jpg');
-                } elseif (file_exists(public_path('images/hero-school.jpg'))) {
+                $subjectCoverMap = [
+                    'matematika' => 'matematika.jpg', 'mtk' => 'matematika.jpg',
+                    'biologi' => 'biologi.jpg', 'bio' => 'biologi.jpg',
+                    'kimia' => 'kimia.jpg', 'kim' => 'kimia.jpg',
+                    'fisika' => 'fisika.jpg', 'fis' => 'fisika.jpg',
+                    'indonesia' => 'indonesia.jpg', 'bin' => 'indonesia.jpg', 'bahasa indonesia' => 'indonesia.jpg',
+                    'informatika' => 'informatika.jpg', 'tik' => 'informatika.jpg', 'inf' => 'informatika.jpg',
+                    'inggris' => 'inggris.svg', 'big' => 'inggris.svg',
+                    'sejarah' => 'sejarah.svg', 'sej' => 'sejarah.svg',
+                    'geografi' => 'geografi.svg', 'geo' => 'geografi.svg',
+                    'ekonomi' => 'ekonomi.svg', 'eko' => 'ekonomi.svg',
+                    'sosiologi' => 'sosiologi.svg', 'sos' => 'sosiologi.svg',
+                    'agama' => 'agama.svg', 'agm' => 'agama.svg',
+                    'pjok' => 'pjok.svg', 'penjas' => 'pjok.svg',
+                    'seni' => 'seni-budaya.svg', 'sbd' => 'seni-budaya.svg',
+                    'ppkn' => 'ppkn.svg', 'pkn' => 'ppkn.svg',
+                ];
+                foreach ($subjectCoverMap as $k => $f) {
+                    if (str_contains($subjectLower, $k)) {
+                        $jpg = preg_replace('/\.(svg|png)$/i', '.jpg', $f);
+                        $svg = preg_replace('/\.(jpg|png)$/i', '.svg', $f);
+                        if (file_exists(public_path('images/subjects/' . $jpg))) {
+                            $subjectCoverImage = asset('images/subjects/' . $jpg);
+                            break;
+                        } elseif (file_exists(public_path('images/subjects/' . $svg))) {
+                            $subjectCoverImage = asset('images/subjects/' . $svg);
+                            break;
+                        }
+                    }
+                }
+                if (!$subjectCoverImage && file_exists(public_path('images/hero-school.jpg'))) {
                     $subjectCoverImage = asset('images/hero-school.jpg');
                 }
             @endphp
@@ -74,7 +102,7 @@
             <div class="relative overflow-hidden rounded-3xl border border-slate-200 bg-[#10243E] p-6 sm:p-8 text-white shadow-xl">
                 @if($subjectCoverImage)
                     <img src="{{ $subjectCoverImage }}" alt="{{ $subjectName }}" class="absolute inset-0 h-full w-full object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-r from-[#091a30]/95 via-[#102a4e]/85 to-[#164273]/65"></div>
+                    <div class="absolute inset-0 bg-gradient-to-r from-[#091a30]/85 via-[#102a4e]/65 to-[#164273]/45"></div>
                 @else
                     <div class="absolute inset-0 bg-gradient-to-br from-[#123B60] via-[#1A4C7A] to-[#267BB5]"></div>
                 @endif
@@ -141,7 +169,7 @@
                 </div>
             </div>
 
-            {{-- DAFTAR SISWA & PENGUMPULAN --}}
+            {{-- DAFTAR SISWA dan PENGUMPULAN --}}
             <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 bg-slate-50/70 px-6 py-5">
                     <div>
@@ -153,7 +181,7 @@
                                 </svg>
                             </div>
                             <h3 class="text-base font-black text-[#101C35]">
-                                Berkas Pengumpulan & Penilaian Siswa
+                                Berkas Pengumpulan dan Penilaian Siswa
                             </h3>
                         </div>
                         <p class="mt-1 text-xs text-slate-500">
@@ -174,7 +202,7 @@
                         @endphp
                         <div class="p-6 transition hover:bg-slate-50/70">
                             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                                {{-- INFORMASI SISWA & STATUS PENGUMPULAN --}}
+                                {{-- INFORMASI SISWA dan STATUS PENGUMPULAN --}}
                                 <div class="flex items-start gap-4">
                                     <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#123B60] to-[#267BB5] text-sm font-black text-white shadow-sm">
                                         {{ strtoupper(substr($studentName, 0, 2)) }}
@@ -214,15 +242,22 @@
                                     </div>
                                 </div>
 
-                                {{-- AKSI UNDUH JAWABAN JIKA ADA --}}
+                                {{-- AKSI UNDUH & LIHAT JAWABAN JIKA ADA --}}
                                 @if($submission)
-                                    <div class="flex items-center gap-3 self-start lg:self-center">
+                                    <div class="flex items-center gap-2 self-start lg:self-center flex-wrap">
+                                        <a href="{{ route('guru.classes.assignments.view', ['assignment' => $assignment->assignment_id, 'nis' => $student->nis]) }}"
+                                           target="_blank"
+                                           class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 shadow-2xs transition hover:bg-slate-50 hover:border-slate-300">
+                                            <svg class="h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                            <span>Buka / Pratinjau</span>
+                                        </a>
+
                                         <a href="{{ route('guru.classes.assignments.download', ['assignment' => $assignment->assignment_id, 'nis' => $student->nis]) }}"
-                                           class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-[#123B60] shadow-sm transition hover:bg-blue-50 hover:border-blue-200">
-                                            <svg class="h-4 w-4 text-[#267BB5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                           class="inline-flex items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-bold text-[#123B60] shadow-2xs transition hover:bg-blue-100">
+                                            <svg class="h-3.5 w-3.5 text-[#267BB5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                                             </svg>
-                                            <span>Unduh Berkas Jawaban</span>
+                                            <span>Unduh Berkas</span>
                                         </a>
 
                                         @if($submission->score !== null)

@@ -26,10 +26,10 @@
 
             $themes = [
                 'matematika' => ['symbol' => 'MAT', 'category' => 'MATEMATIKA', 'image' => 'matematika.jpg', 'gradient' => 'linear-gradient(135deg, #0d2847 0%, #174e7d 100%)'],
-                'fisika' => ['symbol' => 'FIS', 'category' => 'FISIKA', 'image' => 'fisika.svg', 'gradient' => 'linear-gradient(135deg, #091e38 0%, #15508a 100%)'],
+                'fisika' => ['symbol' => 'FIS', 'category' => 'FISIKA', 'image' => 'fisika.jpg', 'gradient' => 'linear-gradient(135deg, #091e38 0%, #15508a 100%)'],
                 'biologi' => ['symbol' => 'BIO', 'category' => 'BIOLOGI', 'image' => 'biologi.jpg', 'gradient' => 'linear-gradient(135deg, #06282d 0%, #0d5f66 100%)'],
                 'kimia' => ['symbol' => 'KIM', 'category' => 'KIMIA', 'image' => 'kimia.jpg', 'gradient' => 'linear-gradient(135deg, #10263f 0%, #1a568a 100%)'],
-                'indonesia' => ['symbol' => 'IDN', 'category' => 'BAHASA INDONESIA', 'image' => 'indonesia.svg', 'gradient' => 'linear-gradient(135deg, #301712 0%, #7d3725 100%)'],
+                'indonesia' => ['symbol' => 'IDN', 'category' => 'BAHASA INDONESIA', 'image' => 'indonesia.jpg', 'gradient' => 'linear-gradient(135deg, #301712 0%, #7d3725 100%)'],
                 'inggris' => ['symbol' => 'ENG', 'category' => 'BAHASA INGGRIS', 'image' => 'inggris.svg', 'gradient' => 'linear-gradient(135deg, #18223c 0%, #29457a 100%)'],
                 'informatika' => ['symbol' => 'TIK', 'category' => 'INFORMATIKA', 'image' => 'informatika.jpg', 'gradient' => 'linear-gradient(135deg, #092338 0%, #104a75 100%)'],
                 'sejarah' => ['symbol' => 'SEJ', 'category' => 'SEJARAH', 'image' => 'sejarah.svg', 'gradient' => 'linear-gradient(135deg, #2b1f13 0%, #694a28 100%)'],
@@ -76,16 +76,12 @@
 
             $imgUrl = null;
             if (!empty($t['image'])) {
-                if (file_exists(public_path('images/subjects/' . $t['image']))) {
-                    $imgUrl = asset('images/subjects/' . $t['image']);
-                } else {
-                    $svgName = preg_replace('/\.(jpg|png)$/i', '.svg', $t['image']);
-                    $jpgName = preg_replace('/\.(svg|png)$/i', '.jpg', $t['image']);
-                    if (file_exists(public_path('images/subjects/' . $svgName))) {
-                        $imgUrl = asset('images/subjects/' . $svgName);
-                    } elseif (file_exists(public_path('images/subjects/' . $jpgName))) {
-                        $imgUrl = asset('images/subjects/' . $jpgName);
-                    }
+                $jpgName = preg_replace('/\.(svg|png)$/i', '.jpg', $t['image']);
+                $svgName = preg_replace('/\.(jpg|png)$/i', '.svg', $t['image']);
+                if (file_exists(public_path('images/subjects/' . $jpgName))) {
+                    $imgUrl = asset('images/subjects/' . $jpgName);
+                } elseif (file_exists(public_path('images/subjects/' . $svgName))) {
+                    $imgUrl = asset('images/subjects/' . $svgName);
                 }
             }
 
@@ -246,7 +242,7 @@
                 </div>
             @endif
 
-            {{-- BREADCRUMB & TOMBOL KEMBALI (DI BAWAH HEADER) --}}
+            {{-- BREADCRUMB dan TOMBOL KEMBALI (DI BAWAH HEADER) --}}
             <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
                 <div class="flex items-center gap-2 text-xs font-medium text-slate-400">
                     <a href="{{ route('siswa.classes.index') }}" class="hover:text-blue-600 transition">
@@ -417,18 +413,77 @@
                                     @endif
 
                                     @if($material->file_path)
-                                        <a href="{{ asset('storage/'.$material->file_path) }}"
-                                            target="_blank"
-                                            rel="noopener"
-                                            class="mt-4 inline-flex max-w-full items-center gap-2.5 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-xs font-extrabold text-blue-700 transition hover:border-blue-200 hover:bg-blue-100 sm:text-sm">
-                                            <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/>
-                                            </svg>
-                                            <span class="truncate">Buka / Unduh Materi</span>
-                                            <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17 17 7M7 7h10v10"/>
-                                            </svg>
-                                        </a>
+                                        @php
+                                            $ext = strtolower(pathinfo($material->file_path, PATHINFO_EXTENSION));
+                                            $isImage = in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif']);
+                                            $fileName = basename($material->file_path);
+                                            $meta = match($ext) {
+                                                'docx', 'doc' => ['label' => 'Dokumen Word', 'badge' => 'bg-blue-600', 'border' => 'border-blue-200', 'bg_subtle' => 'bg-blue-50/70', 'icon' => 'DOCX'],
+                                                'pdf' => ['label' => 'Dokumen PDF', 'badge' => 'bg-rose-600', 'border' => 'border-rose-200', 'bg_subtle' => 'bg-rose-50/70', 'icon' => 'PDF'],
+                                                'xlsx', 'xls' => ['label' => 'Spreadsheet Excel', 'badge' => 'bg-emerald-600', 'border' => 'border-emerald-200', 'bg_subtle' => 'bg-emerald-50/70', 'icon' => 'XLSX'],
+                                                'pptx', 'ppt' => ['label' => 'Presentasi PowerPoint', 'badge' => 'bg-orange-600', 'border' => 'border-orange-200', 'bg_subtle' => 'bg-orange-50/70', 'icon' => 'PPTX'],
+                                                'mp4' => ['label' => 'Video MP4', 'badge' => 'bg-purple-600', 'border' => 'border-purple-200', 'bg_subtle' => 'bg-purple-50/70', 'icon' => 'MP4'],
+                                                'zip' => ['label' => 'Arsip ZIP', 'badge' => 'bg-amber-600', 'border' => 'border-amber-200', 'bg_subtle' => 'bg-amber-50/70', 'icon' => 'ZIP'],
+                                                'jpg', 'jpeg', 'png', 'webp' => ['label' => 'Gambar', 'badge' => 'bg-violet-600', 'border' => 'border-violet-200', 'bg_subtle' => 'bg-violet-50/70', 'icon' => 'IMG'],
+                                                default => ['label' => 'Berkas Lampiran', 'badge' => 'bg-sky-600', 'border' => 'border-sky-200', 'bg_subtle' => 'bg-sky-50/70', 'icon' => strtoupper($ext ?: 'FILE')],
+                                            };
+                                        @endphp
+
+                                        <div class="mt-4 rounded-2xl border {{ $meta['border'] }} {{ $meta['bg_subtle'] }} p-3 sm:p-4 transition">
+                                            <div class="flex items-center justify-between gap-3 flex-wrap sm:flex-nowrap">
+                                                <div class="flex items-center gap-3 min-w-0">
+                                                    @if($isImage)
+                                                        <a href="{{ asset('storage/' . $material->file_path) }}" target="_blank" rel="noopener" class="group relative h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xs">
+                                                            <img src="{{ asset('storage/' . $material->file_path) }}" alt="{{ $material->title }}" class="h-full w-full object-cover transition group-hover:scale-105">
+                                                        </a>
+                                                    @else
+                                                        <div class="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-xl {{ $meta['badge'] }} text-white font-black shadow-xs">
+                                                            <span class="text-[11px] font-mono leading-none">{{ $meta['icon'] }}</span>
+                                                            <span class="text-[7px] font-sans opacity-80 uppercase tracking-widest mt-0.5">FILE</span>
+                                                        </div>
+                                                    @endif
+
+                                                    <div class="min-w-0 flex-1">
+                                                        <div class="flex items-center gap-1.5 flex-wrap">
+                                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black uppercase text-white {{ $meta['badge'] }}">
+                                                                {{ $meta['label'] }}
+                                                            </span>
+                                                            <span class="text-[10px] text-slate-500 font-mono">
+                                                                .{{ $ext }}
+                                                            </span>
+                                                        </div>
+                                                        <p class="mt-1 truncate text-xs sm:text-sm font-bold text-slate-800" title="{{ $fileName }}">
+                                                            {{ $fileName }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div class="flex items-center gap-2 shrink-0">
+                                                    <a href="{{ asset('storage/' . $material->file_path) }}"
+                                                       target="_blank"
+                                                       rel="noopener"
+                                                       class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 shadow-2xs transition hover:bg-slate-50 hover:border-slate-300">
+                                                        <svg class="h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                                        <span>Buka Berkas</span>
+                                                    </a>
+
+                                                    <a href="{{ asset('storage/' . $material->file_path) }}"
+                                                       download="{{ $fileName }}"
+                                                       class="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-3.5 py-2 text-xs font-bold text-white shadow-2xs transition hover:bg-blue-700">
+                                                        <svg class="h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                                        <span>Unduh</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            @if($isImage)
+                                                <div class="mt-3 overflow-hidden rounded-xl border border-slate-200/80 bg-white p-1">
+                                                    <a href="{{ asset('storage/' . $material->file_path) }}" target="_blank" rel="noopener">
+                                                        <img src="{{ asset('storage/' . $material->file_path) }}" alt="{{ $material->title }}" class="max-h-64 w-auto rounded-lg object-contain transition hover:opacity-95">
+                                                    </a>
+                                                </div>
+                                            @endif
+                                        </div>
                                     @endif
 
                                     <div class="mt-4 flex items-center gap-2 text-[11px] font-medium text-slate-400">
@@ -466,7 +521,7 @@
                         </div>
                         <div>
                             <p class="text-[10px] font-extrabold uppercase tracking-[.18em] text-indigo-600">Assignments</p>
-                            <h2 class="mt-1 text-lg font-extrabold tracking-tight text-slate-800">Tugas & Pengumpulan</h2>
+                            <h2 class="mt-1 text-lg font-extrabold tracking-tight text-slate-800">Tugas dan Pengumpulan</h2>
                             <p class="mt-0.5 text-xs text-slate-500">Pantau deadline dan status pengumpulan tugasmu.</p>
                         </div>
                     </div>
@@ -563,15 +618,75 @@
 
                                     <div class="p-4 sm:p-5">
                                         @if($submission->file_path)
-                                            <div class="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-100 bg-white px-4 py-3">
-                                                <div class="flex min-w-0 items-center gap-2">
-                                                    <svg class="h-5 w-5 shrink-0 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Z"/>
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M14 2v6h6"/>
-                                                    </svg>
-                                                    <span class="truncate text-xs font-bold text-slate-700">{{ basename($submission->file_path) }}</span>
+                                            @php
+                                                $subExt = strtolower(pathinfo($submission->file_path, PATHINFO_EXTENSION));
+                                                $isSubImage = in_array($subExt, ['jpg', 'jpeg', 'png', 'webp', 'gif']);
+                                                $subFileName = basename($submission->file_path);
+                                                $subMeta = match($subExt) {
+                                                    'docx', 'doc' => ['label' => 'Dokumen Word', 'badge' => 'bg-blue-600', 'border' => 'border-blue-200', 'bg_subtle' => 'bg-blue-50/70', 'icon' => 'DOCX'],
+                                                    'pdf' => ['label' => 'Dokumen PDF', 'badge' => 'bg-rose-600', 'border' => 'border-rose-200', 'bg_subtle' => 'bg-rose-50/70', 'icon' => 'PDF'],
+                                                    'xlsx', 'xls' => ['label' => 'Spreadsheet Excel', 'badge' => 'bg-emerald-600', 'border' => 'border-emerald-200', 'bg_subtle' => 'bg-emerald-50/70', 'icon' => 'XLSX'],
+                                                    'pptx', 'ppt' => ['label' => 'Presentasi PowerPoint', 'badge' => 'bg-orange-600', 'border' => 'border-orange-200', 'bg_subtle' => 'bg-orange-50/70', 'icon' => 'PPTX'],
+                                                    'mp4' => ['label' => 'Video MP4', 'badge' => 'bg-purple-600', 'border' => 'border-purple-200', 'bg_subtle' => 'bg-purple-50/70', 'icon' => 'MP4'],
+                                                    'zip' => ['label' => 'Arsip ZIP', 'badge' => 'bg-amber-600', 'border' => 'border-amber-200', 'bg_subtle' => 'bg-amber-50/70', 'icon' => 'ZIP'],
+                                                    'jpg', 'jpeg', 'png', 'webp' => ['label' => 'Gambar', 'badge' => 'bg-violet-600', 'border' => 'border-violet-200', 'bg_subtle' => 'bg-violet-50/70', 'icon' => 'IMG'],
+                                                    default => ['label' => 'Berkas Jawaban', 'badge' => 'bg-emerald-600', 'border' => 'border-emerald-200', 'bg_subtle' => 'bg-emerald-50/70', 'icon' => strtoupper($subExt ?: 'FILE')],
+                                                };
+                                            @endphp
+
+                                            <div class="rounded-2xl border {{ $subMeta['border'] }} {{ $subMeta['bg_subtle'] }} p-3 sm:p-4 transition">
+                                                <div class="flex items-center justify-between gap-3 flex-wrap sm:flex-nowrap">
+                                                    <div class="flex items-center gap-3 min-w-0">
+                                                        @if($isSubImage)
+                                                            <a href="{{ route('siswa.classes.assignments.view', $assignment) }}" target="_blank" class="group relative h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xs">
+                                                                <img src="{{ route('siswa.classes.assignments.view', $assignment) }}" alt="Jawaban Tugas" class="h-full w-full object-cover transition group-hover:scale-105">
+                                                            </a>
+                                                        @else
+                                                            <div class="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-xl {{ $subMeta['badge'] }} text-white font-black shadow-xs">
+                                                                <span class="text-[11px] font-mono leading-none">{{ $subMeta['icon'] }}</span>
+                                                                <span class="text-[7px] font-sans opacity-80 uppercase tracking-widest mt-0.5">FILE</span>
+                                                            </div>
+                                                        @endif
+
+                                                        <div class="min-w-0 flex-1">
+                                                            <div class="flex items-center gap-1.5 flex-wrap">
+                                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black uppercase text-white {{ $subMeta['badge'] }}">
+                                                                    {{ $subMeta['label'] }}
+                                                                </span>
+                                                                <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-100/70 px-2 py-0.5 rounded">
+                                                                    <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                                                    Terkumpul
+                                                                </span>
+                                                            </div>
+                                                            <p class="mt-1 truncate text-xs sm:text-sm font-bold text-slate-800" title="{{ $subFileName }}">
+                                                                {{ $subFileName }}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="flex items-center gap-2 shrink-0">
+                                                        <a href="{{ route('siswa.classes.assignments.view', $assignment) }}"
+                                                           target="_blank"
+                                                           class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 shadow-2xs transition hover:bg-slate-50 hover:border-slate-300">
+                                                            <svg class="h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                                            <span>Buka Berkas</span>
+                                                        </a>
+
+                                                        <a href="{{ route('siswa.classes.assignments.download', $assignment) }}"
+                                                           class="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-2xs transition hover:bg-emerald-700">
+                                                            <svg class="h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                                            <span>Unduh Jawaban</span>
+                                                        </a>
+                                                    </div>
                                                 </div>
-                                                <span class="text-[10px] font-bold text-emerald-700">File terkirim</span>
+
+                                                @if($isSubImage)
+                                                    <div class="mt-3 overflow-hidden rounded-xl border border-slate-200/80 bg-white p-1">
+                                                        <a href="{{ route('siswa.classes.assignments.view', $assignment) }}" target="_blank">
+                                                            <img src="{{ route('siswa.classes.assignments.view', $assignment) }}" alt="Jawaban Tugas" class="max-h-60 w-auto rounded-lg object-contain transition hover:opacity-95">
+                                                        </a>
+                                                    </div>
+                                                @endif
                                             </div>
                                         @endif
 
@@ -682,7 +797,7 @@
                         </div>
                         <div>
                             <p class="text-[10px] font-extrabold uppercase tracking-[.18em] text-sky-600">Assessment Center</p>
-                            <h2 class="mt-1 text-lg font-extrabold tracking-tight text-slate-800">Ujian & Kuis</h2>
+                            <h2 class="mt-1 text-lg font-extrabold tracking-tight text-slate-800">Ujian dan Kuis</h2>
                             <p class="mt-0.5 text-xs text-slate-500">Daftar ujian yang telah dipublikasikan oleh guru.</p>
                         </div>
                     </div>

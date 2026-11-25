@@ -120,6 +120,42 @@ class StudentController extends Controller
         return view('admin.students.edit', compact('student', 'classes'));
     }
 
+    /**
+     * Menampilkan detail informasi siswa beserta integrasi Database View & Stored Function:
+     * - v_class_roster (Daftar rombel mapel yang diikuti)
+     * - v_student_grade_summary (Ringkasan nilai per mapel)
+     * - fn_student_average (Rata-rata nilai per mapel)
+     */
+    public function show(string $nis)
+    {
+        $student = Student::on('mysql_admin')
+            ->with(['user', 'schoolClass'])
+            ->where('nis', $nis)
+            ->firstOrFail();
+
+        // Roster kelas mata pelajaran dari Database View: v_class_roster
+        $rosters = DB::connection('mysql_admin')
+            ->table('v_class_roster')
+            ->where('nis', $nis)
+            ->get();
+
+        // Rekap nilai per mata pelajaran dari Database View: v_student_grade_summary
+        $gradeSummaries = DB::connection('mysql_admin')
+            ->table('v_student_grade_summary')
+            ->where('student_id', $nis)
+            ->get();
+
+        // Rata-rata nilai per kelas mapel via Stored Function: fn_student_average
+        $averages = [];
+        foreach ($rosters as $r) {
+            $val = DB::connection('mysql_admin')
+                ->selectOne('SELECT fn_student_average(?, ?) AS avg_score', [$nis, $r->cst_id]);
+            $averages[$r->cst_id] = $val?->avg_score;
+        }
+
+        return view('admin.students.show', compact('student', 'rosters', 'gradeSummaries', 'averages'));
+    }
+
     public function update(Request $request, string $nis)
     {
         $student = Student::on('mysql_admin')->with('user')->findOrFail($nis);

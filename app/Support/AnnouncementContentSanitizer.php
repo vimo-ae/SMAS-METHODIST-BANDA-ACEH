@@ -30,6 +30,36 @@ class AnnouncementContentSanitizer
     ];
 
     /** @var list<string> */
+    private const EXAM_QUESTION_ELEMENTS = [
+        'a',
+        'blockquote',
+        'br',
+        'div',
+        'em',
+        'h1',
+        'h2',
+        'h3',
+        'h4',
+        'h5',
+        'h6',
+        'img',
+        'li',
+        'ol',
+        'p',
+        's',
+        'strong',
+        'table',
+        'tbody',
+        'td',
+        'tfoot',
+        'th',
+        'thead',
+        'tr',
+        'u',
+        'ul',
+    ];
+
+    /** @var list<string> */
     private const ELEMENTS_REMOVED_WITH_CONTENT = [
         'button',
         'embed',
@@ -49,6 +79,22 @@ class AnnouncementContentSanitizer
 
     public function sanitize(string $content): string
     {
+        return $this->sanitizeContent($content, self::ALLOWED_ELEMENTS, 'announcement-images');
+    }
+
+    public function sanitizeExamQuestion(string $content): string
+    {
+        return $this->sanitizeContent($content, self::EXAM_QUESTION_ELEMENTS, 'exam-questions');
+    }
+
+    /**
+     * @param list<string> $allowedElements
+     */
+    private function sanitizeContent(
+        string $content,
+        array $allowedElements,
+        string $imageDirectory
+    ): string {
         if (trim($content) === '') {
             return '';
         }
@@ -74,7 +120,7 @@ class AnnouncementContentSanitizer
             return '';
         }
 
-        $this->sanitizeChildren($root);
+        $this->sanitizeChildren($root, $allowedElements, $imageDirectory);
 
         $sanitizedContent = '';
 
@@ -92,7 +138,11 @@ class AnnouncementContentSanitizer
         return trim($textContent) !== '' || str_contains($content, '<img');
     }
 
-    private function sanitizeChildren(DOMNode $parent): void
+    private function sanitizeChildren(
+        DOMNode $parent,
+        array $allowedElements = self::ALLOWED_ELEMENTS,
+        string $imageDirectory = 'announcement-images'
+    ): void
     {
         foreach (iterator_to_array($parent->childNodes) as $child) {
             if (! $child instanceof DOMElement) {
@@ -111,24 +161,28 @@ class AnnouncementContentSanitizer
                 continue;
             }
 
-            if (! in_array($tagName, self::ALLOWED_ELEMENTS, true)) {
-                $this->sanitizeChildren($child);
+            if (! in_array($tagName, $allowedElements, true)) {
+                $this->sanitizeChildren($child, $allowedElements, $imageDirectory);
                 $this->unwrapElement($child);
 
                 continue;
             }
 
-            if (! $this->sanitizeAttributes($child, $tagName)) {
+            if (! $this->sanitizeAttributes($child, $tagName, $imageDirectory)) {
                 $parent->removeChild($child);
 
                 continue;
             }
 
-            $this->sanitizeChildren($child);
+            $this->sanitizeChildren($child, $allowedElements, $imageDirectory);
         }
     }
 
-    private function sanitizeAttributes(DOMElement $element, string $tagName): bool
+    private function sanitizeAttributes(
+        DOMElement $element,
+        string $tagName,
+        string $imageDirectory
+    ): bool
     {
         $attributes = [];
 
@@ -163,13 +217,24 @@ class AnnouncementContentSanitizer
         if ($tagName === 'img') {
             $source = trim($attributes['src'] ?? '');
 
-            if (! $this->isStoredAnnouncementImage($source)) {
+            if (! $this->isAllowedImageSource($source, $imageDirectory)) {
                 return false;
             }
 
             $element->setAttribute('src', $source);
-            $element->setAttribute('alt', $attributes['alt'] ?? 'Gambar pengumuman');
+            $element->setAttribute(
+                'alt',
+                $attributes['alt'] ?? ($imageDirectory === 'exam-questions' ? 'Gambar soal' : 'Gambar pengumuman')
+            );
             $element->setAttribute('loading', 'lazy');
+        }
+
+        if (in_array($tagName, ['td', 'th'], true)) {
+            foreach (['colspan', 'rowspan'] as $spanAttribute) {
+                if (isset($attributes[$spanAttribute]) && ctype_digit($attributes[$spanAttribute])) {
+                    $element->setAttribute($spanAttribute, $attributes[$spanAttribute]);
+                }
+            }
         }
 
         if ($tagName === 'li' && in_array($attributes['data-list'] ?? '', ['bullet', 'ordered'], true)) {
@@ -192,15 +257,22 @@ class AnnouncementContentSanitizer
             : in_array($scheme, ['http', 'https', 'mailto', 'tel'], true);
     }
 
-    private function isStoredAnnouncementImage(string $source): bool
+    private function isAllowedImageSource(string $source, string $imageDirectory): bool
     {
         if ($source === '' || preg_match('/[\x00-\x20\x7f]/u', $source) === 1) {
             return false;
         }
 
+        if (
+            $imageDirectory === 'exam-questions'
+            && preg_match('/^data:image\/(?:png|jpeg|webp);base64,[a-z0-9+\/]+=*$/i', $source) === 1
+        ) {
+            return true;
+        }
+
         $path = (string) parse_url($source, PHP_URL_PATH);
 
-        if (! str_starts_with($path, '/storage/announcement-images/')) {
+        if (! str_starts_with($path, '/storage/'.$imageDirectory.'/')) {
             return false;
         }
 

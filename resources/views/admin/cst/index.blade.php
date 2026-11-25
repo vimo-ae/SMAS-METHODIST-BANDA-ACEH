@@ -36,7 +36,7 @@
             </div>
         @endif
 
-        {{-- FORM PENCARIAN & FILTER RAPI --}}
+        {{-- FORM PENCARIAN dan FILTER RAPI --}}
         <form method="GET" action="{{ route('admin.cst.index') }}" class="portal-card p-3 mb-4">
             <div class="row g-2 align-items-center">
                 <div class="col-12 col-lg-9">
@@ -73,7 +73,7 @@
                     <thead class="text-muted-portal small border-bottom border-secondary bg-light">
                         <tr>
                             <th class="ps-4 text-center" style="width: 60px;">No</th>
-                            <th>Mata Pelajaran & Kelas</th>
+                            <th>Mata Pelajaran dan Kelas</th>
                             <th>Guru Pengampu (NIP)</th>
                             <th>Tahun Ajaran</th>
                             <th>Kode Gabung</th>

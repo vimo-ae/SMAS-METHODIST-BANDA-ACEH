@@ -274,6 +274,10 @@
                 <i class="bi bi-person-gear"></i>
                 <span>Profil Saya</span>
             </a>
+            <a href="{{ Route::has('admin.recovery.index') ? route('admin.recovery.index') : '#' }}" class="nav-link {{ request()->routeIs('admin.recovery.*') ? 'active' : '' }}">
+                <i class="bi bi-database-check"></i>
+                <span>Pemulihan dan Cadangan</span>
+            </a>
         </div>
 
     </aside>
@@ -290,7 +294,7 @@
 
             <div class="d-none d-md-block"></div>
 
-            <!-- Dropdown Profil Kanan Atas (Klik untuk memunculkan menu Profil & Logout) -->
+            <!-- Dropdown Profil Kanan Atas (Klik untuk memunculkan menu Profil dan Logout) -->
             <div class="dropdown ms-auto">
                 <button class="profile-dropdown-btn dropdown-toggle shadow-sm" type="button" id="adminProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     <div class="bg-white border rounded-circle d-flex align-items-center justify-content-center p-0.5" style="width: 28px; height: 28px;">

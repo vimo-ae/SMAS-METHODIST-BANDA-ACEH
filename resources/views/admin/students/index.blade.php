@@ -38,7 +38,7 @@
             </div>
         @endif
 
-        {{-- FORM PENCARIAN & FILTER --}}
+        {{-- FORM PENCARIAN dan FILTER --}}
         <form method="GET" action="{{ route('admin.students.index') }}" class="portal-card p-3 mb-4">
             <div class="row g-2 align-items-center">
                 <div class="col-12 col-lg-5">
@@ -99,7 +99,7 @@
                         <tr>
                             <th class="ps-4" style="width: 60px;">No</th>
                             <th>NIS / NISN</th>
-                            <th>Nama Siswa & Gender</th>
+                            <th>Nama Siswa dan Gender</th>
                             <th>Kelas</th>
                             <th>Orang Tua / Wali</th>
                             <th class="text-center">Status</th>
@@ -161,6 +161,11 @@
                                 </td>
                                 <td class="text-end pe-4">
                                     <div class="d-inline-flex gap-1">
+                                        <a href="{{ route('admin.students.show', $student->nis) }}"
+                                           class="btn btn-sm btn-outline-info" title="Detail Siswa">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
                                         <a href="{{ route('admin.students.edit', $student->nis) }}"
                                            class="btn btn-sm btn-outline-primary" title="Edit">
                                             <i class="bi bi-pencil-square"></i>

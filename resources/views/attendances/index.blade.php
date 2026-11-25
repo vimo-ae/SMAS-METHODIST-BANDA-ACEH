@@ -33,7 +33,7 @@
         <form method="POST" action="{{ route('attendances.store') }}">
             @csrf
             <div class="row g-3 mb-3">
-                <div class="col-md-6"><label class="form-label">Kelas & Mata Pelajaran</label><select id="cst-select" name="cst_id" class="form-select" required><option value="">-- Pilih --</option>@foreach($csts as $cst)<option value="{{ $cst->cst_id }}">{{ $cst->schoolClass->name }} — {{ $cst->subject->name }}</option>@endforeach</select></div>
+                <div class="col-md-6"><label class="form-label">Kelas dan Mata Pelajaran</label><select id="cst-select" name="cst_id" class="form-select" required><option value="">-- Pilih --</option>@foreach($csts as $cst)<option value="{{ $cst->cst_id }}">{{ $cst->schoolClass->name }} — {{ $cst->subject->name }}</option>@endforeach</select></div>
                 <div class="col-md-4"><label class="form-label">Tanggal</label><input type="date" name="date" class="form-control" value="{{ now()->format('Y-m-d') }}" required></div>
             </div>
             <div id="student-list"></div>

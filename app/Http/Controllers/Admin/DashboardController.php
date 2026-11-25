@@ -7,6 +7,7 @@ use App\Models\ExamViolation;
 use App\Models\Announcement;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Cache;
 
 class DashboardController extends Controller
 {
@@ -33,6 +34,42 @@ class DashboardController extends Controller
             ->latest('started_at')
             ->take(5)
             ->get();
+
+        $examMonitors = Cache::remember('admin.dashboard.exam_monitors', 60, function () use ($conn) {
+            return $conn->table('exams as e')
+                ->join('class_subject_teacher as cst', 'cst.cst_id', '=', 'e.cst_id')
+                ->join('classes as c', 'c.class_id', '=', 'cst.class_id')
+                ->leftJoin('subjects as s', 's.code', '=', 'cst.subject_code')
+                ->leftJoin('exam_sessions as es', 'es.exam_id', '=', 'e.exam_id')
+                ->select(
+                    'e.exam_id',
+                    'e.title',
+                    'e.exam_type',
+                    'e.start_time',
+                    'e.end_time',
+                    'e.is_published',
+                    'c.name as class_name',
+                    's.name as subject_name'
+                )
+                ->selectRaw('COUNT(DISTINCT es.exam_session_id) AS participants_count')
+                ->selectRaw("SUM(CASE WHEN es.status = 'berlangsung' THEN 1 ELSE 0 END) AS running_count")
+                ->selectRaw("SUM(CASE WHEN es.status IN ('selesai', 'keluar') THEN 1 ELSE 0 END) AS finished_count")
+                ->where('e.is_published', true)
+                ->groupBy(
+                    'e.exam_id',
+                    'e.title',
+                    'e.exam_type',
+                    'e.start_time',
+                    'e.end_time',
+                    'e.is_published',
+                    'c.name',
+                    's.name'
+                )
+                ->orderByDesc('e.start_time')
+                ->orderByDesc('e.exam_id')
+                ->take(5)
+                ->get();
+        });
 
         $sessionsRunning = $dbStats->active_sessions ?? $dbStats->sessions_running ?? 0;
 
@@ -102,16 +139,21 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
+        // Optimalisasi query: Ambil 5 riwayat aktivitas lintas tabel dari view log
+        $recentActivityLogs = ActivityLogController::recentAcrossTables(5);
+
         return view('admin.dashboard', compact(
             'stats',
             'sessionsRunning',
             'activeSessions',
+            'examMonitors',
             'pendingEssays',
             'studentsNoClass',
             'recentAnnouncements',
             'violations',
             'classes',
-            'recentGradeLogs'
+            'recentGradeLogs',
+            'recentActivityLogs'
         ));
     }
 }

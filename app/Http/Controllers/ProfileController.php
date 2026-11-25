@@ -78,6 +78,13 @@ class ProfileController extends Controller
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $user = $request->user();
+
+        // Hanya administrator yang memiliki hak akses untuk mengedit informasi akun
+        if (!$user->isAdmin()) {
+            return Redirect::route('profile.edit')
+                ->with('error', 'Pembaruan informasi akun hanya dapat dilakukan oleh Administrator Sekolah.');
+        }
+
         $validated = $request->validated();
 
         // Handle photo removal or upload
@@ -112,11 +119,17 @@ class ProfileController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        $user = $request->user();
+
+        // Penghapusan akun resmi hanya dapat dilakukan oleh Administrator
+        if (!$user->isAdmin()) {
+            return Redirect::route('profile.edit')
+                ->with('error', 'Penghapusan atau penonaktifan akun hanya dapat dilakukan oleh Administrator Sekolah.');
+        }
+
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
         ]);
-
-        $user = $request->user();
 
         Auth::logout();
 

@@ -12,6 +12,7 @@
             ['label' => 'Dashboard', 'route' => 'siswa.dashboard', 'active' => 'siswa.dashboard', 'icon' => 'dashboard'],
             ['label' => 'E-Class', 'route' => 'siswa.classes.index', 'active' => 'siswa.classes.*', 'icon' => 'class'],
             ['label' => 'E-Exam', 'route' => 'siswa.exams.index', 'active' => 'siswa.exams.*', 'icon' => 'exam'],
+            ['label' => 'Roster Pelajaran', 'route' => 'siswa.roster', 'active' => 'siswa.roster*', 'icon' => 'roster'],
         ],
         'admin' => [
             ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'active' => 'admin.dashboard', 'icon' => 'dashboard'],
@@ -193,8 +194,8 @@
 
             {{-- FOOTER SEPERTI HOMEPAGE --}}
             <footer class="mt-auto border-t border-slate-800 bg-[#101C35] text-white">
-                <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-14">
-                    <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-12">
+                <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8 lg:py-14">
+                    <div class="grid gap-8 md:grid-cols-2 md:gap-10 lg:grid-cols-12 lg:gap-10">
 
                         {{-- SCHOOL IDENTITY --}}
                         <div class="lg:col-span-5">
@@ -326,6 +327,13 @@
                                             E-Exam Siswa
                                         </a>
                                     </li>
+                                    <li>
+                                        <a href="{{ route('siswa.roster') }}"
+                                           class="inline-flex items-center gap-2 text-xs sm:text-sm text-slate-300 transition hover:translate-x-1 hover:text-white">
+                                            <span class="text-[#8eadd0]">→</span>
+                                            Roster Pelajaran Siswa
+                                        </a>
+                                    </li>
                                 @else
                                     <li>
                                         <a href="{{ route('dashboard') }}"
@@ -359,13 +367,13 @@
                     </div>
 
                     {{-- FOOTER BOTTOM --}}
-                    <div class="mt-12 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="mt-10 flex flex-col items-center gap-2 border-t border-white/10 pt-6 text-center text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between sm:text-left lg:mt-12">
                         <p>
                             &copy; {{ date('Y') }} SMAS Methodist Banda Aceh. All rights reserved.
                         </p>
 
                         <p>
-                            Methodist Learning Space &bull; Portal E-Learning &amp; E-Exam
+                            Methodist Learning Space &bull; Portal E-Learning dan E-Exam
                         </p>
                     </div>
                 </div>

@@ -24,6 +24,10 @@
                         <x-nav-link :href="route('siswa.exams.index')" :active="request()->routeIs('siswa.exams.*')">
                             {{ __('E-Exam') }}
                         </x-nav-link>
+
+                        <x-nav-link :href="route('siswa.roster')" :active="request()->routeIs('siswa.roster*')">
+                            {{ __('Roster Pelajaran') }}
+                        </x-nav-link>
                     @elseif (Auth::user()?->isGuru())
                         <x-nav-link :href="route('guru.classes.index')" :active="request()->routeIs('guru.classes.*')">
                             {{ __('E-Class') }}
@@ -31,6 +35,10 @@
 
                         <x-nav-link :href="route('guru.exams.index')" :active="request()->routeIs('guru.exams.*')">
                             {{ __('E-Exam') }}
+                        </x-nav-link>
+
+                        <x-nav-link :href="route('guru.roster')" :active="request()->routeIs('guru.roster*')">
+                            {{ __('Roster Pelajaran') }}
                         </x-nav-link>
                     @endif
                 </div>
@@ -97,6 +105,10 @@
                 <x-responsive-nav-link :href="route('siswa.exams.index')" :active="request()->routeIs('siswa.exams.*')">
                     {{ __('E-Exam') }}
                 </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('siswa.roster')" :active="request()->routeIs('siswa.roster*')">
+                    {{ __('Roster Pelajaran') }}
+                </x-responsive-nav-link>
             @elseif (Auth::user()?->isGuru())
                 <x-responsive-nav-link :href="route('guru.classes.index')" :active="request()->routeIs('guru.classes.*')">
                     {{ __('E-Class') }}
@@ -104,6 +116,10 @@
 
                 <x-responsive-nav-link :href="route('guru.exams.index')" :active="request()->routeIs('guru.exams.*')">
                     {{ __('E-Exam') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('guru.roster')" :active="request()->routeIs('guru.roster*')">
+                    {{ __('Roster Pelajaran') }}
                 </x-responsive-nav-link>
             @endif
         </div>

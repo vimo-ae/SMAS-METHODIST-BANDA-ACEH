@@ -93,6 +93,70 @@
                 <a href="{{ route('admin.teachers.index') }}" class="btn btn-outline-secondary">Batal</a>
             </div>
         </form>
+
+        {{-- JADWAL MENGAJAR GURU (Database View: v_teaching_schedule) --}}
+        <div class="portal-card mt-4 overflow-hidden">
+            <div class="card-header-portal d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-dark">
+                    <i class="bi bi-calendar3 text-accent me-2"></i> Jadwal Mengajar Guru
+                </h5>
+                <span class="badge bg-primary-subtle text-primary px-3 py-1 rounded-pill">
+                    {{ count($teachingSchedules ?? []) }} Jadwal
+                </span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle custom-table mb-0">
+                    <thead class="text-muted-portal small border-bottom border-secondary bg-light">
+                        <tr>
+                            <th class="ps-4" style="width: 50px;">No</th>
+                            <th>Hari</th>
+                            <th>Waktu (Mulai - Selesai)</th>
+                            <th>Kelas</th>
+                            <th>Mata Pelajaran</th>
+                            <th>Semester</th>
+                            <th class="pe-4">Tahun Ajaran</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($teachingSchedules ?? [] as $idx => $sch)
+                            <tr>
+                                <td class="ps-4 text-muted-portal">{{ $idx + 1 }}</td>
+                                <td>
+                                    <span class="badge bg-light text-dark border fw-semibold text-capitalize">
+                                        {{ $sch->day }}
+                                    </span>
+                                </td>
+                                <td class="fw-medium text-dark">
+                                    <i class="bi bi-clock me-1 text-muted-portal"></i>
+                                    {{ \Carbon\Carbon::parse($sch->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($sch->end_time)->format('H:i') }}
+                                </td>
+                                <td class="fw-semibold text-dark">
+                                    {{ $sch->class_name }}
+                                </td>
+                                <td>
+                                    {{ $sch->subject_name }}
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary-subtle text-secondary text-capitalize">
+                                        {{ $sch->semester }}
+                                    </span>
+                                </td>
+                                <td class="text-muted-portal pe-4">
+                                    {{ $sch->academic_year ?? '-' }}
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-muted-portal fst-italic">
+                                    Belum ada jadwal mengajar yang terdaftar untuk guru ini.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 

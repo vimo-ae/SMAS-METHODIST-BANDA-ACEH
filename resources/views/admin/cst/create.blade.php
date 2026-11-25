@@ -82,7 +82,7 @@
 
             <div class="mt-4 pt-3 border-top d-flex gap-2">
                 <button type="submit" class="btn btn-portal-primary px-4">
-                    <i class="bi bi-save me-1"></i> Simpan & Buat Kode Gabung
+                    <i class="bi bi-save me-1"></i> Simpan dan Buat Kode Gabung
                 </button>
                 <a href="{{ route('admin.cst.index') }}" class="btn btn-outline-secondary px-4">Batal</a>
             </div>

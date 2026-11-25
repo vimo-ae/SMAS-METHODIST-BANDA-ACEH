@@ -56,11 +56,46 @@ class SchoolClassController extends Controller
             ->get()
             ->groupBy(fn ($item) => (string) $item->class_id);
 
+        $allClasses = SchoolClass::on('mysql_admin')->orderBy('name')->get();
+
         return view('admin.classes.index', [
             'classes'         => $classes,
             'academicYears'   => $academicYears,
             'studentsByClass' => $studentsByClass,
+            'allClasses'      => $allClasses,
         ]);
+    }
+
+    /**
+     * Memindahkan seluruh siswa aktif dari satu kelas ke kelas lain menggunakan Stored Procedure sp_promote_class.
+     */
+    public function promote(Request $request)
+    {
+        $request->validate([
+            'from_class_id' => 'required|exists:mysql_admin.classes,class_id',
+            'to_class_id'   => 'required|different:from_class_id|exists:mysql_admin.classes,class_id',
+        ], [
+            'from_class_id.required' => 'Kelas asal wajib dipilih.',
+            'to_class_id.required'   => 'Kelas tujuan wajib dipilih.',
+            'to_class_id.different'  => 'Kelas tujuan tidak boleh sama dengan kelas asal.',
+        ]);
+
+        try {
+            $result = DB::connection('mysql_admin')->select(
+                'CALL sp_promote_class(?, ?)',
+                [$request->from_class_id, $request->to_class_id]
+            );
+
+            $count = $result[0]->promoted_students ?? 0;
+
+            return redirect()
+                ->route('admin.classes.index')
+                ->with('success', "Proses kenaikan kelas berhasil diproses melalui Stored Procedure sp_promote_class. {$count} siswa aktif berhasil dipindahkan.");
+        } catch (\Throwable $e) {
+            return redirect()
+                ->route('admin.classes.index')
+                ->with('error', 'Gagal memproses kenaikan kelas: ' . $e->getMessage());
+        }
     }
 
     public function create()

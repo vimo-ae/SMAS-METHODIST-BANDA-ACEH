@@ -12,7 +12,15 @@
             <h2 class="fw-bold mb-1 text-dark">{{ $session->exam_title }}</h2>
             <p class="text-muted-portal mb-0">
                 Mata Pelajaran: <strong>{{ $session->subject_name }}</strong> · 
-                Token Ujian: <code class="text-primary fw-bold">{{ $session->token }}</code>
+                Token Ujian:
+                @if($session->exam_token)
+                    <code id="admin-exam-token-value" class="text-primary fw-bold fs-5">{{ $session->exam_token }}</code>
+                    <small class="text-muted-portal ms-2" data-admin-token-expiry>
+                        Berlaku sampai {{ $session->exam_token_expires_at?->format('H:i:s') }}
+                    </small>
+                @else
+                    <span class="text-muted-portal">Belum tersedia / ujian belum aktif</span>
+                @endif
             </p>
         </div>
         <a href="{{ route('admin.monitoring.class.exams', $session->class_id ?? 1) }}" class="btn btn-outline-secondary btn-sm px-3 py-2 rounded-3">
@@ -22,7 +30,7 @@
 
     <div class="p-4 pt-0">
         
-        {{-- TABEL 1: DAFTAR PESERTA SISWA (MENAMPILKAN NIS & NILAI) --}}
+        {{-- TABEL 1: DAFTAR PESERTA SISWA (MENAMPILKAN NIS dan NILAI) --}}
         <div class="portal-card overflow-hidden mb-5">
             <div class="card-header-portal d-flex justify-content-between align-items-center">
                 <h5 class="fw-bold mb-0 text-dark">
@@ -112,7 +120,7 @@
                         <tr>
                             <th class="ps-4 text-center" style="width: 60px;">No</th>
                             <th style="width: 140px;">NIS</th>
-                            <th>Nama Siswa & Keterangan</th>
+                            <th>Nama Siswa dan Keterangan</th>
                             <th style="width: 180px;">Jenis Pelanggaran</th>
                             <th class="text-end pe-4" style="width: 200px;">Waktu Kejadian</th>
                         </tr>
@@ -154,6 +162,47 @@
 
     </div>
 </div>
+
+@if($session->exam_token && $session->exam_token_expires_at)
+<script>
+    (() => {
+        let expiresAt = new Date(@json($session->exam_token_expires_at->toIso8601String())).getTime();
+        let refreshed = false;
+
+        const refreshToken = async () => {
+            if (refreshed) return;
+            refreshed = true;
+
+            try {
+                const response = await fetch(@json(route('admin.monitoring.token', $session->exam_id)), {
+                    headers: { 'Accept': 'application/json' },
+                });
+                const data = await response.json();
+                if (data.token) {
+                    document.getElementById('admin-exam-token-value').textContent = data.token;
+                    expiresAt = new Date(data.expires_at).getTime();
+                    document.querySelector('[data-admin-token-expiry]')?.replaceChildren(
+                        document.createTextNode('Berlaku sampai ' + data.expires_at_display)
+                    );
+                    refreshed = false;
+                }
+            } catch (error) {
+                refreshed = false;
+            }
+        };
+
+        const tick = () => {
+            const remaining = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
+            if (remaining === 0 && !refreshed) {
+                refreshToken();
+            }
+        };
+
+        tick();
+        setInterval(tick, 1000);
+    })();
+</script>
+@endif
 
 <style>
     .theme-portal { background: #ffffff; color: #1e293b; min-height: 80vh; border: 1px solid #e2e8f0; }

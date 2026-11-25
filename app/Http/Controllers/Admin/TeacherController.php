@@ -85,7 +85,14 @@ class TeacherController extends Controller
     {
         $teacher = Teacher::on('mysql_admin')->with('user')->findOrFail($nip);
 
-        return view('admin.teachers.edit', compact('teacher'));
+        $teachingSchedules = DB::connection('mysql_admin')
+            ->table('v_teaching_schedule')
+            ->where('teacher_id', $nip)
+            ->orderBy('day')
+            ->orderBy('start_time')
+            ->get();
+
+        return view('admin.teachers.edit', compact('teacher', 'teachingSchedules'));
     }
 
     public function update(Request $request, string $nip)

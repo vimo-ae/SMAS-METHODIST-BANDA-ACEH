@@ -9,6 +9,23 @@ return new class extends Migration
 {
     public function up(): void
     {
+        Schema::create('exam_token_logs', function (Blueprint $table) {
+            $table->id('log_id');
+            $table->enum('log_action', ['INSERT', 'UPDATE_BEFORE', 'UPDATE_AFTER', 'DELETE']);
+            $table->string('log_by', 100)->nullable();
+            $table->timestamp('log_at', 3)->useCurrent();
+            $table->unsignedBigInteger('exam_token_id')->nullable();
+            $table->unsignedBigInteger('exam_id')->nullable();
+            $table->timestamp('issued_at')->nullable();
+            $table->timestamp('expires_at')->nullable();
+            $table->boolean('is_active')->nullable();
+            $table->timestamp('created_at')->nullable();
+            $table->timestamp('updated_at')->nullable();
+
+            $table->index('log_at');
+            $table->index('log_action');
+        });
+
         Schema::create('announcements_logs', function (Blueprint $table) {
             $table->id('log_id');
             $table->enum('log_action', ['INSERT', 'UPDATE_BEFORE', 'UPDATE_AFTER', 'DELETE']);
@@ -373,6 +390,7 @@ return new class extends Migration
 
     public function down(): void
     {
+        Schema::dropIfExists('exam_token_logs');
         Schema::dropIfExists('announcements_logs');
         Schema::dropIfExists('assignments_logs');
         Schema::dropIfExists('assignment_submissions_logs');
