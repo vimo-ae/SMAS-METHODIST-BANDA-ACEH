@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class ClassSubjectTeacher extends Model
@@ -11,11 +11,8 @@ class ClassSubjectTeacher extends Model
     use HasFactory;
 
     protected $table = 'class_subject_teacher';
-
     protected $primaryKey = 'cst_id';
-
     public $incrementing = false;
-
     protected $keyType = 'string';
 
     protected $fillable = [
@@ -28,73 +25,73 @@ class ClassSubjectTeacher extends Model
         'join_code',
     ];
 
-    protected static function booted()
+    protected static function booted(): void
     {
-        static::creating(function ($model) {
-            // Generate primary key cst_id jika belum ada
+        static::creating(function (self $model): void {
             if (empty($model->cst_id)) {
                 $model->cst_id = 'CST-' . strtoupper(Str::random(6));
             }
+
             self::generateJoinCode($model);
         });
 
-        static::updating(function ($model) {
-            // Otomatis update join_code saat data diedit
-            self::generateJoinCode($model);
+        static::updating(function (self $model): void {
+            if ($model->isDirty(['class_id', 'subject_code']) || empty($model->join_code)) {
+                self::generateJoinCode($model);
+            }
         });
     }
 
-    private static function generateJoinCode($model)
+    public static function makeJoinCode(string $subjectCode, string $className, int $classId): string
     {
-        $class = SchoolClass::where('class_id', $model->class_id)->first();
-        $subject = Subject::where('code', $model->subject_code)->first();
+        $normalized = strtoupper(trim($className));
+        $normalized = preg_replace('/\bXII\b/', '12', $normalized);
+        $normalized = preg_replace('/\bXI\b/', '11', $normalized);
+        $normalized = preg_replace('/\bX\b/', '10', $normalized);
+
+        $normalized = preg_replace('/\bIPAS\s+([AB])\b/', '$1', $normalized);
+        $normalized = preg_replace('/\bIPS\b/', 'B', $normalized);
+        $normalized = preg_replace('/\bIPA\b/', 'A', $normalized);
+
+        $cleanClass = preg_replace('/[^A-Z0-9]/', '', $normalized);
+        $code = strtoupper(trim($subjectCode)) . $cleanClass;
+
+        if (strlen($code) > 8) {
+            $code = strtoupper(trim($subjectCode)) . $classId;
+        }
+
+        return $code;
+    }
+
+    private static function generateJoinCode(self $model): void
+    {
+        $class = SchoolClass::query()->find($model->class_id);
+        $subject = Subject::query()->find($model->subject_code);
 
         if ($class && $subject) {
-            $className = strtoupper($class->name); // Contoh: "XII IPS 2"
-
-            // Ubah angka Romawi ke Angka biasa (XII -> 12, XI -> 11, X -> 10)
-            $className = str_replace(['XII', 'XI', 'X'], ['12', '11', '10'], $className);
-
-            // Ubah IPS jadi 'B' dan IPA jadi 'A'
-            $className = str_replace(['IPS', 'IPA'], ['B', 'A'], $className);
-
-            // Bersihkan spasi
-            $cleanClass = preg_replace('/\s+/', '', $className);
-
-            // Hasil akhir ringkas: KIM + 12B2 = KIM12B2
-            $model->join_code = strtoupper($subject->code . $cleanClass);
-        } else {
-            if (empty($model->join_code)) {
-                $model->join_code = strtoupper(Str::random(6));
-            }
+            $model->join_code = self::makeJoinCode(
+                (string) $subject->code,
+                (string) $class->name,
+                (int) $model->class_id
+            );
+        } elseif (empty($model->join_code)) {
+            $model->join_code = strtoupper(Str::random(6));
         }
     }
 
     public function schoolClass()
     {
-        return $this->belongsTo(
-            SchoolClass::class,
-            'class_id',
-            'class_id'
-        );
+        return $this->belongsTo(SchoolClass::class, 'class_id', 'class_id');
     }
 
     public function subject()
     {
-        return $this->belongsTo(
-            Subject::class,
-            'subject_code',
-            'code'
-        );
+        return $this->belongsTo(Subject::class, 'subject_code', 'code');
     }
 
     public function teacher()
     {
-        return $this->belongsTo(
-            Teacher::class,
-            'teacher_id',
-            'nip'
-        );
+        return $this->belongsTo(Teacher::class, 'teacher_id', 'nip');
     }
 
     public function schedules()
@@ -117,7 +114,6 @@ class ClassSubjectTeacher extends Model
         return $this->hasMany(Exam::class, 'cst_id', 'cst_id');
     }
 
-    // Siswa yang sudah bergabung lewat kode kelas
     public function joinedStudents()
     {
         return $this->belongsToMany(
@@ -132,7 +128,9 @@ class ClassSubjectTeacher extends Model
 
     public function label(): string
     {
-        return ($this->subject->name ?? $this->subject_code).' — '.($this->schoolClass->name ?? '-');
+        return ($this->subject->name ?? $this->subject_code)
+            . ' — '
+            . ($this->schoolClass->name ?? '-');
     }
 
     public function enrollments()

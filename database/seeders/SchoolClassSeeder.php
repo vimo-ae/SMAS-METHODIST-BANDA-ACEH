@@ -5,95 +5,158 @@ namespace Database\Seeders;
 use App\Models\SchoolClass;
 use App\Models\Teacher;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
+/**
+ * Seeder kelas SMAS Methodist Banda Aceh T.A. 2026/2027.
+ * Kelas baru menggunakan ID 201-206.
+ * Data kelas lama tidak dihapus atau ditimpa.
+ */
 class SchoolClassSeeder extends Seeder
 {
     public function run(): void
     {
-        // Ambil semua guru berdasarkan NIP
-        $teachers = Teacher::orderBy('nip')->get();
+        $path = database_path(
+            'seeders/data/school_structure_2026_2027.php'
+        );
 
-        $classes = [
-            [
-                'class_id' => 101,
-                'name' => 'X-A',
-                'academic_year' => '2025/2026',
-            ],
-            [
-                'class_id' => 102,
-                'name' => 'X IPA 2',
-                'academic_year' => '2025/2026',
-            ],
-            [
-                'class_id' => 103,
-                'name' => 'X IPS 1',
-                'academic_year' => '2025/2026',
-            ],
-            [
-                'class_id' => 104,
-                'name' => 'X IPS 2',
-                'academic_year' => '2025/2026',
-            ],
-            [
-                'class_id' => 105,
-                'name' => 'XI IPA 1',
-                'academic_year' => '2025/2026',
-            ],
-            [
-                'class_id' => 106,
-                'name' => 'XI IPA 2',
-                'academic_year' => '2025/2026',
-            ],
-            [
-                'class_id' => 107,
-                'name' => 'XI IPS 1',
-                'academic_year' => '2025/2026',
-            ],
-            [
-                'class_id' => 108,
-                'name' => 'XI IPS 2',
-                'academic_year' => '2025/2026',
-            ],
-            [
-                'class_id' => 109,
-                'name' => 'XII IPA 1',
-                'academic_year' => '2025/2026',
-            ],
-            [
-                'class_id' => 110,
-                'name' => 'XII IPA 2',
-                'academic_year' => '2025/2026',
-            ],
-            [
-                'class_id' => 111,
-                'name' => 'XII IPS 1',
-                'academic_year' => '2025/2026',
-            ],
-            [
-                'class_id' => 112,
-                'name' => 'XII IPS 2',
-                'academic_year' => '2025/2026',
-            ],
-        ];
-
-        foreach ($classes as $index => $class) {
-
-            // Ambil guru sesuai urutan
-            $teacher = $teachers->get($index);
-
-            SchoolClass::updateOrCreate(
-                [
-                    'class_id' => $class['class_id'],
-                ],
-                [
-                    'name' => $class['name'],
-
-                    // Menggunakan NIP sebagai FK
-                    'homeroom_teacher_id' => $teacher?->nip,
-
-                    'academic_year' => $class['academic_year'],
-                ]
+        if (! is_file($path)) {
+            throw new RuntimeException(
+                'SchoolClassSeeder: file struktur sekolah tidak ditemukan.'
             );
         }
+
+        $structure = require $path;
+
+        if (! is_array($structure)) {
+            throw new RuntimeException(
+                'SchoolClassSeeder: format struktur sekolah tidak valid.'
+            );
+        }
+
+        $classes = $structure['classes'] ?? [];
+
+        if (! is_array($classes) || $classes === []) {
+            throw new RuntimeException(
+                'SchoolClassSeeder: data kelas kosong.'
+            );
+        }
+
+        $created = 0;
+        $preserved = 0;
+        $conflicts = [];
+        $seenIds = [];
+
+        // Validasi seluruh kelas dan wali kelas sebelum menulis data.
+        foreach ($classes as $classData) {
+            if (! is_array($classData)) {
+                throw new RuntimeException(
+                    'SchoolClassSeeder: format baris kelas tidak valid.'
+                );
+            }
+
+            $classId = (int) ($classData['class_id'] ?? 0);
+            $name = trim((string) ($classData['name'] ?? ''));
+            $year = trim(
+                (string) ($classData['academic_year'] ?? '')
+            );
+
+            $homeroomId = $classData['homeroom_teacher_id'] ?? null;
+
+            if (
+                $classId <= 0
+                || $name === ''
+                || $year === ''
+            ) {
+                throw new RuntimeException(
+                    'SchoolClassSeeder: ditemukan data kelas tidak lengkap.'
+                );
+            }
+
+            if (isset($seenIds[$classId])) {
+                throw new RuntimeException(
+                    "SchoolClassSeeder: ID kelas duplikat {$classId}."
+                );
+            }
+
+            $seenIds[$classId] = true;
+
+            if (
+                $homeroomId !== null
+                && ! Teacher::query()
+                    ->whereKey((string) $homeroomId)
+                    ->exists()
+            ) {
+                throw new RuntimeException(
+                    "SchoolClassSeeder: wali kelas untuk kelas {$classId} belum tersedia. "
+                    . 'Jalankan TeacherSeeder terlebih dahulu.'
+                );
+            }
+        }
+
+        DB::transaction(function () use (
+            $classes,
+            &$created,
+            &$preserved,
+            &$conflicts
+        ): void {
+            foreach ($classes as $classData) {
+                $classId = (int) $classData['class_id'];
+
+                $attributes = [
+                    'name' => $classData['name'],
+                    'homeroom_teacher_id' =>
+                        $classData['homeroom_teacher_id'] ?? null,
+                    'academic_year' => $classData['academic_year'],
+                ];
+
+                $existing = SchoolClass::query()->find($classId);
+
+                if ($existing) {
+                    $preserved++;
+
+                    foreach ($attributes as $column => $value) {
+                        if (
+                            (string) ($existing->{$column} ?? '')
+                            !== (string) ($value ?? '')
+                        ) {
+                            $conflicts[] =
+                                "kelas {$classId}: kolom {$column} berbeda "
+                                . 'dari sumber; data lama dipertahankan';
+                        }
+                    }
+
+                    continue;
+                }
+
+                SchoolClass::query()->create(
+                    ['class_id' => $classId] + $attributes
+                );
+
+                $created++;
+            }
+        });
+
+        // Data kelas lama tidak pernah dihapus.
+        $obsolete = $structure['obsolete_class_ids'] ?? [];
+
+        if ($obsolete !== []) {
+            $this->command?->warn(
+                'SchoolClassSeeder: daftar obsolete_class_ids diabaikan. '
+                . 'Tidak ada kelas yang dihapus.'
+            );
+        }
+
+        if ($conflicts !== []) {
+            $this->command?->warn(
+                'SchoolClassSeeder: ' . implode('; ', $conflicts)
+            );
+        }
+
+        $this->command?->info(
+            "SchoolClassSeeder: {$created} kelas baru dibuat; "
+            . "{$preserved} kelas yang sudah ada dipertahankan."
+        );
     }
 }
