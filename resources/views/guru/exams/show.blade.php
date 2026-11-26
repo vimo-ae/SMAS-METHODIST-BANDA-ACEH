@@ -37,6 +37,27 @@
         .ck-editor__editable_inline {
             min-height: 220px !important;
         }
+        .ck-content figure.table,
+        .prose figure.table {
+            margin: 1em 0;
+        }
+        .ck-content table,
+        .prose table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .ck-content table th,
+        .ck-content table td,
+        .prose table th,
+        .prose table td {
+            border: 1px solid #94a3b8;
+            padding: 0.45em 0.65em;
+        }
+        .ck-content table th,
+        .prose table th {
+            background: #f1f5f9;
+            font-weight: 700;
+        }
         [x-cloak] { display: none !important; }
     </style>
 
@@ -53,6 +74,17 @@
             bsItems: [{ text: '', flag: 'B' }, { text: '', flag: 'S' }],
             matchLeft: [{ text: '', target: 1 }],
             matchRight: [''],
+
+            setEditorData(content) {
+                if (window.editorInstance) {
+                window.editorInstance.setData(content);
+                return;
+                }
+
+                window.examQuestionEditorReady?.then(editor => {
+                if (editor) editor.setData(content);
+                });
+            },
 
             toggleForm() {
                 this.showForm = !this.showForm;
@@ -87,9 +119,7 @@
                 this.bsItems = [{ text: '', flag: 'B' }, { text: '', flag: 'S' }];
                 this.matchLeft = [{ text: '', target: 1 }];
                 this.matchRight = [''];
-                if (window.editorInstance) {
-                    window.editorInstance.setData('');
-                }
+                this.setEditorData('');
             },
 
             loadEditData(q, updateUrl, index) {
@@ -99,9 +129,7 @@
                 this.editUrl = updateUrl;
                 this.type = q.question_type;
 
-                if (window.editorInstance) {
-                    window.editorInstance.setData(q.question_text || '');
-                }
+                this.setEditorData(q.question_text || '');
 
                 if (this.type === 'pilihan_ganda') {
                     this.options = Array.isArray(q.options) ? q.options : ['', '', '', ''];
@@ -394,6 +422,14 @@
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">
                             Teks Pertanyaan Soal
                         </label>
+                        <div class="mb-2 flex flex-wrap gap-2" role="toolbar" aria-label="Format teks">
+                            <button type="button" data-editor-format="superscript" aria-pressed="false" class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50">
+                                Pangkat atas <span aria-hidden="true">x<sup>2</sup></span>
+                            </button>
+                            <button type="button" data-editor-format="subscript" aria-pressed="false" class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50">
+                                Pangkat bawah <span aria-hidden="true">x<sub>2</sub></span>
+                            </button>
+                        </div>
                         <textarea name="question_text" id="editor" class="w-full rounded-xl border-slate-300 text-xs">{{ old('question_text') }}</textarea>
                     </div>
 
@@ -828,7 +864,7 @@
         const imageUploadUrl = @json(route('guru.exams.upload-image'));
         const csrfToken = @json(csrf_token());
 
-        ClassicEditor
+        window.examQuestionEditorReady = ClassicEditor
             .create(document.querySelector('#editor'), {
                 simpleUpload: {
                     uploadUrl: imageUploadUrl,
@@ -845,48 +881,57 @@
                 ]
             })
             .then(editor => {
+                editor.model.schema.extend('$text', {
+                    allowAttributes: ['superscript', 'subscript']
+                });
+
+                [
+                    ['superscript', 'sup'],
+                    ['subscript', 'sub']
+                ].forEach(([attribute, tag]) => {
+                    editor.conversion.for('upcast').elementToAttribute({
+                        view: tag,
+                        model: { key: attribute, value: true }
+                    });
+                    editor.conversion.for('downcast').attributeToElement({
+                        model: attribute,
+                        view: (value, { writer }) => value
+                            ? writer.createAttributeElement(tag)
+                            : null
+                    });
+                });
+
                 window.editorInstance = editor;
-                editor.plugins.get('FileRepository').createUploadAdapter = loader => {
-                    let controller;
 
-                    return {
-                        upload: async () => {
-                            const file = await loader.file;
-                            const formData = new FormData();
-                            formData.append('upload', file);
-                            controller = new AbortController();
+                document.querySelectorAll('[data-editor-format]').forEach(button => {
+                    button.addEventListener('mousedown', event => event.preventDefault());
+                    button.addEventListener('click', () => {
+                        const attribute = button.dataset.editorFormat;
+                        const selection = editor.model.document.selection;
+                        const isActive = selection.hasAttribute(attribute);
 
-                            const response = await fetch(imageUploadUrl, {
-                                method: 'POST',
-                                headers: {
-                                    'X-CSRF-TOKEN': csrfToken,
-                                    'Accept': 'application/json'
-                                },
-                                body: formData,
-                                signal: controller.signal
-                            });
-                            const result = await response.json();
-
-                            if (!response.ok) {
-                                throw new Error(
-                                    result.errors?.upload?.[0] ||
-                                    result.message ||
-                                    'Gagal mengunggah gambar.'
-                                );
+                        editor.model.change(writer => {
+                            if (selection.isCollapsed) {
+                                if (isActive) {
+                                    writer.removeSelectionAttribute(attribute);
+                                } else {
+                                    writer.setSelectionAttribute(attribute, true);
+                                }
+                            } else if (isActive) {
+                                writer.removeAttribute(attribute, selection.getFirstRange());
+                            } else {
+                                writer.setAttribute(attribute, true, selection.getFirstRange());
                             }
+                        });
+                        button.setAttribute('aria-pressed', String(!isActive));
+                    });
+                });
 
-                            if (!result.url) {
-                                throw new Error('Server tidak mengembalikan URL gambar.');
-                            }
-
-                            return { default: result.url };
-                        },
-                        abort: () => controller?.abort()
-                    };
-                };
+                return editor;
             })
             .catch(error => {
                 console.error('CKEditor Error:', error);
+                return null;
             });
     </script>
 </x-app-layout>
