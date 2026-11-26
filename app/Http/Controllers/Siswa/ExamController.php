@@ -65,10 +65,10 @@ class ExamController extends Controller
         $exam->loadCount('questions');
 
         $examToken = null;
-        if ($exam->isOpen() && ! $session) {
+        if (config('exam.token_enabled') && $exam->isOpen() && ! $session) {
             try {
                 $examToken = app(ExamTokenService::class)->activeToken($exam);
-            } catch (\RuntimeException) {
+            } catch (\DomainException) {
                 $examToken = null;
             }
         }
@@ -89,27 +89,29 @@ class ExamController extends Controller
             return redirect()->route('siswa.exams.take', $exam);
         }
 
-        $submittedToken = strtoupper(trim((string) $request->validate([
-            'exam_token' => 'required|string|max:10',
-        ])['exam_token']));
+        if (config('exam.token_enabled')) {
+            $submittedToken = strtoupper(trim((string) $request->validate([
+                'exam_token' => 'required|string|max:10',
+            ])['exam_token']));
 
-        $attemptKey = 'exam-token-attempt:' . $exam->exam_id . ':' . $student->nis;
-        $attempts = (int) Cache::get($attemptKey, 0);
+            $attemptKey = 'exam-token-attempt:' . $exam->exam_id . ':' . $student->nis;
+            $attempts = (int) Cache::get($attemptKey, 0);
 
-        if ($attempts >= 5) {
-            return back()->withErrors([
-                'exam_token' => 'Terlalu banyak percobaan salah. Coba lagi 15 menit kemudian.',
-            ]);
+            if ($attempts >= 5) {
+                return back()->withErrors([
+                    'exam_token' => 'Terlalu banyak percobaan salah. Coba lagi 15 menit kemudian.',
+                ]);
+            }
+
+            if (! $examTokens->validate($exam, $submittedToken)) {
+                Cache::put($attemptKey, $attempts + 1, now()->addMinutes(15));
+                return back()->withErrors([
+                    'exam_token' => 'Token ujian salah atau sudah kedaluwarsa.',
+                ]);
+            }
+
+            Cache::forget($attemptKey);
         }
-
-        if (! $examTokens->validate($exam, $submittedToken)) {
-            Cache::put($attemptKey, $attempts + 1, now()->addMinutes(15));
-            return back()->withErrors([
-                'exam_token' => 'Token ujian salah atau sudah kedaluwarsa.',
-            ]);
-        }
-
-        Cache::forget($attemptKey);
 
         DB::transaction(function () use ($exam, $student) {
             $exists = ExamSession::where([

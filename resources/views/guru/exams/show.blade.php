@@ -184,6 +184,10 @@
                         </div>
                     </div>
                 </div>
+            @elseif (! config('exam.token_enabled'))
+                <div class="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm font-medium text-amber-900">
+                    Token ujian dinonaktifkan sementara. Siswa dapat memulai ujian tanpa token.
+                </div>
             @endif
 
             {{-- BREADCRUMB dan TOMBOL KEMBALI --}}

@@ -514,23 +514,29 @@
                                 <form action="{{ route('siswa.exams.start', $exam) }}" method="POST" id="startExamForm" class="space-y-4 pt-2">
                                     @csrf
 
-                                    <label class="block text-xs font-bold text-slate-700" for="exam_token">
-                                        Token Ujian
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="exam_token"
-                                        name="exam_token"
-                                        value="{{ old('exam_token') }}"
-                                        maxlength="10"
-                                        autocomplete="off"
-                                        placeholder="Masukkan token 6 karakter"
-                                        class="w-full rounded-xl border-slate-300 py-3 text-center font-mono text-lg font-black uppercase tracking-[0.35em] text-[#123B60] focus:border-[#267BB5] focus:ring-[#267BB5]"
-                                        required
-                                    >
-                                    @error('exam_token')
-                                        <p class="text-xs font-semibold text-rose-600">{{ $message }}</p>
-                                    @enderror
+                                    @if (config('exam.token_enabled'))
+                                        <label class="block text-xs font-bold text-slate-700" for="exam_token">
+                                            Token Ujian
+                                        </label>
+                                        <input
+                                            type="text"
+                                            id="exam_token"
+                                            name="exam_token"
+                                            value="{{ old('exam_token') }}"
+                                            maxlength="10"
+                                            autocomplete="off"
+                                            placeholder="Masukkan token 6 karakter"
+                                            class="w-full rounded-xl border-slate-300 py-3 text-center font-mono text-lg font-black uppercase tracking-[0.35em] text-[#123B60] focus:border-[#267BB5] focus:ring-[#267BB5]"
+                                            required
+                                        >
+                                        @error('exam_token')
+                                            <p class="text-xs font-semibold text-rose-600">{{ $message }}</p>
+                                        @enderror
+                                    @else
+                                        <p class="rounded-xl bg-blue-50 px-4 py-3 text-xs font-medium text-blue-800">
+                                            Token ujian dinonaktifkan sementara. Kamu bisa memulai ujian tanpa token.
+                                        </p>
+                                    @endif
 
                                     <label class="flex items-start gap-2.5 cursor-pointer text-xs leading-relaxed text-slate-600" for="agreeRules">
                                         <input type="checkbox" id="agreeRules" class="mt-0.5 h-4 w-4 rounded border-slate-300 text-[#123B60] focus:ring-[#267BB5] cursor-pointer">
@@ -572,8 +578,9 @@
         }
 
         function refreshButton() {
-            if (!btn || !agree || !examToken) return;
-            btn.disabled = !(agree.checked && navigator.onLine && examToken.value.trim().length >= 6);
+            if (!btn || !agree) return;
+            const tokenIsValid = !examToken || examToken.value.trim().length >= 6;
+            btn.disabled = !(agree.checked && navigator.onLine && tokenIsValid);
         }
 
         function checkNet() {
