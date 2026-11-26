@@ -19,8 +19,12 @@ class ExamTokenService
 
     public function activeToken(Exam $exam): ExamToken
     {
+        if (! config('exam.token_enabled')) {
+            throw new \DomainException('Token ujian sedang dinonaktifkan sementara.');
+        }
+
         if (! $exam->is_published || now()->gt($exam->end_time)) {
-            throw new \RuntimeException('Token ujian hanya tersedia saat ujian aktif.');
+            throw new \DomainException('Token ujian hanya tersedia saat ujian aktif.');
         }
 
         return DB::transaction(function () use ($exam) {
@@ -65,6 +69,10 @@ class ExamTokenService
 
     public function validate(Exam $exam, string $submittedToken): bool
     {
+        if (! config('exam.token_enabled')) {
+            return false;
+        }
+
         $active = ExamToken::on(DB::getDefaultConnection())
             ->where('exam_id', $exam->exam_id)
             ->where('is_active', true)
@@ -77,6 +85,10 @@ class ExamTokenService
 
     public function rotatePublishedTokens(): int
     {
+        if (! config('exam.token_enabled')) {
+            return 0;
+        }
+
         $count = 0;
 
         Exam::on(DB::getDefaultConnection())

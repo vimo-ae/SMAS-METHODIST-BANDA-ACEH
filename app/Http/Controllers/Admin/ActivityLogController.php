@@ -100,7 +100,7 @@ class ActivityLogController extends Controller
                 $rows = $conn->table('v_all_logs')
                     ->selectRaw(
                         "source_table,
-                         COUNT(*) AS total,
+                         COUNT(*) AS total,x    
                          COALESCE(SUM(log_action = 'INSERT'), 0) AS ins,
                          COALESCE(SUM(log_action = 'UPDATE_AFTER'), 0) AS upd,
                          COALESCE(SUM(log_action = 'DELETE'), 0) AS del,

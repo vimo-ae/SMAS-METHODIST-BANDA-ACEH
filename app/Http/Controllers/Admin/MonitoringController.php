@@ -145,7 +145,7 @@ class MonitoringController extends Controller
     {
         $exam = Exam::on('mysql_admin')->findOrFail($id);
 
-        if (! $exam->isOpen()) {
+        if (! config('exam.token_enabled') || ! $exam->isOpen()) {
             return response()->json([
                 'token' => null,
                 'expires_at' => null,
@@ -222,12 +222,12 @@ class MonitoringController extends Controller
         $session->exam_token = null;
         $session->exam_token_expires_at = null;
         $exam = Exam::on('mysql_admin')->find($id);
-        if ($exam && $exam->isOpen()) {
+        if (config('exam.token_enabled') && $exam && $exam->isOpen()) {
             try {
                 $activeToken = $examTokens->activeToken($exam);
                 $session->exam_token = $activeToken->plainToken();
                 $session->exam_token_expires_at = $activeToken->expires_at;
-            } catch (\RuntimeException) {
+            } catch (\DomainException) {
                 // Tidak menampilkan token jika ujian tidak aktif.
             }
         }

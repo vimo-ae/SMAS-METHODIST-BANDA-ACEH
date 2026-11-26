@@ -11,15 +11,19 @@
             <div class="text-uppercase tracking-wide text-accent fw-bold small mb-1">Monitoring Ujian {{ $session->class_name }}</div>
             <h2 class="fw-bold mb-1 text-dark">{{ $session->exam_title }}</h2>
             <p class="text-muted-portal mb-0">
-                Mata Pelajaran: <strong>{{ $session->subject_name }}</strong> · 
-                Token Ujian:
-                @if($session->exam_token)
-                    <code id="admin-exam-token-value" class="text-primary fw-bold fs-5">{{ $session->exam_token }}</code>
-                    <small class="text-muted-portal ms-2" data-admin-token-expiry>
-                        Berlaku sampai {{ $session->exam_token_expires_at?->format('H:i:s') }}
-                    </small>
+                Mata Pelajaran: <strong>{{ $session->subject_name }}</strong>
+                @if(config('exam.token_enabled'))
+                    · Token Ujian:
+                    @if($session->exam_token)
+                        <code id="admin-exam-token-value" class="text-primary fw-bold fs-5">{{ $session->exam_token }}</code>
+                        <small class="text-muted-portal ms-2" data-admin-token-expiry>
+                            Berlaku sampai {{ $session->exam_token_expires_at?->format('H:i:s') }}
+                        </small>
+                    @else
+                        <span class="text-muted-portal">Belum tersedia / ujian belum aktif</span>
+                    @endif
                 @else
-                    <span class="text-muted-portal">Belum tersedia / ujian belum aktif</span>
+                    · <span class="text-muted-portal">Token dinonaktifkan sementara</span>
                 @endif
             </p>
         </div>
