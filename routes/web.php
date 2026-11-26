@@ -252,6 +252,10 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
         Route::post('/{exam}/questions', [GuruExam::class, 'storeQuestion'])
             ->name('questions.store');
 
+        // Salin soal dari ujian lain
+        Route::post('/{exam}/questions/copy', [GuruExam::class, 'copyQuestions'])
+            ->name('questions.copy');
+
         // Edit soal
         Route::put('/{exam}/questions/{question}', [GuruExam::class, 'updateQuestion'])
             ->name('questions.update');
