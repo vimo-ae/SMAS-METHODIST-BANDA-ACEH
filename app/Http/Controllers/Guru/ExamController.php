@@ -13,6 +13,7 @@ use App\Services\ExamTokenService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class ExamController extends Controller
@@ -55,7 +56,8 @@ class ExamController extends Controller
     public function store(Request $request)
     {
         $v = $request->validate([
-            'cst_id' => 'required|exists:class_subject_teacher,cst_id',
+            'cst_ids' => 'required|array|min:1',
+            'cst_ids.*' => 'required|string|distinct|exists:class_subject_teacher,cst_id',
             'title' => 'required|string|max:150',
             'exam_type' => ['required', Rule::in(['uts', 'uas', 'kuis'])],
             'start_time' => 'required|date',
@@ -65,20 +67,34 @@ class ExamController extends Controller
             'instructions' => 'nullable|string',
         ]);
 
-        Access::authorizeTeacher(
-            $request->user(),
-            ClassSubjectTeacher::findOrFail($v['cst_id'])
-        );
+        foreach ($v['cst_ids'] as $cstId) {
+            Access::authorizeTeacher(
+                $request->user(),
+                ClassSubjectTeacher::findOrFail($cstId)
+            );
+        }
 
-        $exam = Exam::create($v + [
-            'shuffle_questions' => $request->boolean('shuffle_questions'),
-            'shuffle_options' => $request->boolean('shuffle_options'),
-            'is_published' => false,
-        ]);
+        $cstIds = $v['cst_ids'];
+        unset($v['cst_ids']);
+
+        $exams = DB::transaction(function () use ($cstIds, $v, $request) {
+            $createdExams = collect();
+
+            foreach ($cstIds as $cstId) {
+                $createdExams->push(Exam::create($v + [
+                    'cst_id' => $cstId,
+                    'shuffle_questions' => $request->boolean('shuffle_questions'),
+                    'shuffle_options' => $request->boolean('shuffle_options'),
+                    'is_published' => false,
+                ]));
+            }
+
+            return $createdExams;
+        });
 
         return redirect()
-            ->route('guru.exams.show', $exam)
-            ->with('success', 'Ujian dibuat. Silakan isi soal beserta kunci jawaban.');
+            ->route('guru.exams.show', $exams->first())
+            ->with('success', $exams->count() . ' ujian dibuat. Silakan isi soal beserta kunci jawaban pada setiap ujian.');
     }
 
     public function show(Request $request, Exam $exam)
@@ -103,7 +119,15 @@ class ExamController extends Controller
             }
         }
 
-        return view('guru.exams.show', compact('exam', 'examToken'));
+        $sourceExams = Exam::with('classSubjectTeacher.subject', 'classSubjectTeacher.schoolClass')
+            ->withCount('questions')
+            ->where('exam_id', '!=', $exam->exam_id)
+            ->whereHas('classSubjectTeacher', fn ($query) => $query->where('teacher_id', $request->user()->teacher->nip))
+            ->whereHas('questions')
+            ->latest()
+            ->get();
+
+        return view('guru.exams.show', compact('exam', 'examToken', 'sourceExams'));
     }
 
     public function activeToken(Request $request, Exam $exam, ExamTokenService $examTokens)
@@ -286,6 +310,72 @@ class ExamController extends Controller
         $this->syncQuestionWeights($exam);
 
         return back()->with('success', 'Soal berhasil ditambahkan.');
+    }
+
+    public function copyQuestions(Request $request, Exam $exam)
+    {
+        $this->own($request, $exam);
+
+        $validated = $request->validate([
+            'source_exam_id' => 'required|integer|exists:exams,exam_id',
+        ]);
+
+        $sourceExam = Exam::findOrFail($validated['source_exam_id']);
+        if ((int) $sourceExam->exam_id === (int) $exam->exam_id) {
+            return back()
+                ->withErrors(['source_exam_id' => 'Pilih ujian lain sebagai sumber soal.'])
+                ->withInput();
+        }
+
+        $this->own($request, $sourceExam);
+
+        $connection = DB::connection('mysql_guru');
+        $sourceQuestions = $connection->table('exam_questions')
+            ->where('exam_id', $sourceExam->exam_id)
+            ->orderBy('exam_question_id')
+            ->get();
+
+        if ($sourceQuestions->isEmpty()) {
+            return back()->with('error', 'Ujian sumber belum memiliki soal untuk disalin.');
+        }
+
+        foreach ($sourceQuestions as $question) {
+            $createdQuestion = $connection->select(
+                'CALL sp_create_exam_question(?, ?, ?, ?, ?, ?, ?)',
+                [
+                    $exam->exam_id,
+                    $request->user()->teacher->nip,
+                    $question->question_type,
+                    $question->question_text,
+                    $question->options,
+                    $question->correct_answer,
+                    $question->score_weight,
+                ]
+            );
+
+            $questionId = $createdQuestion[0]->exam_question_id ?? null;
+            if (!$questionId) {
+                throw new \RuntimeException('Soal berhasil disalin, tetapi ID soal baru tidak ditemukan.');
+            }
+
+            if ($question->image_path) {
+                $extension = pathinfo($question->image_path, PATHINFO_EXTENSION);
+                $imagePath = 'exam-questions/' . $exam->exam_id . '/copy-' . Str::uuid()
+                    . ($extension ? '.' . $extension : '');
+
+                if (!Storage::disk('public')->copy($question->image_path, $imagePath)) {
+                    throw new \RuntimeException('Gagal menyalin gambar soal dari ujian sumber.');
+                }
+
+                $connection->table('exam_questions')
+                    ->where('exam_question_id', $questionId)
+                    ->update(['image_path' => $imagePath]);
+            }
+        }
+
+        $this->syncQuestionWeights($exam);
+
+        return back()->with('success', $sourceQuestions->count() . ' soal berhasil disalin dari ujian sumber.');
     }
 
     public function updateQuestion(

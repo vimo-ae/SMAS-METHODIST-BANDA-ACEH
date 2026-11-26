@@ -216,6 +216,31 @@
                 </div>
             @endif
 
+            @if ($sourceExams->isNotEmpty())
+                <div class="rounded-3xl border border-indigo-200 bg-indigo-50/70 p-5 sm:p-6 shadow-sm">
+                    <div class="mb-4">
+                        <h2 class="text-base font-black text-indigo-950">Salin Soal dari Ujian Lain</h2>
+                        <p class="mt-1 text-xs text-indigo-800">
+                            Semua soal beserta opsi dan kunci jawaban akan ditambahkan. Soal yang sudah ada tetap tersimpan.
+                        </p>
+                    </div>
+                    <form action="{{ route('guru.exams.questions.copy', $exam) }}" method="POST" class="flex flex-col gap-3 sm:flex-row" onsubmit="return confirm('Salin semua soal dari ujian yang dipilih? Soal yang sudah ada tidak akan dihapus.')">
+                        @csrf
+                        <select name="source_exam_id" required class="w-full rounded-xl border-indigo-200 bg-white text-sm shadow-sm focus:border-[#267BB5] focus:ring-[#267BB5]">
+                            <option value="">-- Pilih ujian sumber --</option>
+                            @foreach ($sourceExams as $sourceExam)
+                                <option value="{{ $sourceExam->exam_id }}" {{ old('source_exam_id') == $sourceExam->exam_id ? 'selected' : '' }}>
+                                    {{ $sourceExam->title }} — {{ $sourceExam->classSubjectTeacher?->schoolClass?->name }} / {{ $sourceExam->classSubjectTeacher?->subject?->name }} ({{ $sourceExam->questions_count }} soal)
+                                </option>
+                            @endforeach
+                        </select>
+                        <button type="submit" class="shrink-0 rounded-xl bg-indigo-700 px-5 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-indigo-800">
+                            Salin Semua Soal
+                        </button>
+                    </form>
+                </div>
+            @endif
+
             {{-- ======================================================== --}}
             {{-- TOP CONTROL BAR: INFORMASI SOAL dan TOMBOL TAMBAH/EDIT     --}}
             {{-- ======================================================== --}}

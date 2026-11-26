@@ -54,16 +54,46 @@
 
                     <!-- Pilih Kelas dan Mata Pelajaran -->
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">Kelas dan Mata Pelajaran</label>
-                        <select name="cst_id" required class="w-full rounded-xl border-slate-300 shadow-sm focus:border-[#267BB5] focus:ring-[#267BB5] text-sm">
-                            <option value="">-- Pilih Kelas dan Mapel --</option>
-                            @foreach($csts as $cst)
-                                <option value="{{ $cst->cst_id }}" {{ old('cst_id') == $cst->cst_id ? 'selected' : '' }}>
-                                    {{ $cst->schoolClass->name }} — {{ $cst->subject->name }}
-                                </option>
+                        <div class="mb-1 flex items-center justify-between gap-3">
+                            <label class="block text-sm font-semibold text-slate-700">Kelas dan Mata Pelajaran</label>
+                            <button type="button" id="add-class-row" class="rounded-lg border border-blue-200 px-3 py-1.5 text-xs font-semibold text-blue-700 transition hover:bg-blue-50">
+                                + Tambah Kelas
+                            </button>
+                        </div>
+                        <div id="class-rows" class="space-y-3">
+                            @foreach(old('cst_ids', ['']) as $selectedCstId)
+                                <div class="flex items-center gap-2" data-class-row>
+                                    <select name="cst_ids[]" required class="w-full rounded-xl border-slate-300 shadow-sm focus:border-[#267BB5] focus:ring-[#267BB5] text-sm">
+                                        <option value="">-- Pilih Kelas dan Mapel --</option>
+                                        @foreach($csts as $cst)
+                                            <option value="{{ $cst->cst_id }}" {{ $selectedCstId == $cst->cst_id ? 'selected' : '' }}>
+                                                {{ $cst->schoolClass->name }} — {{ $cst->subject->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <button type="button" class="remove-class-row shrink-0 rounded-lg border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-700 transition hover:bg-rose-50" aria-label="Hapus pilihan kelas">
+                                        Hapus
+                                    </button>
+                                </div>
                             @endforeach
-                        </select>
+                        </div>
                     </div>
+
+                    <template id="class-row-template">
+                        <div class="flex items-center gap-2" data-class-row>
+                            <select name="cst_ids[]" required class="w-full rounded-xl border-slate-300 shadow-sm focus:border-[#267BB5] focus:ring-[#267BB5] text-sm">
+                                <option value="">-- Pilih Kelas dan Mapel --</option>
+                                @foreach($csts as $cst)
+                                    <option value="{{ $cst->cst_id }}">
+                                        {{ $cst->schoolClass->name }} — {{ $cst->subject->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <button type="button" class="remove-class-row shrink-0 rounded-lg border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-700 transition hover:bg-rose-50" aria-label="Hapus pilihan kelas">
+                                Hapus
+                            </button>
+                        </div>
+                    </template>
 
                     <!-- Judul Ujian -->
                     <div>
@@ -145,4 +175,20 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const classRows = document.getElementById('class-rows');
+        const classRowTemplate = document.getElementById('class-row-template');
+
+        document.getElementById('add-class-row').addEventListener('click', () => {
+            classRows.appendChild(classRowTemplate.content.cloneNode(true));
+        });
+
+        classRows.addEventListener('click', (event) => {
+            const removeButton = event.target.closest('.remove-class-row');
+            if (removeButton && classRows.querySelectorAll('[data-class-row]').length > 1) {
+                removeButton.closest('[data-class-row]').remove();
+            }
+        });
+    </script>
 </x-app-layout>
