@@ -48,6 +48,8 @@ class AnnouncementContentSanitizer
         'p',
         's',
         'strong',
+        'sub',
+        'sup',
         'table',
         'tbody',
         'td',
