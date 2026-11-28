@@ -111,7 +111,7 @@ class ExamController extends Controller
         $exam->load('questions');
 
         $examToken = null;
-        if (config('exam.token_enabled') && $exam->isOpen()) {
+        if (config('exam.token_enabled')) {
             try {
                 $examToken = app(ExamTokenService::class)->activeToken($exam);
             } catch (\DomainException) {
@@ -134,14 +134,21 @@ class ExamController extends Controller
     {
         $this->own($request, $exam);
 
-        if (! config('exam.token_enabled') || ! $exam->isOpen()) {
+        if (! config('exam.token_enabled')) {
             return response()->json([
                 'token' => null,
                 'expires_at' => null,
             ]);
         }
 
-        $token = $examTokens->activeToken($exam);
+        try {
+            $token = $examTokens->activeToken($exam);
+        } catch (\DomainException) {
+            return response()->json([
+                'token' => null,
+                'expires_at' => null,
+            ]);
+        }
 
         return response()->json([
             'token' => $token->plainToken(),
