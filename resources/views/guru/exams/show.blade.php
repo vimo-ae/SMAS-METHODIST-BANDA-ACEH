@@ -170,7 +170,7 @@
                     <div class="flex flex-wrap items-center justify-between gap-4">
                         <div>
                             <p class="text-xs font-bold uppercase tracking-[0.18em] text-[#267BB5]">Token Ujian Aktif</p>
-                            <p class="mt-1 text-sm text-slate-600">Token diperbarui otomatis setiap 10 menit.</p>
+                            <p class="mt-1 text-sm text-slate-600">Token diperbarui otomatis setiap 10 menit. Siswa hanya dapat menggunakannya saat jadwal ujian dibuka.</p>
                         </div>
                         <div class="flex items-center gap-3">
                             <code id="exam-token-value" class="rounded-xl border border-[#9DC3DE] bg-white px-5 py-3 font-mono text-2xl font-black tracking-[0.35em] text-[#123B60]">
@@ -187,6 +187,14 @@
             @elseif (! config('exam.token_enabled'))
                 <div class="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm font-medium text-amber-900">
                     Token ujian dinonaktifkan sementara. Siswa dapat memulai ujian tanpa token.
+                </div>
+            @elseif (! $exam->is_published)
+                <div class="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm font-medium text-amber-900">
+                    Terbitkan ujian terlebih dahulu agar token dapat dibuat.
+                </div>
+            @elseif (now()->gt($exam->end_time))
+                <div class="rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-sm font-medium text-slate-700">
+                    Jadwal ujian sudah berakhir; token tidak lagi tersedia.
                 </div>
             @endif
 
