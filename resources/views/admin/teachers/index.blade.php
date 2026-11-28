@@ -136,6 +136,11 @@
                                 </td>
                                 <td class="text-end pe-4">
                                     <div class="d-inline-flex gap-1">
+                                        <a href="{{ route('admin.accounts.password.edit', $teacher->nip) }}"
+                                           class="btn btn-sm btn-outline-warning" title="Reset password"
+                                           aria-label="Reset password akun guru {{ $teacherName }}">
+                                            <i class="bi bi-key"></i>
+                                        </a>
                                         <a href="{{ route('admin.teachers.edit', $teacher->nip) }}"
                                            class="btn btn-sm btn-outline-primary" title="Edit">
                                             <i class="bi bi-pencil-square"></i>
