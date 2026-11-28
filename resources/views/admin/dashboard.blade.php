@@ -95,13 +95,17 @@
                                 </thead>
                                 <tbody>
                                     @forelse($examMonitors as $exam)
-                                        @php
-                                            $now = now();
-                                            $isUpcoming = $now->lt($exam->start_time);
-                                            $isFinished = $now->gt($exam->end_time);
-                                            $isRunning = ! $isUpcoming && ! $isFinished && (int) $exam->running_count > 0;
-                                            $isOpen = ! $isUpcoming && ! $isFinished;
-                                        @endphp
+                                    @continue(!is_object($exam))
+                                    @php
+                                        $now = now();
+                                        $startAt = !empty($exam->start_time) ? \Illuminate\Support\Carbon::parse($exam->start_time) : null;
+                                        $endAt = !empty($exam->end_time) ? \Illuminate\Support\Carbon::parse($exam->end_time) : null;
+
+                                        $isUpcoming = $startAt ? $now->lt($startAt) : false;
+                                        $isFinished = $endAt ? $now->gt($endAt) : false;
+                                        $isRunning = ! $isUpcoming && ! $isFinished && (int) ($exam->running_count ?? 0) > 0;
+                                        $isOpen = ! $isUpcoming && ! $isFinished;
+                                    @endphp
                                         <tr>
                                             <td>
                                                 <div class="fw-semibold text-dark">{{ $exam->title }}</div>
