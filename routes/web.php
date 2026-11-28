@@ -321,6 +321,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::post('/', [AccountController::class, 'store'])
             ->name('store');
 
+        Route::get('/{id}/password', [AccountController::class, 'editPassword'])
+            ->name('password.edit');
+
+        Route::put('/{id}/password', [AccountController::class, 'resetPassword'])
+            ->name('password.update');
+
         Route::get('/{id}/edit', [AccountController::class, 'edit'])
             ->name('edit');
 

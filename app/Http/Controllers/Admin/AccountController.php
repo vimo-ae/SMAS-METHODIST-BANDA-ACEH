@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class AccountController extends Controller
@@ -117,6 +118,41 @@ class AccountController extends Controller
             : collect();
 
         return view('admin.accounts.edit', compact('user', 'gradeSummary'));
+    }
+
+    public function editPassword(string $id)
+    {
+        $user = User::on('mysql_admin')
+            ->whereIn('role', ['guru', 'siswa'])
+            ->where('user_id', $id)
+            ->firstOrFail();
+
+        return view('admin.accounts.password', compact('user'));
+    }
+
+    public function resetPassword(Request $request, string $id)
+    {
+        $validated = $request->validate([
+            'password' => ['required', 'string', 'min:8', 'max:128', 'confirmed'],
+        ], [
+            'password.required'  => 'Password baru wajib diisi.',
+            'password.min'       => 'Password baru minimal 8 karakter.',
+            'password.max'       => 'Password baru maksimal 128 karakter.',
+            'password.confirmed' => 'Konfirmasi password baru tidak cocok.',
+        ]);
+
+        $user = User::on('mysql_admin')
+            ->whereIn('role', ['guru', 'siswa'])
+            ->where('user_id', $id)
+            ->firstOrFail();
+
+        $user->password = Hash::make($validated['password']);
+        $user->setRememberToken(Str::random(60));
+        $user->save();
+
+        return redirect()
+            ->route('admin.accounts.password.edit', $user->user_id)
+            ->with('success', 'Password akun berhasil direset. Sampaikan password baru kepada pengguna melalui jalur yang aman.');
     }
 
     public function update(Request $request, $id)
